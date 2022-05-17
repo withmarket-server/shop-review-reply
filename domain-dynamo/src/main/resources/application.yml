@@ -1,0 +1,43 @@
+spring:
+  profiles:
+    group:
+      "dev": "common,local"
+      "prod": "server,common"
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: "local"
+
+    import: "optional:configserver:http://localhost:9500/"
+  cloud:
+    config:
+      name: nosql
+      profile: dynamo
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: "server"
+
+    import: "optional:configserver:http://10.1.101.192:9500/"
+  cloud:
+    config:
+      name: nosql
+      profile: dynamo
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: "common"
+
+encrypt:
+  key: EjelT7fFw6T4LHQEuwtU
+
+---
