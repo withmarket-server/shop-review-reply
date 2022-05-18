@@ -1,0 +1,12 @@
+spring:
+  config:
+    activate:
+      on-profile: localdynamo
+    import: "optional:configserver:http://localhost:9500/"
+  cloud:
+    config:
+      name: nosql
+      profile: dynamo
+
+encrypt:
+  key: EjelT7fFw6T4LHQEuwtU

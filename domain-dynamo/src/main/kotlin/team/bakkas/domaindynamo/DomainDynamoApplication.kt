@@ -8,7 +8,6 @@ import org.springframework.core.env.AbstractEnvironment
 class DomainDynamoApplication
 
 fun main(args: Array<String>) {
-    System.setProperty("spring.profiles.active", "dev")
 
     runApplication<DomainDynamoApplication>(*args)
 }
