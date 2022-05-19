@@ -10,6 +10,14 @@ import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 
+/**
+ * netty 기반의 DynamoDB Enhanced Client를 Configuration으로 등록
+ * Config Server로부터 access-key, secret-key를 주입받아서 DynamoDBEnhancedClient를 Bean으로 등록한다
+ * @since 22.05.18
+ * @author 김도엽
+ * @param accessKey DynamoDB의 FullAccess IAM의 액세스 키.
+ * @param secretKey DynamoDB의 FullAccess IAM의 시크릿 키.
+ */
 @Configuration
 class DynamoDbConfig(
     @Value("\${aws.dynamodb.credentials.access-key}")

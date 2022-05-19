@@ -14,7 +14,7 @@ dependencies {
 
     implementation("org.springframework.cloud:spring-cloud-starter-config")
 
-    implementation("software.amazon.awssdk:dynamodb-enhanced:2.17.101")
+    implementation("software.amazon.awssdk:dynamodb-enhanced:2.17.191")
 }
 
 dependencyManagement {
