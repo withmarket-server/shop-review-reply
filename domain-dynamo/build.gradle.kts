@@ -1,6 +1,10 @@
+import org.jetbrains.kotlin.builtins.StandardNames.FqNames.annotation
+
 plugins {
     kotlin("jvm")
     kotlin("plugin.spring")
+    id("org.jetbrains.kotlin.plugin.allopen")
+    id("org.jetbrains.kotlin.plugin.noarg")
 }
 
 extra["springCloudVersion"] = "2021.0.2"
@@ -23,4 +27,13 @@ dependencyManagement {
     }
 }
 
-tasks.register("prepareKotlinBuildScriptModel"){}
+allOpen {
+    annotation("software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean")
+}
+
+noArg {
+    annotation("software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean")
+
+}
+
+tasks.register("prepareKotlinBuildScriptModel") {}
