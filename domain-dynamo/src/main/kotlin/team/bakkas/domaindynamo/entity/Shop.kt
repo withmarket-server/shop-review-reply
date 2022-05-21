@@ -9,7 +9,6 @@ import java.io.Serializable
 import java.time.LocalDateTime
 import java.util.*
 
-// TODO LocalDateTime을 DynamoDB에서도 저장하는 방법?
 @DynamoDbBean
 data class Shop(
     @get:DynamoDbPartitionKey

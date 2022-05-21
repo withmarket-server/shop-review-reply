@@ -2,6 +2,7 @@ package team.bakkas.domaindynamo.repository
 
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.beans.factory.annotation.Autowired
@@ -66,6 +67,14 @@ internal class ShopRepositoryTest @Autowired constructor(
             Assertions.assertNull(this)
             println("Test Passed!")
         }
+    }
+
+    @Test
+    @DisplayName("shop 테이블에 존재하는 모든 데이터를 긁어온다")
+    fun 모든shop을가져온다() {
+        val shopList = shopRepository.findAllShop()
+
+        shopList.forEach { shop -> println(shop) }
     }
 
     fun getMockShop(shopId: String, shopName: String, isOpen: Boolean): Shop = Shop(
