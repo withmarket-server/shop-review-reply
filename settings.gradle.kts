@@ -4,5 +4,6 @@ include(
     ":application-shop",
     ":domain-rds",
     ":domain-dynamo",
-    ":common"
+    ":common",
+    ":client-mobilequery"
 )
