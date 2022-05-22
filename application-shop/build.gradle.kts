@@ -5,9 +5,8 @@ plugins {
 
 dependencies {
     api(project(":domain-dynamo"))
-    api(project(":domain-rds"))
 
-    implementation("org.springframework.boot:spring-boot-starter-web:2.6.6")
+    implementation("org.springframework.boot:spring-boot-starter-web")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
