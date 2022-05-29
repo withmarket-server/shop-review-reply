@@ -11,5 +11,6 @@ enum class ErrorCode(
     val message: String
 ) {
     ACCESS_DENIED(400, "C001", "Access is denied"),
+    REQUEST_PARAM_LOST(400, "C002", "Request param is lost"),
     ENTITY_NOT_FOUND(500, "C101", "Not exist entity")
 }

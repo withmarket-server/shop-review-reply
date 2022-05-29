@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service
 import team.bakkas.clientmobilequery.dto.ShopSimpleReadDto
 import team.bakkas.common.ResultFactory
 import team.bakkas.common.Results
+import team.bakkas.common.exceptions.RequestParamLostException
 import team.bakkas.common.exceptions.ShopNotFoundException
 import team.bakkas.domaindynamo.entity.Shop
 import team.bakkas.domaindynamo.repository.ShopRepository
@@ -16,7 +17,12 @@ import team.bakkas.domaindynamo.repository.ShopRepository
 class ShopQueryService(private val shopRepository: ShopRepository) {
 
     // shop의 id와 name을 통해서 shop을 하나 가져오는 메소드
-    fun getShopByIdAndName(shopId: String, shopName: String): ResponseEntity<Results.SingleResult<ShopSimpleReadDto>> {
+    fun getShopByIdAndName(shopId: String?, shopName: String?): ResponseEntity<Results.SingleResult<ShopSimpleReadDto>> {
+
+        // 예외 처리 -> 조건이 유실된 경우
+        if (shopId == null || shopName == null)
+            throw RequestParamLostException("잘못된 형식의 검색. shopId 또는 shopName을 확인하십시오.")
+
         val foundShop = shopRepository.findShopByIdAndName(shopId, shopName)
 
         // shop이 존재하지 않는 경우 -> shopNotFoundException을 뱉어준다

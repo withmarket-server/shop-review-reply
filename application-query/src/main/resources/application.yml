@@ -1,0 +1,6 @@
+server:
+  port: 10100
+
+spring:
+  profiles:
+    active: localdynamo
