@@ -3,7 +3,7 @@ package team.bakkas.domainqueryservice
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = ["team.bakkas"])
 class DomainQueryserviceApplication
 
 fun main(args: Array<String>) {
