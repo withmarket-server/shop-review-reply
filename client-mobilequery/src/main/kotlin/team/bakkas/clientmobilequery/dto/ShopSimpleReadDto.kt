@@ -8,17 +8,13 @@ import java.time.LocalDateTime
  * @author Brian
  * @since 22/05/22
  */
-data class ShopReadDto(
+data class ShopSimpleReadDto(
     @JsonProperty("shop_id")
     var shopId: String,
     @JsonProperty("shop_name")
     var shopName: String,
     @JsonProperty("is_open")
     var isOpen: Boolean,
-    @JsonProperty("open_time")
-    var openTime: LocalDateTime,
-    @JsonProperty("close_time")
-    var closeTime: LocalDateTime,
     @JsonProperty("lot_number_address")
     var lotNumberAddress: String,
     @JsonProperty("road_name_address")
@@ -32,7 +28,5 @@ data class ShopReadDto(
     @JsonProperty("review_number")
     var reviewNumber: Int,
     @JsonProperty("main_image")
-    var mainImage: String,
-    @JsonProperty("representative_image_list")
-    var representativeImageList: List<String>
+    var mainImage: String
 )

@@ -9,8 +9,8 @@ import org.springframework.validation.BindingResult
 sealed class ErrorResponse {
 
     /** Error에 대한 Response의 형태를 정의하는 클래스. Factory pattern 이므로 of 메소드로만 접근 가능
-     * @constructor private Response(errorCode: ErrorCode)
-     * @constructor private Response(errorCode: ErrorCode, fieldErrorList: List<FieldError>)
+     * @author Brian
+     * @since 22/05/29
      */
     class Response {
 

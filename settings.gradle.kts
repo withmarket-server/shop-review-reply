@@ -1,7 +1,7 @@
 rootProject.name = "yumarket"
 
 include(
-    ":application-shop",
+    ":application-query",
     ":domain-rds",
     ":domain-dynamo",
     ":domain-queryservice",
