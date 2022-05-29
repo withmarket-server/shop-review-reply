@@ -10,17 +10,18 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.annotation.Rollback
 import team.bakkas.domaindynamo.entity.Shop
 import java.time.LocalDateTime
+import java.util.*
 
 @SpringBootTest
 internal class ShopRepositoryTest @Autowired constructor(
     val shopRepository: ShopRepository
 ){
     @ParameterizedTest
-    @CsvSource(value = ["ec21:테스트맛도리집:false"], delimiter = ':')
+    @CsvSource(value = ["ec1231-test001:태스트할맥:false"], delimiter = ':')
     @DisplayName("Shop 하나를 생성한다")
     @Rollback(value = false)
     fun createShop(shopId: String, shopName: String, isOpen: Boolean) {
-        val mockShop = getMockShop(shopId, shopName, isOpen)
+        val mockShop = getMockShop(UUID.randomUUID().toString(), shopName, isOpen)
 
         val shop = shopRepository.createShop(mockShop)
 
@@ -90,7 +91,9 @@ internal class ShopRepositoryTest @Autowired constructor(
         lotNumberAddress = "경산시 조영동 307-1",
         roadNameAddress = "경산시 대학로",
         reviewNumber = 0,
-        updatedAt = null
+        updatedAt = null,
+        mainImage = "https://withmarket-image-bucket.s3.ap-northeast-2.amazonaws.com/ed0755dd-6afb-4ed5-8e7c-19658fd2e05c.jpeg",
+        representativeImageList = listOf("https://withmarket-image-bucket.s3.ap-northeast-2.amazonaws.com/e7712904-03ab-4995-84cc-1e9e5fac16aa.jpeg")
     )
 
 }

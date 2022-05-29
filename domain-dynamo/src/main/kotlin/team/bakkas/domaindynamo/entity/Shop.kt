@@ -32,11 +32,15 @@ data class Shop(
     @get:DynamoDbAttribute("longitude")
     var longitude: Double,
     @get:DynamoDbAttribute("created_at")
-    override var createdAt: LocalDateTime = LocalDateTime.now(),
+    var createdAt: LocalDateTime = LocalDateTime.now(),
     @get:DynamoDbAttribute("updated_at")
-    override var updatedAt: LocalDateTime?,
+    var updatedAt: LocalDateTime?,
     @get:DynamoDbAttribute("average_score")
     var averageScore: Double,
     @get:DynamoDbAttribute("review_number")
-    var reviewNumber: Int
-): Serializable, BaseEntity(createdAt, updatedAt)
+    var reviewNumber: Int,
+    @get:DynamoDbAttribute("main_image")
+    var mainImage: String,
+    @get:DynamoDbAttribute("representative_image_list")
+    var representativeImageList: List<String>
+): Serializable

@@ -30,5 +30,9 @@ data class ShopReadDto(
     @JsonProperty("average_score")
     var averageScore: Double,
     @JsonProperty("review_number")
-    var reviewNumber: Int
+    var reviewNumber: Int,
+    @JsonProperty("main_image")
+    var mainImage: String,
+    @JsonProperty("representative_image_list")
+    var representativeImageList: List<String>
 )
