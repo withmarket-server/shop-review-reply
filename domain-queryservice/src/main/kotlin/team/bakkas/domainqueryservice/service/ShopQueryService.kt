@@ -19,15 +19,13 @@ class ShopQueryService(private val shopRepository: ShopRepository) {
     // shop의 id와 name을 통해서 shop을 하나 가져오는 메소드
     fun getShopByIdAndName(shopId: String?, shopName: String?): ResponseEntity<Results.SingleResult<ShopSimpleReadDto>> {
 
-        // 예외 처리 -> 조건이 유실된 경우
-        if (shopId == null || shopName == null)
+        // 예외 처리 -> key 조건이 null로 제시된 경우
+        if (shopId!!.isEmpty() || shopName!!.isEmpty())
             throw RequestParamLostException("잘못된 형식의 검색. shopId 또는 shopName을 확인하십시오.")
 
-        val foundShop = shopRepository.findShopByIdAndName(shopId, shopName)
-
         // shop이 존재하지 않는 경우 -> shopNotFoundException을 뱉어준다
-        if (foundShop == null)
-            throw ShopNotFoundException("There's no shop!!")
+        val foundShop = shopRepository.findShopByIdAndName(shopId, shopName)
+            ?: throw ShopNotFoundException("There's no shop!!")
 
         // null 검사를 한 상태이기 때문에 null-safe한 상황이다.
         val responseShop = toSimpleReadDto(foundShop)
@@ -40,7 +38,7 @@ class ShopQueryService(private val shopRepository: ShopRepository) {
         val shopList = shopRepository.findAllShop()
 
         // shop이 아무것도 검색되지 않는 경우는 exception을 뱉어준다
-        if (shopList.size == 0)
+        if (shopList.isEmpty())
             throw ShopNotFoundException("There's no shop!!")
 
         val responseShopList = shopList.map { shop ->

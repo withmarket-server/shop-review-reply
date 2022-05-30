@@ -1,6 +1,7 @@
 package team.bakkas.common.error
 
 import org.springframework.validation.BindingResult
+import java.io.Serializable
 
 /** Error에 관한 Response를 담당하는 Sealed class
  * @author Brian
@@ -12,11 +13,21 @@ sealed class ErrorResponse {
      * @author Brian
      * @since 22/05/29
      */
+    // TODO 데이터 클래스로 변환...?
     class Response {
 
-        private constructor(errorCode: ErrorCode)
+        private lateinit var errorCode: ErrorCode
 
-        private constructor(errorCode: ErrorCode, fieldErrorList: List<FieldError>)
+        private lateinit var fieldErrorList: List<FieldError>
+
+        private constructor(errorCode: ErrorCode) {
+            this.errorCode = errorCode
+        }
+
+        private constructor(errorCode: ErrorCode, fieldErrorList: List<FieldError>) {
+            this.errorCode = errorCode
+            this.fieldErrorList = fieldErrorList
+        }
 
         companion object {
             // field에서 에러가 터지지 않았을 경우
