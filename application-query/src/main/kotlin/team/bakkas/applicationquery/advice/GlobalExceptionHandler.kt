@@ -24,8 +24,8 @@ class GlobalExceptionHandler {
     @ExceptionHandler(ShopNotFoundException::class)
     fun handleShopNotFoundException(e: ShopNotFoundException): ResponseEntity<ErrorResponse.Response> {
 
-        logger.warn("Caught ShopNotFoundException!!")
-        logger.info(ErrorResponse.Response.of(ErrorCode.ENTITY_NOT_FOUND).toString())
+        logger.error("Caught ShopNotFoundException!!")
+        logger.warn(ErrorResponse.Response.of(ErrorCode.ENTITY_NOT_FOUND).toString())
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(ErrorResponse.Response.of(ErrorCode.ENTITY_NOT_FOUND))
@@ -35,17 +35,19 @@ class GlobalExceptionHandler {
     @ExceptionHandler(RequestParamLostException::class)
     fun handleRequestParamLostException(e: RequestParamLostException): ResponseEntity<ErrorResponse.Response> {
 
-        logger.warn("Caught requestParamException")
-        logger.info(ErrorResponse.Response.of(ErrorCode.REQUEST_PARAM_LOST).toString())
+        logger.error("Caught requestParamException")
+        logger.warn(ErrorResponse.Response.of(ErrorCode.REQUEST_PARAM_LOST).toString())
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(ErrorResponse.Response.of(ErrorCode.REQUEST_PARAM_LOST))
     }
 
+    // Http 요청에서 RequestParam을 누락시킨 상태로 보낼 경우를 처리하는 exceptionHandler
     @ExceptionHandler(MissingServletRequestParameterException::class)
     fun handleMissingServletRequestParameterException(e: MissingServletRequestParameterException): ResponseEntity<ErrorResponse.Response> {
 
-        logger.warn("Caught Request Parameters lost exception!!")
+        logger.error("Caught Request Parameters lost exception!!")
+        logger.warn(ErrorResponse.Response.of(ErrorCode.REQUEST_PARAM_LOST).toString())
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(ErrorResponse.Response.of(ErrorCode.REQUEST_PARAM_LOST))

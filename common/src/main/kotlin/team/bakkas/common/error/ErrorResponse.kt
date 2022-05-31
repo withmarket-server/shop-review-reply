@@ -9,29 +9,16 @@ import java.io.Serializable
  */
 sealed class ErrorResponse {
 
-    /** Error에 대한 Response의 형태를 정의하는 클래스. Factory pattern 이므로 of 메소드로만 접근 가능
+    /** Error에 대한 Response를 담당하는 data class.
      * @author Brian
-     * @since 22/05/29
+     * @since 22/05/31
+     * @param errorCode 에러코드
+     * @param fieldErrorList 필드 에러 목록
      */
-    // TODO 데이터 클래스로 변환...?
-    class Response {
-
-        private lateinit var errorCode: ErrorCode
-
-        private lateinit var fieldErrorList: List<FieldError>
-
-        private constructor(errorCode: ErrorCode) {
-            this.errorCode = errorCode
-        }
-
-        private constructor(errorCode: ErrorCode, fieldErrorList: List<FieldError>) {
-            this.errorCode = errorCode
-            this.fieldErrorList = fieldErrorList
-        }
-
+    data class Response(val errorCode: ErrorCode, val fieldErrorList: List<FieldError>?) {
         companion object {
             // field에서 에러가 터지지 않았을 경우
-            fun of(errorCode: ErrorCode): Response = Response(errorCode)
+            fun of(errorCode: ErrorCode): Response = Response(errorCode, null)
 
             // field에서 에러가 터져나간경우 (bindingResult가 없는 exception에 대해서 사용)
             fun of(errorCode: ErrorCode, fieldErrorList: List<FieldError>) = Response(errorCode, fieldErrorList)

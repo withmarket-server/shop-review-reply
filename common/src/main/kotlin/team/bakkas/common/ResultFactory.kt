@@ -21,6 +21,4 @@ object ResultFactory {
         success = true,
         data = data
     )
-
-    // TODO Exception에 대한 Result를 뱉어주는 함수 정의
 }

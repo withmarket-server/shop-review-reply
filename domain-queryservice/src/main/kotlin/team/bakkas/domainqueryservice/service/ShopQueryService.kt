@@ -34,7 +34,7 @@ class ShopQueryService(private val shopRepository: ShopRepository) {
     }
 
     // 존재하는 모든 shop을 반환하는 메소드. SimpleReadDto로 포장하여 리턴한다
-    fun getAllShops(): ResponseEntity<Results.MultipleResult<ShopSimpleReadDto>> {
+    fun getAllSimpleShops(): ResponseEntity<Results.MultipleResult<ShopSimpleReadDto>> {
         val shopList = shopRepository.findAllShop()
 
         // shop이 아무것도 검색되지 않는 경우는 exception을 뱉어준다
