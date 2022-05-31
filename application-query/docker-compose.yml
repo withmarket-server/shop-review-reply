@@ -1,0 +1,14 @@
+version: "3"
+services:
+  web:
+    image: nginx
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - spring
+  spring:
+    build: .
+    ports:
+      - 10100:10100
