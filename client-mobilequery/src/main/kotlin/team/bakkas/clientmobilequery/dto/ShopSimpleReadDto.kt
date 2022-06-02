@@ -1,6 +1,8 @@
 package team.bakkas.clientmobilequery.dto
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import team.bakkas.common.category.Category
+import team.bakkas.common.category.DetailCategory
 import java.time.LocalDateTime
 
 /**
@@ -28,5 +30,11 @@ data class ShopSimpleReadDto(
     @JsonProperty("review_number")
     var reviewNumber: Int,
     @JsonProperty("main_image")
-    var mainImage: String
+    var mainImage: String,
+    @JsonProperty("description")
+    var shopDescription: String?,
+    @JsonProperty("category")
+    var shopCategory: Category,
+    @JsonProperty("detail_category")
+    var shopDetailCategory: DetailCategory
 )

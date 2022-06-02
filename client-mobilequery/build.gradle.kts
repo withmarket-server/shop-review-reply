@@ -6,6 +6,8 @@ plugins {
 }
 
 dependencies {
+    api(project(":common"))
+
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation(kotlin("stdlib-jdk8"))
     implementation(kotlin("reflect"))

@@ -59,6 +59,9 @@ class ShopQueryService(private val shopRepository: ShopRepository) {
         longitude = foundShop.longitude,
         averageScore = foundShop.averageScore,
         reviewNumber = foundShop.reviewNumber,
-        mainImage = foundShop.mainImage
+        mainImage = foundShop.mainImage,
+        shopDescription = foundShop.shopDescription,
+        shopCategory = foundShop.shopCategory,
+        shopDetailCategory = foundShop.shopDetailCategory
     )
 }

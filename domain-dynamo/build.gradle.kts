@@ -10,6 +10,8 @@ plugins {
 extra["springCloudVersion"] = "2021.0.2"
 
 dependencies {
+    api(project(":common")) // category를 쓰기 위해서 module import 시행
+
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation(kotlin("stdlib-jdk8"))
     implementation(kotlin("reflect"))
