@@ -1,6 +1,8 @@
 package team.bakkas.domaindynamo.entity
 
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.*
+import java.io.Serializable
+import java.time.LocalDateTime
 import java.util.*
 
 /** 가게에 대한 리뷰를 담당하는 엔티티 클래스. Review : Shop = N : 1 관계를 가진다.
@@ -28,5 +30,9 @@ data class ShopReview(
     @get:DynamoDbAttribute("review_score")
     var reviewScore: Double,
     @get:DynamoDbAttribute("review_photo_list")
-    var reviewPhotoList: List<String>
-)
+    var reviewPhotoList: List<String>,
+    @get:DynamoDbAttribute("created_at")
+    var createdAt: LocalDateTime = LocalDateTime.now(),
+    @get:DynamoDbAttribute("updated_at")
+    var updatedAt: LocalDateTime?
+): Serializable

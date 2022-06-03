@@ -14,6 +14,7 @@ import software.amazon.awssdk.enhanced.dynamodb.Key
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 import team.bakkas.domaindynamo.entity.ShopReview
+import java.time.LocalDateTime
 import java.util.*
 
 /** ShopReviewRepository에 대한 Test Class.
@@ -292,6 +293,8 @@ internal class ShopReviewRepositoryTest @Autowired constructor(
             shopName = shopName,
             reviewContent = "저는 아주 만족했어요! ^^",
             reviewScore = 10.0,
-            reviewPhotoList = listOf()
+            reviewPhotoList = listOf(),
+            createdAt = LocalDateTime.now(),
+            updatedAt = null
         )
 }

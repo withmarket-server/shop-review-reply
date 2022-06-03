@@ -20,7 +20,7 @@ class ShopQueryService(private val shopRepository: ShopRepository) {
     fun getShopByIdAndName(shopId: String?, shopName: String?): ResponseEntity<Results.SingleResult<ShopSimpleReadDto>> {
 
         // 예외 처리 -> key 조건이 null로 제시된 경우
-        if (shopId!!.isEmpty() || shopName!!.isEmpty())
+        if (shopId == null || shopName == null || shopId.isEmpty() || shopName.isEmpty())
             throw RequestParamLostException("잘못된 형식의 검색. shopId 또는 shopName을 확인하십시오.")
 
         // shop이 존재하지 않는 경우 -> shopNotFoundException을 뱉어준다
