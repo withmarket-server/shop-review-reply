@@ -4,7 +4,7 @@
 
 * * *
 
-### 👉 프로젝트 참여자 (Contributers of this project)
+### 👉 프로젝트 참여자 (Contributors of this project)
 1️⃣ Doyeop Kim (18k7102dy@naver.com)
 
 * * *
