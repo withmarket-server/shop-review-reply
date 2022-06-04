@@ -17,7 +17,10 @@ import team.bakkas.domaindynamo.repository.ShopRepository
 class ShopQueryService(private val shopRepository: ShopRepository) {
 
     // shop의 id와 name을 통해서 shop을 하나 가져오는 메소드
-    fun getShopByIdAndName(shopId: String?, shopName: String?): ResponseEntity<Results.SingleResult<ShopSimpleReadDto>> {
+    fun getShopByIdAndName(
+        shopId: String?,
+        shopName: String?
+    ): ResponseEntity<Results.SingleResult<ShopSimpleReadDto>> {
 
         // 예외 처리 -> key 조건이 null로 제시된 경우
         if (shopId == null || shopName == null || shopId.isEmpty() || shopName.isEmpty())

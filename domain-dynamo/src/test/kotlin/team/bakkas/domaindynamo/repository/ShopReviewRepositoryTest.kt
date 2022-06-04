@@ -43,7 +43,7 @@ internal class ShopReviewRepositoryTest @Autowired constructor(
     }
 
     @ParameterizedTest
-    @CsvSource(value = ["ecdc2-test001:킹킹만족!:33daf043-7f36-4a52-b791-018f9d5eb218:역전할머니맥주 영남대점"], delimiter = ':')
+    @CsvSource(value = ["ecdc2-test001:진짜 최애 맥주집이에요!!:33daf043-7f36-4a52-b791-018f9d5eb218:역전할머니맥주 영남대점"], delimiter = ':')
     @DisplayName("repository을 이용해서 데이터를 넣어보자!")
     @Rollback(value = false)
     fun createShopWithRepository(reviewId: String, reviewTitle: String, shopId: String, shopName: String) {
