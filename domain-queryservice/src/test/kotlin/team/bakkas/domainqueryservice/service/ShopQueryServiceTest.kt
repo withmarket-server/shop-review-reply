@@ -9,7 +9,6 @@ import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import team.bakkas.domaindynamo.repository.ShopRepository
-import team.bakkas.domainqueryservice.service.ShopQueryService
 
 @SpringBootTest
 internal class ShopQueryServiceTest @Autowired constructor(
@@ -17,7 +16,7 @@ internal class ShopQueryServiceTest @Autowired constructor(
 ) {
 
     @ParameterizedTest
-    @CsvSource(value = ["10323299-b10b-409c-88d2-66e20e4dabe6:태스트할맥"], delimiter = ':')
+    @CsvSource(value = ["c8b05f28-1acc-42c2-a027-dc2bceea7356:역전할머니맥주 영남대점"], delimiter = ':')
     @DisplayName("shop 하나를 가져온다")
     fun `shop 하나를 가져온다`(shopId: String, shopName: String) {
         val foundShop = shopRepository.findShopByIdAndName(shopId, shopName)

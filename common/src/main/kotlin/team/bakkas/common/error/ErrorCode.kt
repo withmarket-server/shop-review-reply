@@ -12,5 +12,6 @@ enum class ErrorCode(
 ) {
     ACCESS_DENIED(400, "C001", "Access is denied"),
     REQUEST_PARAM_LOST(400, "C002", "Request param is lost"),
-    ENTITY_NOT_FOUND(500, "C101", "Not exist entity")
+    ENTITY_NOT_FOUND(500, "C101", "Not exist entity"),
+    INVALID_SHOP_REVIEW_LIST(500, "C102", "Invalid review list occurred")
 }

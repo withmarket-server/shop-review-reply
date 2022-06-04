@@ -3,4 +3,8 @@ server:
 
 spring:
   profiles:
-    active: serverdynamo
+    active: localdynamo
+
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher

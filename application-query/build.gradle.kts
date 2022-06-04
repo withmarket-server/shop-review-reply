@@ -16,6 +16,9 @@ dependencies {
 
     // mockk
     testImplementation("io.mockk:mockk:1.12.0")
+
+    // https://mvnrepository.com/artifact/io.springfox/springfox-swagger2
+    implementation("io.springfox:springfox-boot-starter:3.0.0")
 }
 
 dependencyManagement {
