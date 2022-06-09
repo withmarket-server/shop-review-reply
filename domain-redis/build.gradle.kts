@@ -13,16 +13,17 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation(kotlin("stdlib-jdk8"))
     implementation(kotlin("reflect"))
+    implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
 allOpen {
-
+    annotation("org.springframework.data.redis.core.RedisHash")
 }
 
 noArg {
-
+    annotation("org.springframework.data.redis.core.RedisHash")
 }
 
 tasks.register("prepareKotlinBuildScriptModel") {}
