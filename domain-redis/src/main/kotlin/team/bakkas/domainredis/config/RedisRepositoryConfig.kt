@@ -91,34 +91,23 @@ class RedisRepositoryConfig(
     private fun getCacheConfiguration(): Map<String, RedisCacheConfiguration> {
         val cacheConfiguration = mutableMapOf<String, RedisCacheConfiguration>()
 
-        val keyList = listOf<String>(CacheKeyInfo.ZONE, CacheKeyInfo.SHOP_LIST, CacheKeyInfo.SHOP_REVIEW_LIST)
-        val expirationTimeList = listOf<Long>(
+        /*
+         * zone 에 대해서 기본 유효시간을 설정
+         * 캐싱 데이터의 키는 value::key 형태로 저장되므로, zone 에 대해서는 zone::{id} 형태로 저장된다.
+         * 추가적인 key strategy 를 설정하고싶다면 cacheConfiguration 에 key, ttl 쌍을 추가적으로 설정
+         */
+        val keyList = listOf(CacheKeyInfo.ZONE, CacheKeyInfo.SHOP_LIST, CacheKeyInfo.SHOP_REVIEW_LIST)
+        val expirationTimeList = listOf(
             CacheExpirationTimeInfo.ZONE_EXPIRATION_SEC, CacheExpirationTimeInfo.SHOP_LIST_EXPIRATION_SEC,
             CacheExpirationTimeInfo.SHOP_REVIEW_LIST_EXPIRATION_SEC
         )
 
         val keyInfoPairList = keyList.zip(expirationTimeList) // pari의 목록
 
-        // TODO 나머지 리팩토링하자
-        /*
-         * zone 에 대해서 기본 유효시간을 설정
-         * 캐싱 데이터의 키는 value::key 형태로 저장되므로, zone 에 대해서는 zone::{id} 형태로 저장된다.
-         * 추가적인 key strategy 를 설정하고싶다면 cacheConfiguration 에 key, ttl 쌍을 추가적으로 설정
-         */
-        cacheConfiguration.put(
-            CacheKeyInfo.ZONE, RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofSeconds(CacheKeyInfo.ZONE_EXPIRATION_SEC))
-        )
-
-        cacheConfiguration.put(
-            CacheKeyInfo.SHOP_LIST, RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofSeconds(CacheKeyInfo.SHOP_LIST_EXPIRATION_SEC))
-        )
-
-        cacheConfiguration.put(
-            CacheKeyInfo.SHOP_REVIEW_LIST, RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofSeconds(CacheKeyInfo.SHOP_REVIEW_LIST_EXPIRATION_SEC))
-        )
+        keyInfoPairList.forEach { pair ->
+            cacheConfiguration[pair.first] = RedisCacheConfiguration.defaultCacheConfig()
+                .entryTtl(Duration.ofSeconds(pair.second))
+        }
 
         return cacheConfiguration
     }
