@@ -26,7 +26,7 @@
 
 4️⃣ **사용된 데이터베이스**
 
-<img src="https://img.shields.io/badge/DynamoDB-4053D6?style=for-the-badge&logo=Amazon DynamoDB&logoColor=white">
+<img src="https://img.shields.io/badge/DynamoDB-4053D6?style=for-the-badge&logo=Amazon DynamoDB&logoColor=white"> <img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=Redis&logoColor=white">
 
 * * *
 
@@ -41,7 +41,10 @@ domain-queryservice 모듈을 참조하여 해당 모듈에서 짜여진 service
 2️⃣ Domain Layer (Domain과 관련된 역할과 책임을 수행하는 레이어)
 
 * **domain-dynamo**
-dynamoDB에 대한 설정과 repository, entity를 담고있는 모듈이다.
+dynamoDB에 대한 설정과 repository, entity를 담고있는 모듈이다. 동시에 repository 단계에서 redis로의 캐싱을 정의한다.
+
+* **domain-redis**
+redis에 대한 설정을 담고있는 모듈이다. domain-dynamo에서 본 모듈을 참조하여 redis에 대한 캐싱을 정의한다
 
 * **domain-queryservice**
 domain-dynamo, client-mobilequery, common 모듈을 참조하여 가게 노출에 대한 서비스 로직을 담당하는 모듈이다.
