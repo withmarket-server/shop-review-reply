@@ -11,6 +11,7 @@ extra["springCloudVersion"] = "2021.0.2"
 
 dependencies {
     api(project(":common")) // category를 쓰기 위해서 module import 시행
+    api(project(":domain-redis"))
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation(kotlin("stdlib-jdk8"))
@@ -20,6 +21,7 @@ dependencies {
 
     implementation("org.springframework.cloud:spring-cloud-starter-config")
 
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("software.amazon.awssdk:dynamodb-enhanced:2.17.191")
 }
 

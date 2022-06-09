@@ -1,5 +1,6 @@
 package team.bakkas.domaindynamo.repository
 
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Repository
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient
 import software.amazon.awssdk.enhanced.dynamodb.Expression
@@ -35,6 +36,7 @@ class ShopReviewRepository(
      * @param reviewTitle
      * @return ShopReview if exists else null
      */
+    @Cacheable(value = ["shop-review"], key = "#reviewId", unless = "#result == null")
     fun findReviewByIdAndTitle(reviewId: String, reviewTitle: String): ShopReview? {
         val reviewKey = generateKey(reviewId, reviewTitle)
 
@@ -45,6 +47,7 @@ class ShopReviewRepository(
      * @param shopId shop의 고유 id
      * @param shopName shop의 이름
      */
+    @Cacheable(value = ["shop-review-list"], key = "#shopId")
     fun getReviewListByShopGsi(shopId: String, shopName: String): List<ShopReview> {
         // filter expression에서 조건에 해당하는 변수명을 저장하는 map
         val attributeAliasMap = mutableMapOf<String, String>()

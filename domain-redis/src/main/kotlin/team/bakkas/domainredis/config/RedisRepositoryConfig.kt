@@ -2,6 +2,7 @@ package team.bakkas.domainredis.config
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.cache.CacheManager
+import org.springframework.cache.annotation.EnableCaching
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.redis.cache.CacheKeyPrefix
@@ -14,6 +15,7 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer
 import org.springframework.data.redis.serializer.RedisSerializationContext
 import org.springframework.data.redis.serializer.StringRedisSerializer
+import team.bakkas.domainredis.cacheInfo.CacheExpirationTimeInfo
 import team.bakkas.domainredis.cacheInfo.CacheKeyInfo
 import java.time.Duration
 import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
@@ -27,6 +29,7 @@ import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
  */
 @Configuration
 @EnableRedisRepositories
+@EnableCaching
 class RedisRepositoryConfig(
     @Value("\${spring.redis.port}")
     private val redisPort: Int,
@@ -64,7 +67,7 @@ class RedisRepositoryConfig(
     fun redisCacheManager(): CacheManager {
         val configuration = RedisCacheConfiguration.defaultCacheConfig()
             .disableCachingNullValues()
-            .entryTtl(Duration.ofSeconds(CacheKeyInfo.DEFAULT_EXPIRATION_SEC))
+            .entryTtl(Duration.ofSeconds(CacheExpirationTimeInfo.DEFAULT_EXPIRATION_SEC))
             .computePrefixWith(CacheKeyPrefix.simple())
             .serializeKeysWith(
                 RedisSerializationContext.SerializationPair
@@ -75,20 +78,48 @@ class RedisRepositoryConfig(
                     .fromSerializer(JdkSerializationRedisSerializer())
             )
 
-        val cacheConfiguration = mutableMapOf<String, RedisCacheConfiguration>()
-
-        /*
-         * zone 에 대해서 기본 유효시간을 설정
-         * 캐싱 데이터의 키는 value::key 형태로 저장되므로, zone 에 대해서는 zone::{id} 형태로 저장된다.
-         * 추가적인 key strategy 를 설정하고싶다면 cacheConfiguration 에 key, ttl 쌍을 추가적으로 설정
-         */
-        cacheConfiguration.put(CacheKeyInfo.ZONE, RedisCacheConfiguration.defaultCacheConfig()
-            .entryTtl(Duration.ofSeconds(CacheKeyInfo.ZONE_EXPIRATION_SEC)))
+        val cacheConfiguration = getCacheConfiguration()
 
         return RedisCacheManager.RedisCacheManagerBuilder
             .fromConnectionFactory(redisConnectionFactory())
             .cacheDefaults(configuration)
             .withInitialCacheConfigurations(cacheConfiguration)
             .build()
+    }
+
+    // cacheConfiguration을 반환하는 메소드
+    private fun getCacheConfiguration(): Map<String, RedisCacheConfiguration> {
+        val cacheConfiguration = mutableMapOf<String, RedisCacheConfiguration>()
+
+        val keyList = listOf<String>(CacheKeyInfo.ZONE, CacheKeyInfo.SHOP_LIST, CacheKeyInfo.SHOP_REVIEW_LIST)
+        val expirationTimeList = listOf<Long>(
+            CacheExpirationTimeInfo.ZONE_EXPIRATION_SEC, CacheExpirationTimeInfo.SHOP_LIST_EXPIRATION_SEC,
+            CacheExpirationTimeInfo.SHOP_REVIEW_LIST_EXPIRATION_SEC
+        )
+
+        val keyInfoPairList = keyList.zip(expirationTimeList) // pari의 목록
+
+        // TODO 나머지 리팩토링하자
+        /*
+         * zone 에 대해서 기본 유효시간을 설정
+         * 캐싱 데이터의 키는 value::key 형태로 저장되므로, zone 에 대해서는 zone::{id} 형태로 저장된다.
+         * 추가적인 key strategy 를 설정하고싶다면 cacheConfiguration 에 key, ttl 쌍을 추가적으로 설정
+         */
+        cacheConfiguration.put(
+            CacheKeyInfo.ZONE, RedisCacheConfiguration.defaultCacheConfig()
+                .entryTtl(Duration.ofSeconds(CacheKeyInfo.ZONE_EXPIRATION_SEC))
+        )
+
+        cacheConfiguration.put(
+            CacheKeyInfo.SHOP_LIST, RedisCacheConfiguration.defaultCacheConfig()
+                .entryTtl(Duration.ofSeconds(CacheKeyInfo.SHOP_LIST_EXPIRATION_SEC))
+        )
+
+        cacheConfiguration.put(
+            CacheKeyInfo.SHOP_REVIEW_LIST, RedisCacheConfiguration.defaultCacheConfig()
+                .entryTtl(Duration.ofSeconds(CacheKeyInfo.SHOP_REVIEW_LIST_EXPIRATION_SEC))
+        )
+
+        return cacheConfiguration
     }
 }
