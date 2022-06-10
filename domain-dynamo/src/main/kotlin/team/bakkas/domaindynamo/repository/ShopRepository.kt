@@ -51,11 +51,8 @@ class ShopRepository(
         table.deleteItem(shopKey)
     }
 
-    /* shop table 상에 존재하는 모든 데이터를 가져오는 메소드
-     * shop::xxx 형태로 모두 캐시를 하거나, 혹은 있는 데이터는 캐시에서 가져온다
-     */
-    // TODO 캐싱 성능 개선
-    @Cacheable(value = ["shop-list"])
+    // shop table 상에 존재하는 모든 데이터를 가져오는 메소드
+
     fun findAllShop(): List<Shop> = table.scan().items().toList()
 
     fun count(): Int = table.scan().items().stream().count().toInt()

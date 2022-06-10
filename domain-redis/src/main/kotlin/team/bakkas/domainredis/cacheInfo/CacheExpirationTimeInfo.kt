@@ -1,5 +1,9 @@
 package team.bakkas.domainredis.cacheInfo
 
+/** Cache 전략 중 expiration time 정보를 담당하는 object class
+ * @author Brian
+ * @since 22/06/09
+ */
 object CacheExpirationTimeInfo {
     val DEFAULT_EXPIRATION_SEC: Long = 90 // 1 hour
 

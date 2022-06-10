@@ -14,6 +14,11 @@ import team.bakkas.clientmobilequery.dto.ShopReviewBasicReadDto
 import team.bakkas.common.Results
 import team.bakkas.domainqueryservice.service.ShopReviewQueryService
 
+/** ShopReview의 Read를 담당하는 controller class
+ * @param shopReviewQueryService service logic of shop_review
+ * @author Brian
+ * @since 22/06/04
+ */
 @Api(tags = ["Shop의 리뷰에 대한 읽기 전용 기능을 제공하는 Controller"])
 @RestController
 @RequestMapping("/v1/shop-review")

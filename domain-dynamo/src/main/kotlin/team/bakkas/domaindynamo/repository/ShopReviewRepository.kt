@@ -92,7 +92,7 @@ class ShopReviewRepository(
      * @param reviewTitle Sort Key of shop_review
      * @return key of sjop_review table
      */
-    private fun generateKey(reviewId: String, reviewTitle: String) : Key = Key.builder()
+    private fun generateKey(reviewId: String, reviewTitle: String): Key = Key.builder()
         .partitionValue(reviewId)
         .sortValue(reviewTitle)
         .build()

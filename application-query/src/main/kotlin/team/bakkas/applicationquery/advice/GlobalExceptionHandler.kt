@@ -10,7 +10,7 @@ import team.bakkas.common.error.ErrorCode
 import team.bakkas.common.error.ErrorResponse
 import team.bakkas.common.exceptions.RequestParamLostException
 import team.bakkas.common.exceptions.ShopNotFoundException
-import team.bakkas.common.exceptions.ShopReviewListNotValidException
+import team.bakkas.common.exceptions.ShopReviewListInvalidException
 import team.bakkas.common.exceptions.ShopReviewNotFoundException
 
 /** Application-query 전반에서 발생하는 모든 exception을 캐치해서 처리하는 클래스
@@ -56,8 +56,8 @@ class GlobalExceptionHandler {
     }
 
     // ShopReview의 목록이 잘못 전달된 경우를 처리하는 exceptionHandler (500)
-    @ExceptionHandler(ShopReviewListNotValidException::class)
-    fun handleShopReviewListNotValidException(e: ShopReviewListNotValidException): ResponseEntity<ErrorResponse.Response> {
+    @ExceptionHandler(ShopReviewListInvalidException::class)
+    fun handleShopReviewListNotValidException(e: ShopReviewListInvalidException): ResponseEntity<ErrorResponse.Response> {
 
         logger.error("Caught shop list invalid exception!!")
         logger.warn(ErrorResponse.Response.of(ErrorCode.INVALID_SHOP_REVIEW_LIST).toString())

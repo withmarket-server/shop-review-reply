@@ -14,6 +14,11 @@ import team.bakkas.clientmobilequery.dto.ShopSimpleReadDto
 import team.bakkas.common.Results
 import team.bakkas.domainqueryservice.service.ShopQueryService
 
+/** Shop의 Read 만을 담당하는 controller class
+ * @param shopQueryService service logic of shop
+ * @since 22/05/29
+ * @author Brian
+ */
 @Api(tags = ["Shop에 대한 읽기 전용 기능을 제공하는 Controller"])
 @RestController
 @RequestMapping("/v1/shop")

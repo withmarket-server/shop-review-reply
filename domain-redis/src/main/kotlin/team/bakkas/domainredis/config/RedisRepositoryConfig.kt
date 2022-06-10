@@ -43,13 +43,15 @@ class RedisRepositoryConfig(
     fun redisTemplate(): RedisTemplate<String, JvmType.Object> {
         val redisTemplate = RedisTemplate<String, JvmType.Object>()
 
-        redisTemplate.setConnectionFactory(redisConnectionFactory()) // Lettuce를 이용해서 redisTemplate를 사용
-        redisTemplate.keySerializer = StringRedisSerializer()
-        redisTemplate.hashKeySerializer = StringRedisSerializer()
-        redisTemplate.hashKeySerializer = JdkSerializationRedisSerializer()
-        redisTemplate.valueSerializer = JdkSerializationRedisSerializer()
-        redisTemplate.setEnableTransactionSupport(true)
-        redisTemplate.afterPropertiesSet()
+        with(redisTemplate) {
+            this.setConnectionFactory(redisConnectionFactory())
+            this.keySerializer = StringRedisSerializer()
+            this.hashKeySerializer = StringRedisSerializer()
+            this.hashKeySerializer = JdkSerializationRedisSerializer()
+            this.valueSerializer = JdkSerializationRedisSerializer()
+            this.setEnableTransactionSupport(true)
+            this.afterPropertiesSet()
+        }
 
         return redisTemplate
     }
@@ -65,6 +67,7 @@ class RedisRepositoryConfig(
      */
     @Bean
     fun redisCacheManager(): CacheManager {
+        val cacheConfiguration = getCacheConfiguration()
         val configuration = RedisCacheConfiguration.defaultCacheConfig()
             .disableCachingNullValues()
             .entryTtl(Duration.ofSeconds(CacheExpirationTimeInfo.DEFAULT_EXPIRATION_SEC))
@@ -77,8 +80,6 @@ class RedisRepositoryConfig(
                 RedisSerializationContext.SerializationPair
                     .fromSerializer(JdkSerializationRedisSerializer())
             )
-
-        val cacheConfiguration = getCacheConfiguration()
 
         return RedisCacheManager.RedisCacheManagerBuilder
             .fromConnectionFactory(redisConnectionFactory())
@@ -102,7 +103,7 @@ class RedisRepositoryConfig(
             CacheExpirationTimeInfo.SHOP_REVIEW_LIST_EXPIRATION_SEC
         )
 
-        val keyInfoPairList = keyList.zip(expirationTimeList) // pari의 목록
+        val keyInfoPairList = keyList.zip(expirationTimeList) // pair의 목록
 
         keyInfoPairList.forEach { pair ->
             cacheConfiguration[pair.first] = RedisCacheConfiguration.defaultCacheConfig()
