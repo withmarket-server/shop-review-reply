@@ -8,6 +8,7 @@ import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.annotation.Rollback
+import org.springframework.util.StopWatch
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient
 import software.amazon.awssdk.enhanced.dynamodb.Expression
 import software.amazon.awssdk.enhanced.dynamodb.Key
@@ -124,11 +125,15 @@ internal class ShopReviewRepositoryTest @Autowired constructor(
     }
 
     @ParameterizedTest
-    @CsvSource(value = ["6274cfba-92a7-4e44-9a8f-123113e928bc:대만족이에요!"], delimiter = ':')
-    @DisplayName("repository를 이용해서 find 테스트. (Success)")
+    @CsvSource(value = ["b7cbec2d-5120-4ec2-ab92-ca6827428945:진짜 최애 맥주집이에요!!"], delimiter = ':')
+    @DisplayName("repository를 이용해서 find 테스트. 동시에 시간 측정(Success)")
     fun repositorySuccessFindReviewWithIdAndTitle(reviewId: String, reviewTitle: String) {
+        val stopWatch = StopWatch()
+
         // when
+        stopWatch.start()
         val foundReview = shopReviewRepository.findReviewByIdAndTitle(reviewId, reviewTitle)
+        stopWatch.stop()
 
         // then
         with(foundReview) {
@@ -137,6 +142,7 @@ internal class ShopReviewRepositoryTest @Autowired constructor(
             assertEquals(this!!.reviewTitle, reviewTitle)
         }
 
+        println("걸린 시간: ${stopWatch.totalTimeSeconds}")
         println(foundReview)
         println("Test passed!!")
     }
@@ -187,6 +193,7 @@ internal class ShopReviewRepositoryTest @Autowired constructor(
     fun clientReviewListByShopGsi1(shopId: String, shopName: String) {
 
         // given
+        val stopWatch = StopWatch()
         val attributeAliasMap = mutableMapOf<String, String>()
         attributeAliasMap["#shop_id"] = "shop_id"
         attributeAliasMap["#shop_name"] = "shop_name"
@@ -203,9 +210,13 @@ internal class ShopReviewRepositoryTest @Autowired constructor(
             .build()
 
         // then
+        stopWatch.start()
         table.scan {
             it.filterExpression(expression)
         }.items().forEach { it -> println(it) }
+        stopWatch.stop()
+
+        println("걸린 시간: ${stopWatch.totalTimeSeconds}")
     }
 
     @ParameterizedTest

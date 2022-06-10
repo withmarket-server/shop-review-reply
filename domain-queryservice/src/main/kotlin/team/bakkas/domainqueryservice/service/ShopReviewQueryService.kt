@@ -6,7 +6,7 @@ import team.bakkas.clientmobilequery.dto.ShopReviewBasicReadDto
 import team.bakkas.common.ResultFactory
 import team.bakkas.common.Results
 import team.bakkas.common.exceptions.RequestParamLostException
-import team.bakkas.common.exceptions.ShopReviewListNotValidException
+import team.bakkas.common.exceptions.ShopReviewListInvalidException
 import team.bakkas.common.exceptions.ShopReviewNotFoundException
 import team.bakkas.domaindynamo.entity.ShopReview
 import team.bakkas.domaindynamo.repository.ShopReviewRepository
@@ -47,7 +47,7 @@ class ShopReviewQueryService(
      * @param shopName shopReview GSI의 sort key
      * @throws RequestParamLostException
      * @throws ShopReviewNotFoundException
-     * @throws ShopReviewListNotValidException
+     * @throws ShopReviewListInvalidException
      */
     fun getShopReviewListByShopKey(
         shopId: String?,
@@ -60,13 +60,14 @@ class ShopReviewQueryService(
         // repository를 이용해서 list를 가져온다. 이 때 리스트의 크기가 0이 아닌지 검증한다
         val reviewList = shopReviewRepository.getReviewListByShopGsi(shopId, shopName)
 
+        // shopReviewList에 대한 예외 처리 -> review를 하나도 못 찾은 경우
         if (reviewList.isEmpty())
             throw ShopReviewNotFoundException("(shopId = $shopId, shopName = $shopName)에 해당하는 review는 존재하지 않습니다.")
 
         // repository를 이용해서 가져온 list를 모두 검증한다 -> map을 돌면서 shopId, shopName을 검증하고 list로 집어넣는다
         val responseList = reviewList.map { review ->
             if (!review.shopId.equals(shopId) || !review.shopName.equals(shopName))
-                throw ShopReviewListNotValidException("review 목록을 가져오는데 문제가 발생하였습니다.")
+                throw ShopReviewListInvalidException("review 목록을 가져오는데 문제가 발생하였습니다.")
 
             toBasicReadDto(review)
         }.toList()

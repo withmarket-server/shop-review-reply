@@ -1,5 +1,9 @@
 package team.bakkas.common.category
 
+/** Shop에 대한 세부 분류를 담당하는 enum class
+ * @author Brian
+ * @since 22/06/02
+ */
 enum class DetailCategory(val title: String) {
     /* ==================== [Town Market] ====================*/
     FOOD("식/음료"),

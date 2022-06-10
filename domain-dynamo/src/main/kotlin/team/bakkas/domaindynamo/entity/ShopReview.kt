@@ -35,4 +35,4 @@ data class ShopReview(
     var createdAt: LocalDateTime = LocalDateTime.now(),
     @get:DynamoDbAttribute("updated_at")
     var updatedAt: LocalDateTime?
-): Serializable
+) : Serializable
