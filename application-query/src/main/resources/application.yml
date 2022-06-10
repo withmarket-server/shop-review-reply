@@ -3,7 +3,7 @@ server:
 
 spring:
   profiles:
-    active: localdynamo
+    active: localdynamo, localcache
 
   mvc:
     pathmatch:
