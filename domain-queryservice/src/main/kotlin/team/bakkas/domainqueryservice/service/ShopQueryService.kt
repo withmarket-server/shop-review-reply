@@ -67,6 +67,8 @@ class ShopQueryService(private val shopRepository: ShopRepository) {
         mainImage = foundShop.mainImage,
         shopDescription = foundShop.shopDescription,
         shopCategory = foundShop.shopCategory,
-        shopDetailCategory = foundShop.shopDetailCategory
+        shopDetailCategory = foundShop.shopDetailCategory,
+        isBranch = foundShop.isBranch,
+        branchName = foundShop.branchName
     )
 }

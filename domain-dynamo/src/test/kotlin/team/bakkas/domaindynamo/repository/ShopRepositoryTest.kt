@@ -21,7 +21,7 @@ internal class ShopRepositoryTest @Autowired constructor(
 ) {
 
     @ParameterizedTest
-    @CsvSource(value = ["ec1231-test001:Hash:false"], delimiter = ':')
+    @CsvSource(value = ["ec1231-test001:카페봄봄 영남대점:false"], delimiter = ':')
     @DisplayName("Shop 하나를 생성한다")
     @Rollback(value = false)
     fun createShop(shopId: String, shopName: String, isOpen: Boolean) {
@@ -33,7 +33,7 @@ internal class ShopRepositoryTest @Autowired constructor(
     }
 
     @ParameterizedTest
-    @CsvSource(value = ["d4c9df43-6f98-4efd-bab4-33cfc4b58da2:Hash"], delimiter = ':')
+    @CsvSource(value = ["33daf043-7f36-4a52-b791-018f9d5eb218:역전할머니맥주 영남대점"], delimiter = ':')
     @DisplayName("Shop 하나를 찾아온다")
     fun findOneShop(shopId: String, shopName: String) {
         val foundShop = shopRepository.findShopByIdAndName(shopId, shopName)
@@ -44,6 +44,7 @@ internal class ShopRepositoryTest @Autowired constructor(
             assertEquals(this.shopName, shopName)
         }
 
+        println(foundShop)
         println("Test passed!!")
     }
 
@@ -100,16 +101,18 @@ internal class ShopRepositoryTest @Autowired constructor(
         closeTime = LocalDateTime.now(),
         createdAt = LocalDateTime.now(),
         averageScore = 0.0,
-        latitude = 35.838449,
-        longitude = 128.752317,
-        lotNumberAddress = "경상북도 경산시 대동 29-14",
-        roadNameAddress = "경상북도 경산시 북부동 대동안길 19",
+        latitude = 35.837129,
+        longitude = 128.753736,
+        lotNumberAddress = "경상북도 경산시 대동 168-1",
+        roadNameAddress = "경상북도 경산시 대학로 291",
         reviewNumber = 0,
         updatedAt = null,
-        mainImage = "https://withmarket-image-bucket.s3.ap-northeast-2.amazonaws.com/173c305f-3889-4743-b4dd-9e5f32908000.jpeg",
-        representativeImageList = listOf("https://withmarket-image-bucket.s3.ap-northeast-2.amazonaws.com/30b3a2e5-6949-4e2c-a5bd-bb39d16a2b32.jpeg"),
-        shopDescription = "파스타가 진짜 맛있는 집. 목살플레이트도 맛있습니다!",
+        mainImage = "https://withmarket-image-bucket.s3.ap-northeast-2.amazonaws.com/5b175751-6070-4c86-9905-84b7623df977.jpeg",
+        representativeImageList = listOf("https://withmarket-image-bucket.s3.ap-northeast-2.amazonaws.com/54ea83a0-f308-4ee0-adef-5a10b2b7d7dd.jpeg"),
+        isBranch = false,
+        branchName = null,
+        shopDescription = "영남대의 자랑! 카페봄봄 영남대 본점입니다!",
         shopCategory = Category.FOOD_BEVERAGE,
-        shopDetailCategory = DetailCategory.FOOD_EXTRA
+        shopDetailCategory = DetailCategory.BEVERAGE_COFFEE_MILK_PRODUCT
     )
 }

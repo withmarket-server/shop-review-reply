@@ -10,6 +10,7 @@ import java.io.Serializable
 import java.time.LocalDateTime
 import java.util.*
 
+// TODO isBranch, branch attribute 추가
 /** Shop Entity class with DynamoDB
  * @author Brian
  * @since 22/05/19
@@ -50,6 +51,10 @@ data class Shop(
     var representativeImageList: List<String>,
     @get:DynamoDbAttribute("shop_description")
     var shopDescription: String?,
+    @get:DynamoDbAttribute("is_branch")
+    var isBranch: Boolean,
+    @get:DynamoDbAttribute("branch_name")
+    var branchName: String?,
     @get:DynamoDbAttribute("shop_category")
     var shopCategory: Category,
     @get:DynamoDbAttribute("shop_detail_category")
