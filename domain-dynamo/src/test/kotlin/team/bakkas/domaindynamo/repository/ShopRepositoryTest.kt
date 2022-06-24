@@ -21,7 +21,7 @@ internal class ShopRepositoryTest @Autowired constructor(
 ) {
 
     @ParameterizedTest
-    @CsvSource(value = ["ec1231-test001:카페봄봄 영남대점:false"], delimiter = ':')
+    @CsvSource(value = ["ec1231-test001:포스마트:false"], delimiter = ':')
     @DisplayName("Shop 하나를 생성한다")
     @Rollback(value = false)
     fun createShop(shopId: String, shopName: String, isOpen: Boolean) {
@@ -101,18 +101,18 @@ internal class ShopRepositoryTest @Autowired constructor(
         closeTime = LocalDateTime.now(),
         createdAt = LocalDateTime.now(),
         averageScore = 0.0,
-        latitude = 35.837129,
-        longitude = 128.753736,
-        lotNumberAddress = "경상북도 경산시 대동 168-1",
-        roadNameAddress = "경상북도 경산시 대학로 291",
+        latitude = 35.838597,
+        longitude = 128.756576,
+        lotNumberAddress = "경상북도 경산시 조영동 307-1",
+        roadNameAddress = "경상북도 경산시 대학로 318",
         reviewNumber = 0,
         updatedAt = null,
-        mainImage = "https://withmarket-image-bucket.s3.ap-northeast-2.amazonaws.com/5b175751-6070-4c86-9905-84b7623df977.jpeg",
-        representativeImageList = listOf("https://withmarket-image-bucket.s3.ap-northeast-2.amazonaws.com/54ea83a0-f308-4ee0-adef-5a10b2b7d7dd.jpeg"),
+        mainImage = "https://withmarket-image-bucket.s3.ap-northeast-2.amazonaws.com/c247bc62-e17f-43c1-90e9-60d566faaa3e.jpeg",
+        representativeImageList = listOf("https://withmarket-image-bucket.s3.ap-northeast-2.amazonaws.com/c2570a85-1da7-4fec-9754-52a178e2abf5.jpeg"),
         isBranch = false,
         branchName = null,
-        shopDescription = "영남대의 자랑! 카페봄봄 영남대 본점입니다!",
-        shopCategory = Category.FOOD_BEVERAGE,
-        shopDetailCategory = DetailCategory.BEVERAGE_COFFEE_MILK_PRODUCT
+        shopDescription = "포오오스 마트!",
+        shopCategory = Category.ETC,
+        shopDetailCategory = DetailCategory.ETC_ALL
     )
 }
