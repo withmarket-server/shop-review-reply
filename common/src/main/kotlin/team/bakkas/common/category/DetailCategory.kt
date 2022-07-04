@@ -1,5 +1,9 @@
 package team.bakkas.common.category
 
+/** Shop에 대한 세부 분류를 담당하는 enum class
+ * @author Brian
+ * @since 22/06/02
+ */
 enum class DetailCategory(val title: String) {
     /* ==================== [Town Market] ====================*/
     FOOD("식/음료"),
@@ -24,6 +28,7 @@ enum class DetailCategory(val title: String) {
     BEVERAGE_COFFEE_MILK_PRODUCT("음료/커피/유제품"),
     INSTANT_COOK("즉석조리식품"),
     WASHING_PRODUCT("세탁용품"),
+    SUPER_MARKET("슈퍼마켓"),
     MART_EXTRA("기타 용품"),
 
     /* ==================== [Service] ====================*/

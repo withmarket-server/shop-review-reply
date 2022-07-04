@@ -12,6 +12,8 @@ import team.bakkas.domaindynamo.repository.ShopRepository
 
 /** CQRS 패턴 중 Query 만을 담당하는 서비스 클래스. 모듈 이름과 클래스를 병렬적으로 놓으면 bean scope가 늘어난다.
  * @param shopRepository shop에 대한 repository
+ * @since 22/05/29
+ * @author Brian
  */
 @Service
 class ShopQueryService(private val shopRepository: ShopRepository) {
@@ -65,6 +67,8 @@ class ShopQueryService(private val shopRepository: ShopRepository) {
         mainImage = foundShop.mainImage,
         shopDescription = foundShop.shopDescription,
         shopCategory = foundShop.shopCategory,
-        shopDetailCategory = foundShop.shopDetailCategory
+        shopDetailCategory = foundShop.shopDetailCategory,
+        isBranch = foundShop.isBranch,
+        branchName = foundShop.branchName
     )
 }

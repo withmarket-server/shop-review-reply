@@ -1,5 +1,9 @@
 package team.bakkas.common
 
+/** Result의 공통 반환 형태를 정의하는 sealed class
+ * @author Brian
+ * @since 22/05/22
+ */
 sealed class Results {
 
     // 성공 여부만을 담당하는 클래스

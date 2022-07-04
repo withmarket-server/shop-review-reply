@@ -11,6 +11,10 @@ import springfox.documentation.spi.DocumentationType
 import springfox.documentation.spring.web.plugins.Docket
 import springfox.documentation.swagger2.annotations.EnableSwagger2
 
+/** REST API 문서 자동화를 위한 Swagger config class
+ * @author Brian
+ * @since 22/06/04
+ */
 @Configuration
 @EnableSwagger2
 class SwaggerConfig {

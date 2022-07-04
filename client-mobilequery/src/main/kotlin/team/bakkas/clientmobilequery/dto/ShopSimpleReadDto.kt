@@ -36,5 +36,9 @@ data class ShopSimpleReadDto(
     @JsonProperty("category")
     var shopCategory: Category,
     @JsonProperty("detail_category")
-    var shopDetailCategory: DetailCategory
+    var shopDetailCategory: DetailCategory,
+    @JsonProperty("is_branch")
+    var isBranch: Boolean,
+    @JsonProperty("branch_name")
+    var branchName: String?
 )
