@@ -34,7 +34,7 @@ class ShopRepository(
     /* PartitionKey와 SortKey를 이용해서 Item을 가져오는 메소드
      * shop::shopId 형태로 캐싱한다. 그리고 결과값이 null인 경우에는 캐싱하지 않는다
      */
-    @Cacheable(value = ["shop"], key = "#shopId", unless = "#result == null")
+    // @Cacheable(value = ["shop"], key = "#shopId", unless = "#result == null")
     fun findShopByIdAndName(shopId: String, shopName: String): Shop? {
         val shopKey = generateKey(shopId, shopName)
 
@@ -44,7 +44,7 @@ class ShopRepository(
     /* shopId, shopName을 받아서 해당 key에 해당하는 item을 삭제시키는 메소드
      * shop::shopId 형태로 저장된 캐시도 같이 없애버린다
      */
-    @CacheEvict(value = ["shop"], key = "#shopId")
+    // @CacheEvict(value = ["shop"], key = "#shopId")
     fun deleteShop(shopId: String, shopName: String): Unit {
         val shopKey = generateKey(shopId, shopName)
 
@@ -56,6 +56,10 @@ class ShopRepository(
     fun findAllShop(): List<Shop> = table.scan().items().toList()
 
     fun count(): Int = table.scan().items().stream().count().toInt()
+
+    /* ==============================[Async Methods]============================== */
+
+
 
     private fun generateKey(shopId: String, shopName: String): Key = Key.builder()
         .partitionValue(shopId)

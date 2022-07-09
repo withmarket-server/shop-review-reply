@@ -1,5 +1,9 @@
 package team.bakkas.domaindynamo.repository
 
+import kotlinx.coroutines.*
+import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -9,15 +13,21 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.annotation.Rollback
 import org.springframework.util.StopWatch
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbAsyncTable
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedAsyncClient
+import software.amazon.awssdk.enhanced.dynamodb.Key
+import software.amazon.awssdk.enhanced.dynamodb.TableSchema
 import team.bakkas.common.category.Category
 import team.bakkas.common.category.DetailCategory
 import team.bakkas.domaindynamo.entity.Shop
 import java.time.LocalDateTime
 import java.util.*
+import java.util.concurrent.CompletableFuture
 
 @SpringBootTest
 internal class ShopRepositoryTest @Autowired constructor(
-    private val shopRepository: ShopRepository
+    private val shopRepository: ShopRepository,
+    private val dynamoDbEnhancedAsyncClient: DynamoDbEnhancedAsyncClient
 ) {
 
     @ParameterizedTest
@@ -92,6 +102,31 @@ internal class ShopRepositoryTest @Autowired constructor(
 
         println("Test passed!!")
     }
+
+    /* ==============================[Async Methods]============================== */
+    @ParameterizedTest
+    @CsvSource(value = ["33daf043-7f36-4a52-b791-018f9d5eb218:역전할머니맥주 영남대점"], delimiter = ':')
+    fun findOneShopAsync1(shopId: String, shopName: String): Unit = runBlocking {
+        val table = dynamoDbEnhancedAsyncClient.table("shop", TableSchema.fromBean(Shop::class.java))
+        val key = generateKey(shopId, shopName)
+        val shopFuture = table.getItem(key)
+        val shop = withContext(Dispatchers.IO) {
+            shopFuture.get()
+        }
+
+        Assertions.assertNotNull(shop)
+        shop?.let {
+            Assertions.assertEquals(it.shopId, shopId)
+            Assertions.assertEquals(shopName, shopName)
+        }
+
+        println(shop)
+    }
+
+    fun generateKey(shopId: String, shopName: String) = Key.builder()
+        .partitionValue(shopId)
+        .sortValue(shopName)
+        .build()
 
     fun getMockShop(shopId: String, shopName: String, isOpen: Boolean): Shop = Shop(
         shopId = shopId,

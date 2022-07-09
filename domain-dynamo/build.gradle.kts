@@ -19,6 +19,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.3")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.3")
+
     implementation("org.springframework.cloud:spring-cloud-starter-config")
 
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
