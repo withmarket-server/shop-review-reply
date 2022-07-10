@@ -1,6 +1,8 @@
 package team.bakkas.domaindynamo.repository
 
 import kotlinx.coroutines.*
+import kotlinx.coroutines.reactive.collect
+import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions
@@ -9,10 +11,15 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.core.CoroutinesUtils
+import org.springframework.http.ResponseEntity
 import org.springframework.test.annotation.Rollback
 import org.springframework.util.StopWatch
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbAsyncTable
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedAsyncClient
 import software.amazon.awssdk.enhanced.dynamodb.Key
@@ -106,21 +113,59 @@ internal class ShopRepositoryTest @Autowired constructor(
     /* ==============================[Async Methods]============================== */
     @ParameterizedTest
     @CsvSource(value = ["33daf043-7f36-4a52-b791-018f9d5eb218:역전할머니맥주 영남대점"], delimiter = ':')
+    @DisplayName("비동기로 아이템을 하나 가져온다")
     fun findOneShopAsync1(shopId: String, shopName: String): Unit = runBlocking {
         val table = dynamoDbEnhancedAsyncClient.table("shop", TableSchema.fromBean(Shop::class.java))
         val key = generateKey(shopId, shopName)
         val shopFuture = table.getItem(key)
-        val shop = withContext(Dispatchers.IO) {
-            shopFuture.get()
-        }
+        // kotlinx-coroutines-reactor로부터 확장 함수를 이용해서 Mono -> coroutines로 변환
+        val shop = Mono.fromFuture(shopFuture).awaitSingleOrNull()
 
-        Assertions.assertNotNull(shop)
+        assertNotNull(shop)
         shop?.let {
-            Assertions.assertEquals(it.shopId, shopId)
-            Assertions.assertEquals(shopName, shopName)
+            assertEquals(it.shopId, shopId)
+            assertEquals(it.shopName, shopName)
+            println(it)
         }
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = ["33daf043-7f36-4a52-b791-018f9d5eb218:가짜할머니맥주 영남대점"], delimiter = ':')
+    @DisplayName("비동기로 잘못된 이름으로 요청을 보내서 아이템을 가져오지 못한다")
+    fun findOneShopAsync2(shopId: String, shopName: String): Unit = runBlocking {
+        val table = dynamoDbEnhancedAsyncClient.table("shop", TableSchema.fromBean(Shop::class.java))
+        val key = generateKey(shopId, shopName)
+        val shopFuture = table.getItem(key)
+        val shop = Mono.fromFuture(shopFuture).awaitSingleOrNull()
+
+        assertNull(shop)
 
         println(shop)
+    }
+
+    suspend fun findShopByIdAndNameAsync(shopId: String, shopName: String): Shop? = withContext(Dispatchers.IO) {
+        val table = dynamoDbEnhancedAsyncClient.table("shop", TableSchema.fromBean(Shop::class.java))
+        val key = generateKey(shopId, shopName)
+        val shopFuture = table.getItem(key)
+        val shop = Mono.fromFuture(shopFuture).awaitSingleOrNull()
+
+        return@withContext shop
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = ["33daf043-7f36-4a52-b791-018f9d5eb218:역전할머니맥주 영남대점"], delimiter = ':')
+    @DisplayName("작성된 findShopByIdAndNameAsync 메소드의 성공 테스트")
+    fun findShopListAsync(shopId: String, shopName: String): Unit = runBlocking {
+        val shopMono = shopRepository.findShopByIdAndNameAsync(shopId, shopName)
+        val foundShop: Shop? = shopMono.awaitSingleOrNull()
+
+        assertNotNull(foundShop)
+        foundShop?.let {
+            assertEquals(it.shopId, shopId)
+            assertEquals(it.shopName, shopName)
+        }
+
+        println(foundShop)
     }
 
     fun generateKey(shopId: String, shopName: String) = Key.builder()

@@ -3,6 +3,9 @@ package team.bakkas.domaindynamo.repository
 import org.springframework.cache.annotation.CacheEvict
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Repository
+import reactor.core.publisher.Mono
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbAsyncTable
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedAsyncClient
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable
 import software.amazon.awssdk.enhanced.dynamodb.Key
@@ -20,9 +23,12 @@ import team.bakkas.domaindynamo.entity.Shop
 @Repository
 class ShopRepository(
     private val dynamoDbEnhancedClient: DynamoDbEnhancedClient,
+    private val dynamoDbEnhancedAsyncClient: DynamoDbEnhancedAsyncClient
 ) {
     // table 변수 선언
     val table: DynamoDbTable<Shop> = dynamoDbEnhancedClient.table("shop", TableSchema.fromBean(Shop::class.java))
+    val asyncTable: DynamoDbAsyncTable<Shop> =
+        dynamoDbEnhancedAsyncClient.table("shop", TableSchema.fromBean(Shop::class.java))
 
     // shop을 파라미터로 받아서 table에 shop을 등록시킨 후, 등록된 shop을 그대로 리턴하는 메소드
     fun createShop(shop: Shop): Shop {
@@ -59,7 +65,15 @@ class ShopRepository(
 
     /* ==============================[Async Methods]============================== */
 
-
+    /** shopId와 shopName을 이용해서 비동기식으로 아이템을 가져오는 메소드
+     * @param shopId shop의 id
+     * @param shopName shop의 이름
+     * @return Mono<Shop?>
+      */
+    suspend fun findShopByIdAndNameAsync(shopId: String, shopName: String): Mono<Shop?> {
+        val shopKey = generateKey(shopId, shopName)
+        return Mono.fromFuture(asyncTable.getItem(shopKey))
+    }
 
     private fun generateKey(shopId: String, shopName: String): Key = Key.builder()
         .partitionValue(shopId)
