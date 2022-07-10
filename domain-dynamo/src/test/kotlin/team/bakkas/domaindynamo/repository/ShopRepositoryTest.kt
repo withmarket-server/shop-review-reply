@@ -155,7 +155,7 @@ internal class ShopRepositoryTest @Autowired constructor(
     @ParameterizedTest
     @CsvSource(value = ["33daf043-7f36-4a52-b791-018f9d5eb218:역전할머니맥주 영남대점"], delimiter = ':')
     @DisplayName("작성된 findShopByIdAndNameAsync 메소드의 성공 테스트")
-    fun findShopListAsync(shopId: String, shopName: String): Unit = runBlocking {
+    fun findShopByIdAndNameAsyncSuccess(shopId: String, shopName: String): Unit = runBlocking {
         val shopMono = shopRepository.findShopByIdAndNameAsync(shopId, shopName)
         val foundShop: Shop? = shopMono.awaitSingleOrNull()
 
@@ -166,6 +166,30 @@ internal class ShopRepositoryTest @Autowired constructor(
         }
 
         println(foundShop)
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = ["33daf043-7f36-4a52-b791-018f9d5eb218:가짜할머니맥주 영남대점"], delimiter = ':')
+    @DisplayName("작성된 findShopByIdAndNameAsync 메소드의 실패 테스트 (잘못된 가게 이름)")
+    fun findShopByIdAndNameAsyncFail1(shopId: String, shopName: String): Unit = runBlocking {
+        val shopMono = shopRepository.findShopByIdAndNameAsync(shopId, shopName)
+        val foundShop: Shop? = shopMono.awaitSingleOrNull()
+
+        assertNull(foundShop)
+
+        println("Test passed!!")
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = ["xxxxxx-7f36-4a52-b791-018f9d5eb218:역전할머니맥주 영남대점"], delimiter = ':')
+    @DisplayName("작성된 findShopByIdAndNameAsync 메소드의 실패 테스트(잘못된 shopId)")
+    fun findShopByIdAndNameAsyncFail2(shopId: String, shopName: String): Unit = runBlocking {
+        val shopMono = shopRepository.findShopByIdAndNameAsync(shopId, shopName)
+        val foundShop: Shop? = shopMono.awaitSingleOrNull()
+
+        assertNull(foundShop)
+
+        println("Test passed!!")
     }
 
     fun generateKey(shopId: String, shopName: String) = Key.builder()
