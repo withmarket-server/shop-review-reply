@@ -12,9 +12,13 @@ dependencies {
     api(project(":common"))
 
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.junit.jupiter:junit-jupiter:5.8.1")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
     implementation("org.springframework.cloud:spring-cloud-starter-config")
+    implementation("org.springframework.boot:spring-boot-starter-data-redis-reactive")
+
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.3")
 
     // mockk
     testImplementation("io.mockk:mockk:1.12.0")

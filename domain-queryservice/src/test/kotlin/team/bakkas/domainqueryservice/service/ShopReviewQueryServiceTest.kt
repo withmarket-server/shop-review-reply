@@ -12,13 +12,13 @@ import team.bakkas.clientmobilequery.dto.ShopReviewBasicReadDto
 import team.bakkas.common.exceptions.RequestParamLostException
 import team.bakkas.common.exceptions.ShopReviewNotFoundException
 import team.bakkas.domaindynamo.entity.ShopReview
-import team.bakkas.domaindynamo.repository.ShopReviewRepository
+import team.bakkas.domaindynamo.repository.ShopReviewDynamoRepository
 import java.time.LocalDateTime
 
 @ExtendWith(MockKExtension::class)
 internal class ShopReviewQueryServiceTest {
     @MockK
-    private lateinit var shopReviewRepository: ShopReviewRepository
+    private lateinit var shopReviewRepository: ShopReviewDynamoRepository
 
     // ============================== [find One using repository] ==============================
 

@@ -1,7 +1,5 @@
 package team.bakkas.domaindynamo.repository
 
-import org.springframework.cache.annotation.CacheEvict
-import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbAsyncTable
@@ -21,7 +19,7 @@ import team.bakkas.domaindynamo.entity.Shop
  * @author Brian
  */
 @Repository
-class ShopRepository(
+class ShopDynamoRepository(
     private val dynamoDbEnhancedClient: DynamoDbEnhancedClient,
     private val dynamoDbEnhancedAsyncClient: DynamoDbEnhancedAsyncClient
 ) {

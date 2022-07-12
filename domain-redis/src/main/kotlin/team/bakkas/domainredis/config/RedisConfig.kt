@@ -22,5 +22,4 @@ class RedisConfig(
         return LettuceConnectionFactory(host, port)
     }
 
-
 }

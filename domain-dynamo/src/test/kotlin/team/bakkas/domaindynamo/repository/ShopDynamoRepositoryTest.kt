@@ -1,26 +1,17 @@
 package team.bakkas.domaindynamo.repository
 
 import kotlinx.coroutines.*
-import kotlinx.coroutines.reactive.collect
 import kotlinx.coroutines.reactor.awaitSingleOrNull
-import kotlinx.coroutines.test.runBlockingTest
-import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.core.CoroutinesUtils
-import org.springframework.http.ResponseEntity
 import org.springframework.test.annotation.Rollback
 import org.springframework.util.StopWatch
-import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
-import software.amazon.awssdk.enhanced.dynamodb.DynamoDbAsyncTable
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedAsyncClient
 import software.amazon.awssdk.enhanced.dynamodb.Key
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema
@@ -29,11 +20,10 @@ import team.bakkas.common.category.DetailCategory
 import team.bakkas.domaindynamo.entity.Shop
 import java.time.LocalDateTime
 import java.util.*
-import java.util.concurrent.CompletableFuture
 
 @SpringBootTest
-internal class ShopRepositoryTest @Autowired constructor(
-    private val shopRepository: ShopRepository,
+internal class ShopDynamoRepositoryTest @Autowired constructor(
+    private val shopRepository: ShopDynamoRepository,
     private val dynamoDbEnhancedAsyncClient: DynamoDbEnhancedAsyncClient
 ) {
 

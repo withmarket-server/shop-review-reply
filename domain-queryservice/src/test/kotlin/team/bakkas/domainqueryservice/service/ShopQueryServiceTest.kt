@@ -1,18 +1,17 @@
 package team.bakkas.domainqueryservice.service
 
 import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import team.bakkas.domaindynamo.repository.ShopRepository
+import team.bakkas.domaindynamo.repository.ShopDynamoRepository
 
 @SpringBootTest
 internal class ShopQueryServiceTest @Autowired constructor(
-    val shopRepository: ShopRepository
+    val shopRepository: ShopDynamoRepository
 ) {
 
     @ParameterizedTest
