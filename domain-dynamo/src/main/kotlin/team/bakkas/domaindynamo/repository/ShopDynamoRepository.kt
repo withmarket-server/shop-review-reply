@@ -68,7 +68,7 @@ class ShopDynamoRepository(
      * @param shopName shop의 이름
      * @return Mono<Shop?>
       */
-    suspend fun findShopByIdAndNameAsync(shopId: String, shopName: String): Mono<Shop?> {
+    fun findShopByIdAndNameAsync(shopId: String, shopName: String): Mono<Shop?> {
         val shopKey = generateKey(shopId, shopName)
         return Mono.fromFuture(asyncTable.getItem(shopKey))
     }
