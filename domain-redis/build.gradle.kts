@@ -14,16 +14,8 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(kotlin("reflect"))
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-data-redis")
+    implementation("org.springframework.boot:spring-boot-starter-data-redis-reactive")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-}
-
-allOpen {
-    annotation("org.springframework.data.redis.core.RedisHash")
-}
-
-noArg {
-    annotation("org.springframework.data.redis.core.RedisHash")
 }
 
 tasks.register("prepareKotlinBuildScriptModel") {}

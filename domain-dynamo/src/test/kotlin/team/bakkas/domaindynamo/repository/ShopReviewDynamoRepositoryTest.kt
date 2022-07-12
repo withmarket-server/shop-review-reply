@@ -24,9 +24,9 @@ import java.util.*
  * @see <a href="https://github.com/awsdocs/aws-doc-sdk-examples/tree/main/kotlin/services/dynamodb#code-examples">Query method with Global Secondary Index</a>
  */
 @SpringBootTest
-internal class ShopReviewRepositoryTest @Autowired constructor(
+internal class ShopReviewDynamoRepositoryTest @Autowired constructor(
     private val dynamoDbEnhancedClient: DynamoDbEnhancedClient,
-    private val shopReviewRepository: ShopReviewRepository
+    private val shopReviewRepository: ShopReviewDynamoRepository
 ) {
     // 테이블 정의
     val table = dynamoDbEnhancedClient.table("shop_review", TableSchema.fromBean(ShopReview::class.java))

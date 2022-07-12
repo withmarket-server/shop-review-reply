@@ -9,7 +9,7 @@ import team.bakkas.common.exceptions.RequestParamLostException
 import team.bakkas.common.exceptions.ShopReviewListInvalidException
 import team.bakkas.common.exceptions.ShopReviewNotFoundException
 import team.bakkas.domaindynamo.entity.ShopReview
-import team.bakkas.domaindynamo.repository.ShopReviewRepository
+import team.bakkas.domaindynamo.repository.ShopReviewDynamoRepository
 
 /** ShopReview의 Query에 대응하는 service code
  * @param shopReviewRepository review를 담당하는 repository bean
@@ -18,7 +18,7 @@ import team.bakkas.domaindynamo.repository.ShopReviewRepository
  */
 @Service
 class ShopReviewQueryService(
-    private val shopReviewRepository: ShopReviewRepository
+    private val shopReviewRepository: ShopReviewDynamoRepository
 ) {
 
     /** reviewId와 reviewTitle을 키로 가지는 데이터를 가져오는 메소드
