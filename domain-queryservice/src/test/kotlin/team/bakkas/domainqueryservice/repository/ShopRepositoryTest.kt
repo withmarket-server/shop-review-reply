@@ -135,7 +135,7 @@ internal class ShopRepositoryTest @Autowired constructor(
     fun testFindOneShopFail1(shopId: String, shopName: String): Unit = runBlocking {
         // given
         val key = generateKey(shopId, shopName)
-        val shopMono: Mono<Shop?> = shopRepository.findOneShopByIdAndNameWithCaching(shopId, shopName)
+        val shopMono: Mono<Shop?> = shopRepository.findShopByIdAndNameWithCaching(shopId, shopName)
 
         // when
         val result = CoroutinesUtils.monoToDeferred(shopMono).await()
@@ -155,7 +155,7 @@ internal class ShopRepositoryTest @Autowired constructor(
     fun testFindOneShopFail2(shopId: String, shopName: String): Unit = runBlocking {
         // given
         val key = generateKey(shopId, shopName)
-        val shopMono: Mono<Shop?> = shopRepository.findOneShopByIdAndNameWithCaching(shopId, shopName)
+        val shopMono: Mono<Shop?> = shopRepository.findShopByIdAndNameWithCaching(shopId, shopName)
 
         // when
         val result = CoroutinesUtils.monoToDeferred(shopMono).await()
@@ -175,7 +175,7 @@ internal class ShopRepositoryTest @Autowired constructor(
     fun testFindOneShopSuccess1(shopId: String, shopName: String): Unit = runBlocking {
         // given
         val key = generateKey(shopId, shopName)
-        val shopMono: Mono<Shop?> = shopRepository.findOneShopByIdAndNameWithCaching(shopId, shopName)
+        val shopMono: Mono<Shop?> = shopRepository.findShopByIdAndNameWithCaching(shopId, shopName)
 
         // when
         val result = CoroutinesUtils.monoToDeferred(shopMono).await()
@@ -223,7 +223,7 @@ internal class ShopRepositoryTest @Autowired constructor(
         stopWatch.start()
         val cachingJob = launch {
             repeat(100) {
-                val shopMono: Mono<Shop?> = shopRepository.findOneShopByIdAndNameWithCaching(shopId, shopName)
+                val shopMono: Mono<Shop?> = shopRepository.findShopByIdAndNameWithCaching(shopId, shopName)
                 val shopDeferred = CoroutinesUtils.monoToDeferred(shopMono)
                 cachingAsyncResult.add(shopDeferred.await())
             }

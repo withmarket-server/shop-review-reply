@@ -1,5 +1,6 @@
 package team.bakkas.domaindynamo.repository
 
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -7,6 +8,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.core.CoroutinesUtils
 import org.springframework.test.annotation.Rollback
 import org.springframework.util.StopWatch
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient
@@ -285,6 +287,56 @@ internal class ShopReviewDynamoRepositoryTest @Autowired constructor(
         val deletedShop = shopReviewRepository.findReviewByIdAndTitle(reviewId, reviewTitle)
 
         assertNull(deletedShop)
+
+        println("Test passed!!")
+    }
+
+    /* ==============================[Async Test]============================== */
+    @ParameterizedTest
+    @CsvSource(value = ["xxxxxx-5120-4ec2-ab92-ca6827428945:진짜 최애 맥주집이에요!!"], delimiter = ':')
+    @DisplayName("[Repository] reviewId가 틀려서 못 찾아오는 경우 테스트")
+    fun findReviewByIdAndTitleFail1(reviewId: String, reviewTitle: String): Unit = runBlocking {
+        // when
+        val reviewMono = shopReviewRepository.findReviewByIdAndTitleAsync(reviewId, reviewTitle)
+        val reviewDeferred = CoroutinesUtils.monoToDeferred(reviewMono)
+        val review = reviewDeferred.await()
+
+        // then
+        assertNull(review)
+
+        println("Test passed!!")
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = ["b7cbec2d-5120-4ec2-ab92-ca6827428945:진짜 맛없는 맥주집이에요!!"], delimiter = ':')
+    @DisplayName("[Repository] reviewName이 틀려서 못 찾아오는 경우 테스트")
+    fun findReviewByIdAndTitleFail2(reviewId: String, reviewTitle: String): Unit = runBlocking {
+        // when
+        val reviewMono = shopReviewRepository.findReviewByIdAndTitleAsync(reviewId, reviewTitle)
+        val reviewDeferred = CoroutinesUtils.monoToDeferred(reviewMono)
+        val review = reviewDeferred.await()
+
+        // then
+        assertNull(review)
+
+        println("Test passed!!")
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = ["b7cbec2d-5120-4ec2-ab92-ca6827428945:진짜 최애 맥주집이에요!!"], delimiter = ':')
+    @DisplayName("[Repository] 정상적으로 잘 찾아오는 경우 테스트")
+    fun findReviewByIdAndTitleSuccess(reviewId: String, reviewTitle: String): Unit = runBlocking {
+        // when
+        val reviewMono = shopReviewRepository.findReviewByIdAndTitleAsync(reviewId, reviewTitle)
+        val reviewDeferred = CoroutinesUtils.monoToDeferred(reviewMono)
+        val review = reviewDeferred.await()
+
+        // then
+        assertNotNull(review)
+        review?.let {
+            assertEquals(it.reviewId, reviewId)
+            assertEquals(it.reviewTitle, reviewTitle)
+        }
 
         println("Test passed!!")
     }

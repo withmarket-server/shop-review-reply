@@ -10,6 +10,7 @@ import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer
 import org.springframework.data.redis.serializer.RedisSerializationContext
 import org.springframework.data.redis.serializer.StringRedisSerializer
 import team.bakkas.domaindynamo.entity.Shop
+import team.bakkas.domaindynamo.entity.ShopReview
 
 @Configuration
 class ReactiveRedisConfig {
@@ -48,4 +49,10 @@ class ReactiveRedisConfig {
     fun shopReactiveRedisTemplate(
         factory: ReactiveRedisConnectionFactory,
     ): ReactiveRedisTemplate<String, Shop> = commonReactiveRedisTemplate(factory, Shop::class.java)
+
+    // ShopReview에 대한 reactive redis template
+    @Bean
+    fun shopReviewReactiveRedisTemplate(
+        factory: ReactiveRedisConnectionFactory
+    ): ReactiveRedisTemplate<String, ShopReview> = commonReactiveRedisTemplate(factory, ShopReview::class.java)
 }

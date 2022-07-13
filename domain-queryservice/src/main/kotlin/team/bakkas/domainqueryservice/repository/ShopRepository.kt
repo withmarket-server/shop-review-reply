@@ -29,7 +29,7 @@ class ShopRepository(
      * @param shopName 가게의 이름
      * @return Mono<Shop?>
      */
-    fun findOneShopByIdAndNameWithCaching(shopId: String, shopName: String): Mono<Shop?> {
+    fun findShopByIdAndNameWithCaching(shopId: String, shopName: String): Mono<Shop?> {
         val key = generateKey(shopId, shopName)
         val alternativeShopMono: Mono<Shop?> = shopDynamoRepository.findShopByIdAndNameAsync(shopId, shopName)
             .doOnSuccess {
