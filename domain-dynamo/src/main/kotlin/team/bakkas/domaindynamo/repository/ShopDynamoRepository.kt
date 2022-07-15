@@ -1,5 +1,9 @@
 package team.bakkas.domaindynamo.repository
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.reactive.asFlow
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbAsyncTable
@@ -71,6 +75,14 @@ class ShopDynamoRepository(
     fun findShopByIdAndNameAsync(shopId: String, shopName: String): Mono<Shop?> {
         val shopKey = generateKey(shopId, shopName)
         return Mono.fromFuture(asyncTable.getItem(shopKey))
+    }
+
+    // 모든 Shop에 대한 key의 flow를 반환해주는 메소드
+    fun getAllShopKeys(): Flow<Pair<String, String>> {
+        val shopPublisher = asyncTable.scan().items()
+        return shopPublisher.asFlow().map {
+            Pair(it.shopId, it.shopName)
+        }
     }
 
     private fun generateKey(shopId: String, shopName: String): Key = Key.builder()

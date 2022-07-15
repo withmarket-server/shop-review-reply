@@ -1,6 +1,9 @@
 package team.bakkas.domaindynamo.repository
 
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.buffer
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.junit.jupiter.api.Assertions.*
@@ -176,11 +179,44 @@ internal class ShopDynamoRepositoryTest @Autowired constructor(
 
     // 모든 Shop을 받아오자
     @Test
-    @DisplayName("모든 Shop list를 받아오는 테스트")
-    fun findAllShopFail1(): Unit = runBlocking {
+    @DisplayName("모든 Shop list를 받아오는 테스트 (buffer 적용해서 코루틴 분리)")
+    fun findAllShopSuccess1(): Unit = runBlocking {
         val table = dynamoDbEnhancedAsyncClient.table("shop", TableSchema.fromBean(Shop::class.java))
-        val shopItemListPublisher = table.scan().items()
+        val shopPublisher = table.scan().items()
+        val shopFlow = shopPublisher.asFlow()
+        val shopNameList = mutableListOf<String>()
+        val stopWatch = StopWatch()
 
+        stopWatch.start()
+        shopFlow.map {shop ->
+            shop.shopName
+        }.buffer()
+            .collect {
+                shopNameList.add(it)
+            }
+        stopWatch.stop()
+
+
+        println("Time: ${stopWatch.totalTimeMillis}") // 637, 779, 650 mills
+        println(shopNameList)
+    }
+
+    @Test
+    @DisplayName("모든 Shop list를 받아오는 테스트 (buffer 적용 없이 단일 코루틴으로 적용)")
+    fun findAllShopSuccess2(): Unit = runBlocking {
+        val table = dynamoDbEnhancedAsyncClient.table("shop", TableSchema.fromBean(Shop::class.java))
+        val shopPublisher = table.scan().items()
+        val shopFlow = shopPublisher.asFlow()
+        val shopNameList = mutableListOf<String>()
+        val stopWatch = StopWatch()
+
+        stopWatch.start()
+        shopFlow.map { shop -> shop.shopName }
+            .collect { it -> shopNameList.add(it) }
+        stopWatch.stop()
+
+        println("Time: ${stopWatch.totalTimeMillis}") // 775, 632, 543 mills
+        println(shopNameList)
     }
 
     fun generateKey(shopId: String, shopName: String) = Key.builder()

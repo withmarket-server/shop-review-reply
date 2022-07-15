@@ -1,10 +1,10 @@
 package team.bakkas.domainqueryservice.repository
 
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.beans.factory.annotation.Autowired
@@ -235,6 +235,86 @@ internal class ShopRepositoryTest @Autowired constructor(
         val cachingSpeed = stopWatch.totalTimeMillis - normalSpeed
 
         println("caching async: $cachingSpeed") // 1780 mills
+    }
+
+    // Cache hit 방식으로 모든 shop을 가져오는 테스트
+    @Test
+    @DisplayName("Cache hit 방식을 이용해서 모든 shop을 가져오기")
+    fun getAllShopFlow(): Unit = runBlocking {
+        // given
+        val shopKeysFlow = shopDynamoRepository.getAllShopKeys()
+        val cachedShopFlow = shopKeysFlow.map {
+            shopRepository.findShopByIdAndNameWithCaching(it.first, it.second)
+        }
+
+        // when
+        val shopList = mutableListOf<Shop>()
+        cachedShopFlow.buffer()
+            .collect { shopMono ->
+                val shopDeferred = CoroutinesUtils.monoToDeferred(shopMono)
+                shopList.add(shopDeferred.await()!!)
+            }
+
+        // then
+        val redisShopList = mutableListOf<Shop>()
+        shopList.forEach {
+            val redisShopMono = shopReactiveRedisTemplate.opsForValue().get(generateKey(it.shopId, it.shopName))
+            redisShopList.add(CoroutinesUtils.monoToDeferred(redisShopMono).await())
+        }
+
+        assert(shopList.size != 0)
+        assert(redisShopList.size != 0)
+        assertEquals(shopList.size, redisShopList.size)
+        shopList.zip(redisShopList).forEach {
+            assertEquals(it.first.shopId, it.second.shopId)
+            assertEquals(it.first.shopName, it.second.shopName)
+        }
+
+        shopList.forEach {
+            println(it)
+        }
+    }
+
+    @Test
+    @DisplayName("[repository] 작성한 getAllShopWithCaching 검증")
+    fun getAllShopWithCaching(): Unit = runBlocking {
+        // given
+        val shopFlow = shopRepository.getAllShopsWithCaching()
+        val shopList = mutableListOf<Shop>()
+
+        // when
+        shopFlow.buffer()
+            .collect {
+                val shopDeferred = CoroutinesUtils.monoToDeferred(it)
+                val shop = withContext(Dispatchers.IO) {
+                    shopDeferred.await()!!
+                }
+                shopList.add(shop)
+            }
+
+        // then
+        val redisShopList = mutableListOf<Shop>()
+        shopDynamoRepository.getAllShopKeys().map {
+            generateKey(it.first, it.second)
+        }.buffer()
+            .collect {
+                val shopMono = shopReactiveRedisTemplate.opsForValue().get(it)
+                val shop = CoroutinesUtils.monoToDeferred(shopMono).await()
+                redisShopList.add(shop)
+            }
+
+        assert(shopList.size != 0)
+        assert(redisShopList.size != 0)
+        assertEquals(shopList.size, redisShopList.size)
+        shopList.zip(redisShopList).forEach {
+            assertEquals(it.first.shopId, it.second.shopId)
+            assertEquals(it.first.shopName, it.second.shopName)
+        }
+
+        println("Test passed!!")
+        shopList.forEach {
+            println(it)
+        }
     }
 
     private fun generateKey(shopId: String, shopName: String): String = "shop:${shopId}-${shopName}"

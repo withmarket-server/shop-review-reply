@@ -1,5 +1,7 @@
 package team.bakkas.domainqueryservice.repository
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
@@ -20,7 +22,7 @@ class ShopRepository(
         // Cache를 보관할 기간을 정의
         val DAYS_TO_LIVE = 1L
 
-        fun generateKey(shopId: String, shopName: String) = "shop:${shopId}-${shopName}"
+        fun generateRedisKey(shopId: String, shopName: String) = "shop:${shopId}-${shopName}"
     }
 
     /**
@@ -30,7 +32,7 @@ class ShopRepository(
      * @return Mono<Shop?>
      */
     fun findShopByIdAndNameWithCaching(shopId: String, shopName: String): Mono<Shop?> {
-        val key = generateKey(shopId, shopName)
+        val key = generateRedisKey(shopId, shopName)
         val alternativeShopMono: Mono<Shop?> = shopDynamoRepository.findShopByIdAndNameAsync(shopId, shopName)
             .doOnSuccess {
                 it?.let {
@@ -46,5 +48,11 @@ class ShopRepository(
             .switchIfEmpty(alternativeShopMono)
     }
 
-
+    // 모든 Shop을 가져오는 flow를 반환해주는 메소드
+    fun getAllShopsWithCaching(): Flow<Mono<Shop?>> {
+        val shopKeysFlow = shopDynamoRepository.getAllShopKeys() // shop Key Pair들의 flow를 가져온다
+        return shopKeysFlow.map {
+            findShopByIdAndNameWithCaching(it.first, it.second)
+        }
+    }
 }
