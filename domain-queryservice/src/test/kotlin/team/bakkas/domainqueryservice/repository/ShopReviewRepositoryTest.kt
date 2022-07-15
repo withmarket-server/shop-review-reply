@@ -1,7 +1,12 @@
 package team.bakkas.domainqueryservice.repository
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.buffer
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.params.ParameterizedTest
@@ -267,5 +272,236 @@ internal class ShopReviewRepositoryTest @Autowired constructor(
         println("[Async normally]: $beforeTime") // 2965 mills
         println("[Async with caching]: $afterTime") // 1558 mills
         println("Test success!!")
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = ["33daf043-7f36-4a52-b791-018f9d5eb218:역전할머니맥주 영남대점"], delimiter = ':')
+    @DisplayName("Cache hit을 하면서 review를 가져오는지 테스트")
+    fun getAllReviewsByShopIdAndNameSuccess1(shopId: String, shopName: String): Unit = runBlocking {
+        // given
+        val reviewKeysFlow = shopReviewDynamoRepository.getAllReviewKeyFlowByShopIdAndName(shopId, shopName)
+        val reviewList = mutableListOf<ShopReview>()
+
+        // when
+        reviewKeysFlow.map {
+            shopReviewRepository.findShopReviewByIdAndTitleWithCaching(it.first, it.second)
+        }.buffer()
+            .collect { shopReviewMono ->
+                val reviewDeferred = CoroutinesUtils.monoToDeferred(shopReviewMono)
+                reviewList.add(reviewDeferred.await()!!)
+            }
+
+        // then
+        val redisReviewList = mutableListOf<ShopReview>()
+        reviewKeysFlow.map {
+            val redisKey = generateRedisKey(it.first, it.second)
+            val redisReviewMono = shopReviewReactiveRedisTemplate.opsForValue().get(redisKey)
+            CoroutinesUtils.monoToDeferred(redisReviewMono)
+        }.buffer()
+            .collect {
+                redisReviewList.add(it.await()!!)
+            }
+
+        assert(reviewList.size != 0)
+        assert(redisReviewList.size != 0)
+        assertEquals(reviewList.size, redisReviewList.size)
+        reviewList.zip(redisReviewList).forEach {
+            assertEquals(it.first.shopId, it.second.shopId)
+            assertEquals(it.first.shopName, it.second.shopName)
+            assertEquals(it.first.reviewId, it.second.reviewId)
+            assertEquals(it.first.reviewTitle, it.second.reviewTitle)
+        }
+
+        println("Test passed!!")
+        println(reviewList)
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = ["xxxxxxxx-7f36-4a52-b791-018f9d5eb218:역전할머니맥주 영남대점"], delimiter = ':')
+    @DisplayName("잘못된 shopId가 전달되어 하나도 못 가져오는 경우 테스트")
+    fun getAllReviewsByShopIdAndNameFail1(shopId: String, shopName: String): Unit = runBlocking {
+        // given
+        val reviewKeysFlow = shopReviewDynamoRepository.getAllReviewKeyFlowByShopIdAndName(shopId, shopName)
+        val reviewList = mutableListOf<ShopReview>()
+
+        // when
+        reviewKeysFlow.map {
+            shopReviewRepository.findShopReviewByIdAndTitleWithCaching(it.first, it.second)
+        }.buffer()
+            .collect { shopReviewMono ->
+                val reviewDeferred = CoroutinesUtils.monoToDeferred(shopReviewMono)
+                reviewList.add(reviewDeferred.await()!!)
+            }
+
+        // then
+        val redisReviewList = mutableListOf<ShopReview>()
+        reviewKeysFlow.map {
+            val redisKey = generateRedisKey(it.first, it.second)
+            val redisReviewMono = shopReviewReactiveRedisTemplate.opsForValue().get(redisKey)
+            CoroutinesUtils.monoToDeferred(redisReviewMono)
+        }.buffer()
+            .collect {
+                redisReviewList.add(it.await()!!)
+            }
+
+        assert(reviewList.size == 0)
+        assert(redisReviewList.size == 0)
+        assertEquals(reviewList.size, redisReviewList.size)
+
+        println("Test passed!!")
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = ["33daf043-7f36-4a52-b791-018f9d5eb218:역전할머니맥주 가짜"], delimiter = ':')
+    @DisplayName("잘못된 shopName이 전달되서 review를 못 가져오는 경우 테스트")
+    fun getAllReviewsByShopIdAndNameFail2(shopId: String, shopName: String): Unit = runBlocking {
+        // given
+        val reviewKeysFlow = shopReviewDynamoRepository.getAllReviewKeyFlowByShopIdAndName(shopId, shopName)
+        val reviewList = mutableListOf<ShopReview>()
+
+        // when
+        reviewKeysFlow.map {
+            shopReviewRepository.findShopReviewByIdAndTitleWithCaching(it.first, it.second)
+        }.buffer()
+            .collect { shopReviewMono ->
+                val reviewDeferred = CoroutinesUtils.monoToDeferred(shopReviewMono)
+                reviewList.add(reviewDeferred.await()!!)
+            }
+
+        // then
+        val redisReviewList = mutableListOf<ShopReview>()
+        reviewKeysFlow.map {
+            val redisKey = generateRedisKey(it.first, it.second)
+            val redisReviewMono = shopReviewReactiveRedisTemplate.opsForValue().get(redisKey)
+            CoroutinesUtils.monoToDeferred(redisReviewMono)
+        }.buffer()
+            .collect {
+                redisReviewList.add(it.await()!!)
+            }
+
+        assert(reviewList.size == 0)
+        assert(redisReviewList.size == 0)
+
+        println("Test passed!!")
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = ["33daf043-7f36-4a52-b791-018f9d5eb218:역전할머니맥주 영남대점"], delimiter = ':')
+    @DisplayName("[repository] Cache hit을 하면서 review를 가져오는지 테스트")
+    fun testGetReviewListFlowByShopIdAndNameSuccess1(shopId: String, shopName: String): Unit = runBlocking {
+        // given
+        val reviewFlow = shopReviewRepository.getShopReviewListFlowByShopIdAndNameWithCaching(shopId, shopName)
+        val reviewList = mutableListOf<ShopReview>()
+
+        // when
+        reviewFlow.map {
+            CoroutinesUtils.monoToDeferred(it)
+        }.buffer()
+            .collect {
+                withContext(Dispatchers.IO) {
+                    reviewList.add(it.await()!!)
+                }
+            }
+
+        // then
+        val redisReviewList = mutableListOf<ShopReview>()
+        val keyFlow = shopReviewDynamoRepository.getAllReviewKeyFlowByShopIdAndName(shopId, shopName)
+        keyFlow.map {
+            val redisKey = generateRedisKey(it.first, it.second)
+            val reviewMono = shopReviewReactiveRedisTemplate.opsForValue().get(redisKey)
+            CoroutinesUtils.monoToDeferred(reviewMono)
+        }.buffer()
+            .collect {
+                withContext(Dispatchers.IO) {
+                    redisReviewList.add(it.await()!!)
+                }
+            }
+
+        assert(reviewList.size != 0)
+        assert(redisReviewList.size != 0)
+        assertEquals(reviewList.size, redisReviewList.size)
+        reviewList.zip(redisReviewList).forEach {
+            assertEquals(it.first.shopId, it.second.shopId)
+            assertEquals(it.first.shopName, it.second.shopName)
+            assertEquals(it.first.reviewId, it.second.reviewId)
+            assertEquals(it.first.reviewTitle, it.second.reviewTitle)
+        }
+
+        println("Test passed!!")
+        reviewList.forEach {
+            println(it)
+        }
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = ["xxxxxxxx-7f36-4a52-b791-018f9d5eb218:역전할머니맥주 영남대점"], delimiter = ':')
+    @DisplayName("[repository] shopId가 잘못되어 리뷰를 하나도 못 가져옴")
+    fun testGetReviewListFlowByShopIdAndNameFail1(shopId: String, shopName: String): Unit = runBlocking {
+        // given
+        val reviewFlow = shopReviewRepository.getShopReviewListFlowByShopIdAndNameWithCaching(shopId, shopName)
+        val reviewList = mutableListOf<ShopReview>()
+
+        // when
+        reviewFlow.map {
+            CoroutinesUtils.monoToDeferred(it)
+        }.buffer()
+            .collect {
+                withContext(Dispatchers.IO) {
+                    reviewList.add(it.await()!!)
+                }
+            }
+
+        // then
+        val redisReviewList = mutableListOf<ShopReview>()
+        val keyFlow = shopReviewDynamoRepository.getAllReviewKeyFlowByShopIdAndName(shopId, shopName)
+        keyFlow.map {
+            val redisKey = generateRedisKey(it.first, it.second)
+            val reviewMono = shopReviewReactiveRedisTemplate.opsForValue().get(redisKey)
+            CoroutinesUtils.monoToDeferred(reviewMono)
+        }.buffer()
+            .collect {
+                redisReviewList.add(it.await()!!)
+            }
+
+        assert(reviewList.size == 0)
+        assert(redisReviewList.size == 0)
+
+        println("Test passed!!")
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = ["33daf043-7f36-4a52-b791-018f9d5eb218:역전할머니맥주 가짜"], delimiter = ':')
+    @DisplayName("[repository] shopName이 잘못되어 리뷰를 하나도 못 가져옴")
+    fun testGetReviewListFlowByShopIdAndNameFail2(shopId: String, shopName: String): Unit = runBlocking {
+        // given
+        val reviewFlow = shopReviewRepository.getShopReviewListFlowByShopIdAndNameWithCaching(shopId, shopName)
+        val reviewList = mutableListOf<ShopReview>()
+
+        // when
+        reviewFlow.map {
+            CoroutinesUtils.monoToDeferred(it)
+        }.buffer()
+            .collect {
+                withContext(Dispatchers.IO) {
+                    reviewList.add(it.await()!!)
+                }
+            }
+
+        // then
+        val redisReviewList = mutableListOf<ShopReview>()
+        val keyFlow = shopReviewDynamoRepository.getAllReviewKeyFlowByShopIdAndName(shopId, shopName)
+        keyFlow.map {
+            val redisKey = generateRedisKey(it.first, it.second)
+            val reviewMono = shopReviewReactiveRedisTemplate.opsForValue().get(redisKey)
+            CoroutinesUtils.monoToDeferred(reviewMono)
+        }.buffer()
+            .collect {
+                redisReviewList.add(it.await()!!)
+            }
+
+        assert(reviewList.size == 0)
+        assert(redisReviewList.size == 0)
+
+        println("Test passed!!")
     }
 }

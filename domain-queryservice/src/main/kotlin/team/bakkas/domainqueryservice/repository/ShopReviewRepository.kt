@@ -1,5 +1,7 @@
 package team.bakkas.domainqueryservice.repository
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
@@ -42,5 +44,17 @@ class ShopReviewRepository(
 
         return shopReviewReactiveRedisTemplate.opsForValue().get(key)
             .switchIfEmpty(alternativeMono)
+    }
+
+    /** review list에 대한 flow를 반환해주는 메소드
+     * @param shopId
+     * @param shopName
+     * @return Flow<Mono<ShopReview>> flow consisted with monos of shopReview
+     */
+    fun getShopReviewListFlowByShopIdAndNameWithCaching(shopId: String, shopName: String): Flow<Mono<ShopReview?>> {
+        val reviewKeysFlow = shopReviewDynamoRepository.getAllReviewKeyFlowByShopIdAndName(shopId, shopName)
+        return reviewKeysFlow.map {
+            findShopReviewByIdAndTitleWithCaching(it.first, it.second)
+        }
     }
 }

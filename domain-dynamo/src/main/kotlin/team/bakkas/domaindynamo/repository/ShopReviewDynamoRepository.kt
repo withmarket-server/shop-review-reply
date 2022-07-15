@@ -1,5 +1,8 @@
 package team.bakkas.domaindynamo.repository
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.reactive.asFlow
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
@@ -103,6 +106,34 @@ class ShopReviewDynamoRepository(
         val reviewFuture = asyncTable.getItem(reviewKey)
 
         return Mono.fromFuture(reviewFuture)
+    }
+
+    /** review들에 대한 Key의 flow를 반환해주는 메소드
+     * @param shopId
+     * @param shopName
+     * @return Flow consisted with Pair of reviewId and reviewTitle (Pair<String, String>)
+     */
+    fun getAllReviewKeyFlowByShopIdAndName(shopId: String, shopName: String): Flow<Pair<String, String>> {
+        val attributeAliasMap = mutableMapOf<String, String>()
+        val attributeValueMap = mutableMapOf<String, AttributeValue>()
+
+        attributeAliasMap["#shop_id"] = "shop_id"
+        attributeAliasMap["#shop_name"] = "shop_name"
+
+        attributeValueMap[":id_val"] = AttributeValue.fromS(shopId)
+        attributeValueMap[":name_val"] = AttributeValue.fromS(shopName)
+
+        val expression = Expression.builder()
+            .expressionNames(attributeAliasMap)
+            .expressionValues(attributeValueMap)
+            .expression("#shop_id = :id_val AND #shop_name = :name_val")
+            .build()
+
+        return asyncTable.scan {
+            it.filterExpression(expression)
+        }.items().asFlow().map {
+            Pair(it.reviewId, it.reviewTitle)
+        }
     }
 
     /** Key를 반환하는 private method
