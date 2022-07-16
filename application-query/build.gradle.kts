@@ -9,7 +9,6 @@ dependencies {
     // 모듈 간 의존관계 주입
     api(project(":domain-service"))
 
-    implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
@@ -21,9 +20,6 @@ dependencies {
 
     // mockk
     testImplementation("io.mockk:mockk:1.12.0")
-
-    // https://mvnrepository.com/artifact/io.springfox/springfox-swagger2
-    implementation("io.springfox:springfox-boot-starter:3.0.0")
 }
 
 dependencyManagement {

@@ -26,16 +26,16 @@ class ShopHandler(
 ) {
 
     suspend fun findByIdAndName(request: ServerRequest): ServerResponse = coroutineScope {
-        val shopId = request.queryParamOrNull("shop-id") ?: throw RequestParamLostException("shopId is lost")
-        val shopName = request.queryParamOrNull("shop-name") ?: throw RequestParamLostException("shopName is lost")
+        val shopId = request.queryParamOrNull("id") ?: throw RequestParamLostException("shopId is lost")
+        val shopName = request.queryParamOrNull("name") ?: throw RequestParamLostException("shopName is lost")
 
         val shopMono = shopRepository.findShopByIdAndNameWithCaching(shopId, shopName)
         val shop = withContext(Dispatchers.IO) {
             CoroutinesUtils.monoToDeferred(shopMono).await() ?: throw ShopNotFoundException("Shop is not found")
         }
 
-        return@coroutineScope ok().contentType(MediaType.APPLICATION_JSON)
-            .bodyValueAndAwait(toSimpleReadDto(shop))
+        return@coroutineScope ok()
+            .bodyValueAndAwait(resultFactory.getSingleResult(toSimpleReadDto(shop)))
     }
 
     private fun toSimpleReadDto(shop: Shop) = ShopSimpleReadDto(

@@ -18,7 +18,8 @@ import team.bakkas.domaindynamo.repository.ShopReviewDynamoRepository
  */
 @Service
 class ShopReviewQueryService(
-    private val shopReviewRepository: ShopReviewDynamoRepository
+    private val shopReviewRepository: ShopReviewDynamoRepository,
+    private val resultFactory: ResultFactory
 ) {
 
     /** reviewId와 reviewTitle을 키로 가지는 데이터를 가져오는 메소드
@@ -39,7 +40,7 @@ class ShopReviewQueryService(
         val foundReview = shopReviewRepository.findReviewByIdAndTitle(reviewId, reviewTitle)
             ?: throw ShopReviewNotFoundException("(reviewId = $reviewId, reviewTitle = $reviewTitle)에 해당하는 review는 존재하지 않습니다.")
 
-        return ResponseEntity.ok(ResultFactory.getSingleResult(toBasicReadDto(foundReview)))
+        return ResponseEntity.ok(resultFactory.getSingleResult(toBasicReadDto(foundReview)))
     }
 
     /** Shop GSI 정보를 이용해서 대응되는 리뷰들을 모두 가져오는 메소드
@@ -73,7 +74,7 @@ class ShopReviewQueryService(
         }.toList()
 
         // 결과를 반환한다.
-        return ResponseEntity.ok(ResultFactory.getMultipleResult(responseList))
+        return ResponseEntity.ok(resultFactory.getMultipleResult(responseList))
     }
 
     private fun toBasicReadDto(shopReview: ShopReview) = ShopReviewBasicReadDto(

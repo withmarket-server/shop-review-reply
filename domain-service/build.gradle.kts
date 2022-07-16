@@ -11,7 +11,7 @@ dependencies {
     api(project(":domain-dynamo"))
     api(project(":common"))
 
-    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.junit.jupiter:junit-jupiter:5.8.1")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
