@@ -1,7 +1,13 @@
 package team.bakkas.domaindynamo.repository
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.reactive.asFlow
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Repository
+import reactor.core.publisher.Mono
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbAsyncTable
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedAsyncClient
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient
 import software.amazon.awssdk.enhanced.dynamodb.Expression
 import software.amazon.awssdk.enhanced.dynamodb.Key
@@ -17,10 +23,13 @@ import team.bakkas.domaindynamo.entity.ShopReview
  */
 @Repository
 class ShopReviewDynamoRepository(
-    private val dynamoDbEnhancedClient: DynamoDbEnhancedClient
+    private val dynamoDbEnhancedClient: DynamoDbEnhancedClient,
+    private val dynamoDbEnhancedAsyncClient: DynamoDbEnhancedAsyncClient
 ) {
     // shop_review에 대한 테이블 정의
     val table = dynamoDbEnhancedClient.table("shop_review", TableSchema.fromBean(ShopReview::class.java))
+    val asyncTable: DynamoDbAsyncTable<ShopReview> =
+        dynamoDbEnhancedAsyncClient.table("shop_review", TableSchema.fromBean(ShopReview::class.java))
 
     /** Shop에 대한 Review를 생성하는 메소드
      * @param shopReview 리뷰 엔티티
@@ -36,7 +45,6 @@ class ShopReviewDynamoRepository(
      * @param reviewTitle
      * @return ShopReview if exists else null
      */
-    @Cacheable(value = ["shop-review"], key = "#reviewId", unless = "#result == null")
     fun findReviewByIdAndTitle(reviewId: String, reviewTitle: String): ShopReview? {
         val reviewKey = generateKey(reviewId, reviewTitle)
 
@@ -47,7 +55,6 @@ class ShopReviewDynamoRepository(
      * @param shopId shop의 고유 id
      * @param shopName shop의 이름
      */
-    @Cacheable(value = ["shop-review-list"], key = "#shopId")
     fun getReviewListByShopGsi(shopId: String, shopName: String): List<ShopReview> {
         // filter expression에서 조건에 해당하는 변수명을 저장하는 map
         val attributeAliasMap = mutableMapOf<String, String>()
@@ -85,6 +92,48 @@ class ShopReviewDynamoRepository(
         val reviewKey = generateKey(reviewId, reviewTitle)
 
         table.deleteItem(reviewKey)
+    }
+
+    /* ==============================[Async Methods]============================== */
+
+    /** 비동기적으로 review를 하나 가져오는 메소드
+     * @param reviewId 리뷰의 id
+     * @param reviewTitle 리뷰의 제목
+     * @return Mono<ShopReview?>
+     */
+    fun findReviewByIdAndTitleAsync(reviewId: String, reviewTitle: String): Mono<ShopReview?> {
+        val reviewKey = generateKey(reviewId, reviewTitle)
+        val reviewFuture = asyncTable.getItem(reviewKey)
+
+        return Mono.fromFuture(reviewFuture)
+    }
+
+    /** review들에 대한 Key의 flow를 반환해주는 메소드
+     * @param shopId
+     * @param shopName
+     * @return Flow consisted with Pair of reviewId and reviewTitle (Pair<String, String>)
+     */
+    fun getAllReviewKeyFlowByShopIdAndName(shopId: String, shopName: String): Flow<Pair<String, String>> {
+        val attributeAliasMap = mutableMapOf<String, String>()
+        val attributeValueMap = mutableMapOf<String, AttributeValue>()
+
+        attributeAliasMap["#shop_id"] = "shop_id"
+        attributeAliasMap["#shop_name"] = "shop_name"
+
+        attributeValueMap[":id_val"] = AttributeValue.fromS(shopId)
+        attributeValueMap[":name_val"] = AttributeValue.fromS(shopName)
+
+        val expression = Expression.builder()
+            .expressionNames(attributeAliasMap)
+            .expressionValues(attributeValueMap)
+            .expression("#shop_id = :id_val AND #shop_name = :name_val")
+            .build()
+
+        return asyncTable.scan {
+            it.filterExpression(expression)
+        }.items().asFlow().map {
+            Pair(it.reviewId, it.reviewTitle)
+        }
     }
 
     /** Key를 반환하는 private method

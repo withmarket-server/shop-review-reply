@@ -1,6 +1,10 @@
 package team.bakkas.domaindynamo.repository
 
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.buffer
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.DisplayName
@@ -133,15 +137,6 @@ internal class ShopDynamoRepositoryTest @Autowired constructor(
         println(shop)
     }
 
-    suspend fun findShopByIdAndNameAsync(shopId: String, shopName: String): Shop? = withContext(Dispatchers.IO) {
-        val table = dynamoDbEnhancedAsyncClient.table("shop", TableSchema.fromBean(Shop::class.java))
-        val key = generateKey(shopId, shopName)
-        val shopFuture = table.getItem(key)
-        val shop = Mono.fromFuture(shopFuture).awaitSingleOrNull()
-
-        return@withContext shop
-    }
-
     @ParameterizedTest
     @CsvSource(value = ["33daf043-7f36-4a52-b791-018f9d5eb218:역전할머니맥주 영남대점"], delimiter = ':')
     @DisplayName("작성된 findShopByIdAndNameAsync 메소드의 성공 테스트")
@@ -180,6 +175,48 @@ internal class ShopDynamoRepositoryTest @Autowired constructor(
         assertNull(foundShop)
 
         println("Test passed!!")
+    }
+
+    // 모든 Shop을 받아오자
+    @Test
+    @DisplayName("모든 Shop list를 받아오는 테스트 (buffer 적용해서 코루틴 분리)")
+    fun findAllShopSuccess1(): Unit = runBlocking {
+        val table = dynamoDbEnhancedAsyncClient.table("shop", TableSchema.fromBean(Shop::class.java))
+        val shopPublisher = table.scan().items()
+        val shopFlow = shopPublisher.asFlow()
+        val shopNameList = mutableListOf<String>()
+        val stopWatch = StopWatch()
+
+        stopWatch.start()
+        shopFlow.map {shop ->
+            shop.shopName
+        }.buffer()
+            .collect {
+                shopNameList.add(it)
+            }
+        stopWatch.stop()
+
+
+        println("Time: ${stopWatch.totalTimeMillis}") // 637, 779, 650 mills
+        println(shopNameList)
+    }
+
+    @Test
+    @DisplayName("모든 Shop list를 받아오는 테스트 (buffer 적용 없이 단일 코루틴으로 적용)")
+    fun findAllShopSuccess2(): Unit = runBlocking {
+        val table = dynamoDbEnhancedAsyncClient.table("shop", TableSchema.fromBean(Shop::class.java))
+        val shopPublisher = table.scan().items()
+        val shopFlow = shopPublisher.asFlow()
+        val shopNameList = mutableListOf<String>()
+        val stopWatch = StopWatch()
+
+        stopWatch.start()
+        shopFlow.map { shop -> shop.shopName }
+            .collect { it -> shopNameList.add(it) }
+        stopWatch.stop()
+
+        println("Time: ${stopWatch.totalTimeMillis}") // 775, 632, 543 mills
+        println(shopNameList)
     }
 
     fun generateKey(shopId: String, shopName: String) = Key.builder()

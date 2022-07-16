@@ -4,7 +4,7 @@ include(
     ":application-query",
     ":domain-dynamo",
     ":domain-redis",
-    ":domain-queryservice",
+    ":domain-service",
     ":common",
     ":client-mobilequery"
 )
