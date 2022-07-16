@@ -16,7 +16,10 @@ import team.bakkas.domaindynamo.repository.ShopDynamoRepository
  * @author Brian
  */
 @Service
-class ShopQueryService(private val shopRepository: ShopDynamoRepository) {
+class ShopQueryService(
+    private val shopRepository: ShopDynamoRepository,
+    private val resultFactory: ResultFactory
+) {
 
     // shop의 id와 name을 통해서 shop을 하나 가져오는 메소드
     fun getShopByIdAndName(
@@ -35,7 +38,7 @@ class ShopQueryService(private val shopRepository: ShopDynamoRepository) {
         // null 검사를 한 상태이기 때문에 null-safe한 상황이다.
         val responseShop = toSimpleReadDto(foundShop)
 
-        return ResponseEntity.ok(ResultFactory.getSingleResult(responseShop))
+        return ResponseEntity.ok(resultFactory.getSingleResult(responseShop))
     }
 
     // 존재하는 모든 shop을 반환하는 메소드. SimpleReadDto로 포장하여 리턴한다
@@ -50,7 +53,7 @@ class ShopQueryService(private val shopRepository: ShopDynamoRepository) {
             toSimpleReadDto(shop)
         }.toList()
 
-        return ResponseEntity.ok(ResultFactory.getMultipleResult(responseShopList))
+        return ResponseEntity.ok(resultFactory.getMultipleResult(responseShopList))
     }
 
     // entity -> simpleDto

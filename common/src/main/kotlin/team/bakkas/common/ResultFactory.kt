@@ -1,11 +1,16 @@
 package team.bakkas.common
 
+import org.springframework.stereotype.Component
+import team.bakkas.common.error.ErrorCode
+import team.bakkas.common.error.ErrorResponse
+
 /**
  * Result를 반환하는 메소드들을 모아둔 Factory class
  * @author Brian
  * @since 22/05/22
  */
-object ResultFactory {
+@Component
+class ResultFactory {
 
     // 성공에 대한 결과를 리턴하는 메소드
     fun getSuccessResult(): Results.CommonResult = Results.CommonResult(true)
@@ -21,4 +26,12 @@ object ResultFactory {
         success = true,
         data = data
     )
+
+    // field에서 에러가 터지지 않은 경우 에러코드만 포함시켜서 에러를 반환해주는 메소드
+    fun getSimpleErrorResult(errorCode: ErrorCode): ErrorResponse.Response =
+        ErrorResponse.Response.of(errorCode)
+
+    // field에서 에러가 발생하였으나 bindingResult가 존재하지 않는 오류에 대해서 에러를 반환해주는 메소드
+    fun getErrorResultWithFieldError(errorCode: ErrorCode, fieldErrorList: List<ErrorResponse.FieldError>) =
+        ErrorResponse.Response.of(errorCode, fieldErrorList)
 }
