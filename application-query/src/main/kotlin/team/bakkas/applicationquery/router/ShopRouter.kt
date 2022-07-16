@@ -16,6 +16,7 @@ class ShopRouter(
     fun shopRoutes() = coRouter {
         "/v2/shop/simple".nest {
             GET("", shopHandler::findByIdAndName)
+            GET("/list", shopHandler::getAllShops)
         }
     }
 }

@@ -2,7 +2,7 @@ package team.bakkas.domainqueryservice.service
 
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
-import team.bakkas.clientmobilequery.dto.ShopReviewBasicReadDto
+import team.bakkas.clientmobilequery.dto.ShopReviewSimpleReadDto
 import team.bakkas.common.ResultFactory
 import team.bakkas.common.Results
 import team.bakkas.common.exceptions.RequestParamLostException
@@ -31,7 +31,7 @@ class ShopReviewQueryService(
     fun findReviewByIdAndName(
         reviewId: String?,
         reviewTitle: String?
-    ): ResponseEntity<Results.SingleResult<ShopReviewBasicReadDto>> {
+    ): ResponseEntity<Results.SingleResult<ShopReviewSimpleReadDto>> {
         // key 조건중 적어도 하나가 유실된 경우
         if (reviewId == null || reviewTitle == null || reviewId.isEmpty() || reviewTitle.isEmpty())
             throw RequestParamLostException("잘못된 형식의 검색. reviewId 혹은 reviewTitle을 확인하십시오.")
@@ -53,7 +53,7 @@ class ShopReviewQueryService(
     fun getShopReviewListByShopKey(
         shopId: String?,
         shopName: String?
-    ): ResponseEntity<Results.MultipleResult<ShopReviewBasicReadDto>> {
+    ): ResponseEntity<Results.MultipleResult<ShopReviewSimpleReadDto>> {
         // shopId, shopName 검증
         if (shopId == null || shopName == null || shopId.isEmpty() || shopName.isEmpty())
             throw RequestParamLostException("잘못된 형식의 검색. shopId 혹은 shopName을 확인하십시오.")
@@ -77,7 +77,7 @@ class ShopReviewQueryService(
         return ResponseEntity.ok(resultFactory.getMultipleResult(responseList))
     }
 
-    private fun toBasicReadDto(shopReview: ShopReview) = ShopReviewBasicReadDto(
+    private fun toBasicReadDto(shopReview: ShopReview) = ShopReviewSimpleReadDto(
         reviewId = shopReview.reviewId,
         reviewTitle = shopReview.reviewTitle,
         shopId = shopReview.shopId,

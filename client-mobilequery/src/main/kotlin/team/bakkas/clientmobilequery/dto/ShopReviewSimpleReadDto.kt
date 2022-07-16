@@ -7,7 +7,7 @@ import java.time.LocalDateTime
  * @author Brian
  * @since 22/06/03
  */
-data class ShopReviewBasicReadDto(
+data class ShopReviewSimpleReadDto(
     @JsonProperty("review_id")
     var reviewId: String,
     @JsonProperty("review_title")
