@@ -39,7 +39,7 @@ class ShopReviewRepository(
                         .subscribe()
                 }
             }.onErrorResume {
-                Mono.empty<ShopReview?>()
+                Mono.empty()
             }
 
         return shopReviewReactiveRedisTemplate.opsForValue().get(key)
