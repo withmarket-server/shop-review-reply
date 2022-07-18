@@ -1,13 +1,12 @@
 package team.bakkas.applicationquery.handler
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.reactor.awaitSingle
-import kotlinx.coroutines.withContext
 import org.springframework.core.CoroutinesUtils
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.*
@@ -15,6 +14,7 @@ import org.springframework.web.reactive.function.server.ServerResponse.ok
 import team.bakkas.applicationquery.service.ShopService
 import team.bakkas.clientmobilequery.dto.ShopSimpleReadDto
 import team.bakkas.common.ResultFactory
+import team.bakkas.common.error.ErrorCode
 import team.bakkas.common.exceptions.RequestParamLostException
 import team.bakkas.common.exceptions.ShopNotFoundException
 import team.bakkas.domaindynamo.entity.Shop

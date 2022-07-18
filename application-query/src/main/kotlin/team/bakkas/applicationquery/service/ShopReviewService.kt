@@ -33,14 +33,17 @@ class ShopReviewService(
     suspend fun getReviewListByShop(shopId: String, shopName: String): List<ShopReview> = withContext(Dispatchers.IO) {
         val reviewFlow = shopReviewRepository.getShopReviewListFlowByShopIdAndNameWithCaching(shopId, shopName)
 
-        // review가 하나도 존재하지 않는 경우에는 예외를 던져버린다
-        CoroutinesUtils.monoToDeferred(reviewFlow.first()).await()
-            ?: throw ShopReviewNotFoundException("Shop review is not found!!")
+        // flow에 item이 하나도 전달이 안 되는 경우의 예외 처리
+        try {
+            val firstItem = CoroutinesUtils.monoToDeferred(reviewFlow.first()).await()
+            checkNotNull(firstItem)
+        } catch (_: Exception) {
+            throw ShopReviewNotFoundException("Shop review is not found!!")
+        }
 
         val reviewList = mutableListOf<ShopReview>()
 
-        reviewFlow.buffer()
-            .collect {
+        reviewFlow.buffer().collect {
                 val review = CoroutinesUtils.monoToDeferred(it).await()
                 reviewList.add(review!!)
             }

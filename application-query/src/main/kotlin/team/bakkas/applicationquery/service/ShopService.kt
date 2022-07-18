@@ -35,10 +35,11 @@ class ShopService(
      */
     suspend fun getAllShopList(): List<Shop> = withContext(Dispatchers.IO) {
         val shopFlow = shopRepository.getAllShopsWithCaching()
-        val firstItem = CoroutinesUtils.monoToDeferred(shopFlow.first()).await()
 
-        // cache hit에 실패하거나 repository 단계에서 예외가 발생하면 empty mono가 반환되기 때문에 first item은 null일수 있는 상황이 존재함
-        checkNotNull(firstItem) {
+        try {
+            val firstItem = CoroutinesUtils.monoToDeferred(shopFlow.first()).await()
+            checkNotNull(firstItem)
+        } catch (e: Exception) {
             throw ShopNotFoundException("Shop is not found!!")
         }
 
