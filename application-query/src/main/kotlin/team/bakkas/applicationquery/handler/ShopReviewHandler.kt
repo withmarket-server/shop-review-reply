@@ -13,6 +13,7 @@ import org.springframework.web.reactive.function.server.ServerResponse
 import org.springframework.web.reactive.function.server.ServerResponse.ok
 import org.springframework.web.reactive.function.server.bodyValueAndAwait
 import org.springframework.web.reactive.function.server.queryParamOrNull
+import team.bakkas.applicationquery.service.ShopReviewService
 import team.bakkas.clientmobilequery.dto.ShopReviewSimpleReadDto
 import team.bakkas.common.ResultFactory
 import team.bakkas.common.exceptions.RequestParamLostException
@@ -23,6 +24,7 @@ import team.bakkas.domainqueryservice.repository.ShopReviewRepository
 @Component
 class ShopReviewHandler(
     private val shopReviewRepository: ShopReviewRepository,
+    private val shopReviewService: ShopReviewService,
     private val resultFactory: ResultFactory
 ) {
 
@@ -35,15 +37,11 @@ class ShopReviewHandler(
         val reviewId = request.queryParamOrNull("id") ?: throw RequestParamLostException("reviewId is lost!!")
         val reviewTitle = request.queryParamOrNull("title") ?: throw RequestParamLostException("reviewTitle is lost!!")
 
-        val reviewMono = shopReviewRepository.findShopReviewByIdAndTitleWithCaching(reviewId, reviewTitle)
-        val reviewDeferred = CoroutinesUtils.monoToDeferred(reviewMono)
+        val review = shopReviewService.findReviewByIdAndTitle(reviewId, reviewTitle)
 
-        return@coroutineScope withContext(Dispatchers.IO) {
-            reviewDeferred.await()
-        }?.let {
-            ok().contentType(MediaType.APPLICATION_JSON)
-                .bodyValueAndAwait(resultFactory.getSingleResult(toSimpleReadDto(it)))
-        } ?: throw ShopReviewNotFoundException("Shop review is not found!!")
+        return@coroutineScope ok()
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValueAndAwait(resultFactory.getSingleResult(toSimpleReadDto(review)))
     }
 
     suspend fun getReviewListByShopIdAndName(request: ServerRequest): ServerResponse = coroutineScope {
