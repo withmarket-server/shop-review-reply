@@ -8,6 +8,8 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.spyk
 import io.mockk.verify
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.reactor.mono
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -15,6 +17,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import reactor.core.publisher.Mono
 import team.bakkas.common.exceptions.ShopReviewNotFoundException
 import team.bakkas.domaindynamo.entity.ShopReview
 import team.bakkas.domainqueryservice.repository.ShopReviewRepository
@@ -85,7 +88,25 @@ internal class ShopReviewServiceTest {
         println("[[service] review를 하나 성공적으로 가져오는 메소드] passed!!")
     }
 
+    @Test
+    @DisplayName("[service] shop review를 하나도 못 가져오는 케이스 테스트")
+    fun failGetReviewList() = runBlocking {
+        // given
+        val shopId = "shop-fake-id"
+        val shopName = "shop-fake-name"
+        every { shopReviewRepository.getShopReviewListFlowByShopIdAndNameWithCaching(shopId, shopName) } returns
+                flowOf(Mono.empty())
 
+        // when
+        val exception = shouldThrow<ShopReviewNotFoundException> { shopReviewService.getReviewListByShop(shopId, shopName)}
+
+        // then
+        verify(exactly = 1) { shopReviewRepository.getShopReviewListFlowByShopIdAndNameWithCaching(shopId, shopName) }
+        coVerify(exactly = 1) { shopReviewService.getReviewListByShop(shopId, shopName) }
+        assert(exception is ShopReviewNotFoundException)
+
+        println("[[service] shop review를 하나도 못 가져오는 케이스 테스트] passed!!")
+    }
 
     private fun getMockReview(reviewId: String, reviewTitle: String, shopId: String, shopName: String) =
         ShopReview(
