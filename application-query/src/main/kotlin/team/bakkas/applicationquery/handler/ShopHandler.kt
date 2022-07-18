@@ -12,6 +12,7 @@ import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.*
 import org.springframework.web.reactive.function.server.ServerResponse.ok
+import team.bakkas.applicationquery.service.ShopService
 import team.bakkas.clientmobilequery.dto.ShopSimpleReadDto
 import team.bakkas.common.ResultFactory
 import team.bakkas.common.exceptions.RequestParamLostException
@@ -21,7 +22,7 @@ import team.bakkas.domainqueryservice.repository.ShopRepository
 
 @Component
 class ShopHandler(
-    private val shopRepository: ShopRepository,
+    private val shopService: ShopService,
     private val resultFactory: ResultFactory
 ) {
 
@@ -31,10 +32,7 @@ class ShopHandler(
         val shopId = request.queryParamOrNull("id") ?: throw RequestParamLostException("shopId is lost")
         val shopName = request.queryParamOrNull("name") ?: throw RequestParamLostException("shopName is lost")
 
-        val shopMono = shopRepository.findShopByIdAndNameWithCaching(shopId, shopName)
-        val shop = withContext(Dispatchers.IO) {
-            CoroutinesUtils.monoToDeferred(shopMono).await() ?: throw ShopNotFoundException("Shop is not found")
-        }
+        val shop = shopService.findShopByIdAndName(shopId, shopName)
 
         return@coroutineScope ok()
             .contentType(MediaType.APPLICATION_JSON)
@@ -44,22 +42,12 @@ class ShopHandler(
     // 모든 shop에 대한 list를 반환해주는 메소드
     // http://localhost:10100/v2/shop/simple/list
     suspend fun getAllShops(request: ServerRequest): ServerResponse = coroutineScope {
-        val shopFlow = shopRepository.getAllShopsWithCaching()
-        val shopList = mutableListOf<ShopSimpleReadDto>()
-
-        withContext(Dispatchers.IO) {
-            shopFlow.buffer()
-                .collect {
-                    val shop = CoroutinesUtils.monoToDeferred(it).await()
-                    shopList.add(toSimpleReadDto(shop!!))
-                }
+        val shopList = shopService.getAllShopList()
+        val shopDtoList = shopList.map {
+            toSimpleReadDto(it)
         }
 
-        check(shopList.size != 0) {
-            throw ShopNotFoundException("Shop is not found!!")
-        }
-
-        ok().bodyValueAndAwait(resultFactory.getMultipleResult(shopList))
+        ok().bodyValueAndAwait(resultFactory.getMultipleResult(shopDtoList))
     }
 
     private fun toSimpleReadDto(shop: Shop) = ShopSimpleReadDto(

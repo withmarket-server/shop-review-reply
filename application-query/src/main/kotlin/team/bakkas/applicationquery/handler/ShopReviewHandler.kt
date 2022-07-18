@@ -13,6 +13,7 @@ import org.springframework.web.reactive.function.server.ServerResponse
 import org.springframework.web.reactive.function.server.ServerResponse.ok
 import org.springframework.web.reactive.function.server.bodyValueAndAwait
 import org.springframework.web.reactive.function.server.queryParamOrNull
+import team.bakkas.applicationquery.service.ShopReviewService
 import team.bakkas.clientmobilequery.dto.ShopReviewSimpleReadDto
 import team.bakkas.common.ResultFactory
 import team.bakkas.common.exceptions.RequestParamLostException
@@ -22,52 +23,41 @@ import team.bakkas.domainqueryservice.repository.ShopReviewRepository
 
 @Component
 class ShopReviewHandler(
-    private val shopReviewRepository: ShopReviewRepository,
+    private val shopReviewService: ShopReviewService,
     private val resultFactory: ResultFactory
 ) {
 
     /** reviewId와 reviewTitle을 기반으로 review 하나를 가져오는 메소드
      * @param reviewId review의 id
      * @param reviewTitle review의 제목
+     * @throws RequestParamLostException
+     * @return ServerResponse
      */
     suspend fun findReviewByIdAndTitle(request: ServerRequest): ServerResponse = coroutineScope {
         // id와 title을 request로부터 받아오고, 존재하지 않으면 바로 에러 처리를 수행한다
         val reviewId = request.queryParamOrNull("id") ?: throw RequestParamLostException("reviewId is lost!!")
         val reviewTitle = request.queryParamOrNull("title") ?: throw RequestParamLostException("reviewTitle is lost!!")
 
-        val reviewMono = shopReviewRepository.findShopReviewByIdAndTitleWithCaching(reviewId, reviewTitle)
-        val reviewDeferred = CoroutinesUtils.monoToDeferred(reviewMono)
+        val review = shopReviewService.findReviewByIdAndTitle(reviewId, reviewTitle)
 
-        return@coroutineScope withContext(Dispatchers.IO) {
-            reviewDeferred.await()
-        }?.let {
-            ok().contentType(MediaType.APPLICATION_JSON)
-                .bodyValueAndAwait(resultFactory.getSingleResult(toSimpleReadDto(it)))
-        } ?: throw ShopReviewNotFoundException("Shop review is not found!!")
+        return@coroutineScope ok()
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValueAndAwait(resultFactory.getSingleResult(toSimpleReadDto(review)))
     }
 
+    /** shopId와 shopName을 기반으로 review의 목록을 가져오는 메소드
+     * @param shopId shop id
+     * @param shopName shop name
+     * @throws RequestParamLostException
+     * @return ServerResponse
+     */
     suspend fun getReviewListByShopIdAndName(request: ServerRequest): ServerResponse = coroutineScope {
         // query param으로부터 shopId와 shopName을 받아오고, 없으면 예외처리
         val shopId = request.queryParamOrNull("shop-id") ?: throw RequestParamLostException("shopId is lost!!")
         val shopName = request.queryParamOrNull("shop-name") ?: throw RequestParamLostException("shopName is lost!!")
 
-        val reviewDtoList = mutableListOf<ShopReviewSimpleReadDto>()
-        val reviewFlow = shopReviewRepository.getShopReviewListFlowByShopIdAndNameWithCaching(shopId, shopName)
-
-        // 비동기적으로 reviewDtoList에 원소를 담는다
-        withContext(Dispatchers.IO) {
-            reviewFlow.buffer()
-                .collect {
-                    val reviewDeferred = CoroutinesUtils.monoToDeferred(it)
-                    val review = reviewDeferred.await()!!
-                    reviewDtoList.add(toSimpleReadDto(review))
-                }
-        }
-
-        // review가 하나도 없다면 예외 처리
-        check(reviewDtoList.size != 0) {
-            throw ShopReviewNotFoundException("shopReview is not found!!")
-        }
+        val reviewList = shopReviewService.getReviewListByShop(shopId, shopName)
+        val reviewDtoList = reviewList.map { toSimpleReadDto(it) }
 
         return@coroutineScope ok().contentType(MediaType.APPLICATION_JSON)
             .bodyValueAndAwait(resultFactory.getMultipleResult(reviewDtoList))
