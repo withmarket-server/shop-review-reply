@@ -63,8 +63,6 @@ class ShopDynamoRepository(
 
     fun findAllShop(): List<Shop> = table.scan().items().toList()
 
-    fun count(): Int = table.scan().items().stream().count().toInt()
-
     /* ==============================[Async Methods]============================== */
 
     /** shopId와 shopName을 이용해서 비동기식으로 아이템을 가져오는 메소드

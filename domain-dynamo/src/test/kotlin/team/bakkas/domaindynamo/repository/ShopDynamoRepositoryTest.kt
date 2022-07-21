@@ -23,6 +23,7 @@ import team.bakkas.common.category.Category
 import team.bakkas.common.category.DetailCategory
 import team.bakkas.domaindynamo.entity.Shop
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.util.*
 
 @SpringBootTest
@@ -228,8 +229,8 @@ internal class ShopDynamoRepositoryTest @Autowired constructor(
         shopId = shopId,
         shopName = shopName,
         isOpen = isOpen,
-        openTime = LocalDateTime.now(),
-        closeTime = LocalDateTime.now(),
+        openTime = LocalTime.now(),
+        closeTime = LocalTime.now(),
         createdAt = LocalDateTime.now(),
         averageScore = 0.0,
         latitude = 35.838597,

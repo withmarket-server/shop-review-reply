@@ -27,6 +27,7 @@ import team.bakkas.common.exceptions.ShopNotFoundException
 import team.bakkas.domaindynamo.entity.Shop
 import team.bakkas.domainqueryservice.repository.ShopRepository
 import java.time.LocalDateTime
+import java.time.LocalTime
 
 /**
  * ShopService에 대한 Mock test를 수행하는 클래스
@@ -174,8 +175,8 @@ internal class ShopServiceTest {
         shopId = shopId,
         shopName = shopName,
         isOpen = isOpen,
-        openTime = LocalDateTime.now(),
-        closeTime = LocalDateTime.now(),
+        openTime = LocalTime.now(),
+        closeTime = LocalTime.now(),
         createdAt = LocalDateTime.now(),
         averageScore = 0.0,
         latitude = 35.838597,

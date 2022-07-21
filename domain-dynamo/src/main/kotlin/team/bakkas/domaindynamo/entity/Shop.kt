@@ -8,6 +8,7 @@ import team.bakkas.common.category.Category
 import team.bakkas.common.category.DetailCategory
 import java.io.Serializable
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.util.*
 
 // TODO isBranch, branch attribute 추가
@@ -26,9 +27,9 @@ data class Shop(
     @get:DynamoDbAttribute("is_open")
     var isOpen: Boolean,
     @get:DynamoDbAttribute("open_time")
-    var openTime: LocalDateTime,
+    var openTime: LocalTime,
     @get:DynamoDbAttribute("close_time")
-    var closeTime: LocalDateTime,
+    var closeTime: LocalTime,
     @get:DynamoDbAttribute("lot_number_address")
     var lotNumberAddress: String,
     @get:DynamoDbAttribute("road_name_address")
