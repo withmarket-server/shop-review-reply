@@ -13,6 +13,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.core.CoroutinesUtils
 import org.springframework.test.annotation.Rollback
 import org.springframework.util.StopWatch
 import reactor.core.publisher.Mono
@@ -28,7 +29,7 @@ import java.util.*
 
 @SpringBootTest
 internal class ShopDynamoRepositoryTest @Autowired constructor(
-    private val shopRepository: ShopDynamoRepository,
+    private val shopDynamoRepository: ShopDynamoRepository,
     private val dynamoDbEnhancedAsyncClient: DynamoDbEnhancedAsyncClient
 ) {
 
@@ -39,7 +40,7 @@ internal class ShopDynamoRepositoryTest @Autowired constructor(
     fun createShop(shopId: String, shopName: String, isOpen: Boolean) {
         val mockShop = getMockShop(UUID.randomUUID().toString(), shopName, isOpen)
 
-        val shop = shopRepository.createShop(mockShop)
+        val shop = shopDynamoRepository.createShop(mockShop)
 
         println(shop)
     }
@@ -48,7 +49,7 @@ internal class ShopDynamoRepositoryTest @Autowired constructor(
     @CsvSource(value = ["33daf043-7f36-4a52-b791-018f9d5eb218:역전할머니맥주 영남대점"], delimiter = ':')
     @DisplayName("Shop 하나를 찾아온다")
     fun findOneShop(shopId: String, shopName: String) {
-        val foundShop = shopRepository.findShopByIdAndName(shopId, shopName)
+        val foundShop = shopDynamoRepository.findShopByIdAndName(shopId, shopName)
 
         assertNotNull(foundShop)
         with(foundShop!!) {
@@ -67,7 +68,7 @@ internal class ShopDynamoRepositoryTest @Autowired constructor(
         val stopWatch = StopWatch()
         stopWatch.start()
 
-        var foundShop = shopRepository.findShopByIdAndName(shopId, shopName)
+        var foundShop = shopDynamoRepository.findShopByIdAndName(shopId, shopName)
 
         stopWatch.stop()
 
@@ -88,7 +89,7 @@ internal class ShopDynamoRepositoryTest @Autowired constructor(
         val stopWatch = StopWatch()
         stopWatch.start()
 
-        val shopList = shopRepository.findAllShop()
+        val shopList = shopDynamoRepository.findAllShop()
 
         stopWatch.stop()
 
@@ -100,7 +101,7 @@ internal class ShopDynamoRepositoryTest @Autowired constructor(
     @ParameterizedTest
     @CsvSource(value = ["6b0999de-0bf1-4378-bd32-4ac808c2ae45:Hash"], delimiter = ':')
     fun deleteOneShop(shopId: String, shopName: String) {
-        shopRepository.deleteShop(shopId, shopName)
+        shopDynamoRepository.deleteShop(shopId, shopName)
 
         println("Test passed!!")
     }
@@ -142,7 +143,7 @@ internal class ShopDynamoRepositoryTest @Autowired constructor(
     @CsvSource(value = ["33daf043-7f36-4a52-b791-018f9d5eb218:역전할머니맥주 영남대점"], delimiter = ':')
     @DisplayName("작성된 findShopByIdAndNameAsync 메소드의 성공 테스트")
     fun findShopByIdAndNameAsyncSuccess(shopId: String, shopName: String): Unit = runBlocking {
-        val shopMono = shopRepository.findShopByIdAndNameAsync(shopId, shopName)
+        val shopMono = shopDynamoRepository.findShopByIdAndNameAsync(shopId, shopName)
         val foundShop: Shop? = shopMono.awaitSingleOrNull()
 
         assertNotNull(foundShop)
@@ -158,7 +159,7 @@ internal class ShopDynamoRepositoryTest @Autowired constructor(
     @CsvSource(value = ["33daf043-7f36-4a52-b791-018f9d5eb218:가짜할머니맥주 영남대점"], delimiter = ':')
     @DisplayName("작성된 findShopByIdAndNameAsync 메소드의 실패 테스트 (잘못된 가게 이름)")
     fun findShopByIdAndNameAsyncFail1(shopId: String, shopName: String): Unit = runBlocking {
-        val shopMono = shopRepository.findShopByIdAndNameAsync(shopId, shopName)
+        val shopMono = shopDynamoRepository.findShopByIdAndNameAsync(shopId, shopName)
         val foundShop: Shop? = shopMono.awaitSingleOrNull()
 
         assertNull(foundShop)
@@ -170,7 +171,7 @@ internal class ShopDynamoRepositoryTest @Autowired constructor(
     @CsvSource(value = ["xxxxxx-7f36-4a52-b791-018f9d5eb218:역전할머니맥주 영남대점"], delimiter = ':')
     @DisplayName("작성된 findShopByIdAndNameAsync 메소드의 실패 테스트(잘못된 shopId)")
     fun findShopByIdAndNameAsyncFail2(shopId: String, shopName: String): Unit = runBlocking {
-        val shopMono = shopRepository.findShopByIdAndNameAsync(shopId, shopName)
+        val shopMono = shopDynamoRepository.findShopByIdAndNameAsync(shopId, shopName)
         val foundShop: Shop? = shopMono.awaitSingleOrNull()
 
         assertNull(foundShop)
@@ -220,6 +221,18 @@ internal class ShopDynamoRepositoryTest @Autowired constructor(
         println(shopNameList)
     }
 
+    @ParameterizedTest
+    @CsvSource(value = ["ec5678-test002:나이스마트:false"], delimiter = ':')
+    @DisplayName("Shop 하나를 생성한다")
+    @Rollback(value = false)
+    fun createShopAsync(shopId: String, shopName: String, isOpen: Boolean): Unit = runBlocking {
+        val mockShop = getMockShop(UUID.randomUUID().toString(), shopName, isOpen)
+
+        val createdShopMono = shopDynamoRepository.createShopAsync(mockShop)
+
+        CoroutinesUtils.monoToDeferred(createdShopMono).await()
+    }
+
     fun generateKey(shopId: String, shopName: String) = Key.builder()
         .partitionValue(shopId)
         .sortValue(shopName)
@@ -233,18 +246,18 @@ internal class ShopDynamoRepositoryTest @Autowired constructor(
         closeTime = LocalTime.now(),
         createdAt = LocalDateTime.now(),
         averageScore = 0.0,
-        latitude = 35.838597,
-        longitude = 128.756576,
-        lotNumberAddress = "경상북도 경산시 조영동 307-1",
-        roadNameAddress = "경상북도 경산시 대학로 318",
+        latitude = 35.838954,
+        longitude = 128.755997,
+        lotNumberAddress = "경상북도 경산시 북부동 305-13",
+        roadNameAddress = "경상북도 경산시 대학로 321 1층",
         reviewNumber = 0,
         updatedAt = null,
         mainImage = "https://withmarket-image-bucket.s3.ap-northeast-2.amazonaws.com/c247bc62-e17f-43c1-90e9-60d566faaa3e.jpeg",
         representativeImageList = listOf("https://withmarket-image-bucket.s3.ap-northeast-2.amazonaws.com/c2570a85-1da7-4fec-9754-52a178e2abf5.jpeg"),
         isBranch = false,
         branchName = null,
-        shopDescription = "포오오스 마트!",
-        shopCategory = Category.ETC,
-        shopDetailCategory = DetailCategory.ETC_ALL
+        shopDescription = "삼겹살라면 존맛",
+        shopCategory = Category.MART,
+        shopDetailCategory = DetailCategory.SUPER_MARKET
     )
 }

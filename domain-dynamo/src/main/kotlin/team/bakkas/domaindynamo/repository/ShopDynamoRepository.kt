@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.reactive.asFlow
+import org.springframework.core.CoroutinesUtils
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbAsyncTable
@@ -81,6 +82,12 @@ class ShopDynamoRepository(
         return shopPublisher.asFlow().map {
             Pair(it.shopId, it.shopName)
         }
+    }
+
+    // shop을 하나 생성해주는 메소드
+    fun createShopAsync(shop: Shop): Mono<Void> {
+        val shopFuture = asyncTable.putItem(shop)
+        return Mono.fromFuture(shopFuture)
     }
 
     private fun generateKey(shopId: String, shopName: String): Key = Key.builder()
