@@ -5,6 +5,7 @@ include(
     ":domain-dynamo",
     ":domain-redis",
     ":domain-service",
+    ":domain-shopcommand",
     ":common",
     ":client-mobilequery",
     ":client-kafka"
