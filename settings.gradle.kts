@@ -6,5 +6,6 @@ include(
     ":domain-redis",
     ":domain-service",
     ":common",
-    ":client-mobilequery"
+    ":client-mobilequery",
+    ":client-kafka"
 )
