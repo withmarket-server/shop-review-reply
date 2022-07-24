@@ -30,7 +30,7 @@ data class ShopSimpleReadDto(
     @JsonProperty("review_number")
     var reviewNumber: Int,
     @JsonProperty("main_image")
-    var mainImage: String,
+    var mainImage: String?,
     @JsonProperty("description")
     var shopDescription: String?,
     @JsonProperty("category")

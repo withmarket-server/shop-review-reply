@@ -12,8 +12,6 @@ import java.time.LocalTime
 data class ShopCreateDto(
     @JsonProperty("shop_name")
     var shopName: String,
-    @JsonProperty("is_open")
-    var isOpen: Boolean = false,
     @JsonProperty("open_time")
     var openTime: LocalTime,
     @JsonProperty("close_time")
@@ -26,12 +24,6 @@ data class ShopCreateDto(
     var latitude: Double,
     @JsonProperty("longitude")
     var longitude: Double,
-    @JsonProperty("updated_at")
-    var updatedAt: LocalDateTime? = null,
-    @JsonProperty("average_score")
-    var averageScore: Double = 0.0,
-    @JsonProperty("review_number")
-    var reviewNumber: Int = 0,
     @JsonProperty("shop_description")
     var shopDescription: String,
     @JsonProperty("is_branch")
