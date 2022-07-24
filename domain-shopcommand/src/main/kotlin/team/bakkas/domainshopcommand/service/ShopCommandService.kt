@@ -1,6 +1,9 @@
 package team.bakkas.domainshopcommand.service
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Service
+import team.bakkas.clientcommand.dto.shop.ShopCreateDto
 import team.bakkas.domaindynamo.repository.ShopDynamoRepository
 
 @Service
@@ -9,6 +12,9 @@ class ShopCommandService(
 ) {
 
     // TODO shop을 생성하는 메소드
+    suspend fun createShop(shopCreateDto: ShopCreateDto) = withContext(Dispatchers.IO) {
+
+    }
 
     // TODO shop을 수정하는 메소드
 
