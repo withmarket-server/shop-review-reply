@@ -7,6 +7,7 @@ include(
     ":domain-service",
     ":domain-shopcommand",
     ":common",
-    ":client-mobilequery",
+    ":client-query",
+    ":client-command",
     ":client-kafka"
 )

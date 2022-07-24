@@ -7,7 +7,7 @@ extra["springCloudVersion"] = "2021.0.2"
 
 dependencies {
     // 모듈 간 의존관계 주입
-    api(project(":client-mobilequery"))
+    api(project(":client-query"))
     api(project(":domain-dynamo"))
     api(project(":common"))
 
