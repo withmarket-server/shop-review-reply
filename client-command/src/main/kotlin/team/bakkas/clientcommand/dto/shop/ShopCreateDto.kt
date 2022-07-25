@@ -3,7 +3,6 @@ package team.bakkas.clientcommand.dto.shop
 import com.fasterxml.jackson.annotation.JsonProperty
 import team.bakkas.common.category.Category
 import team.bakkas.common.category.DetailCategory
-import java.time.LocalDateTime
 import java.time.LocalTime
 
 /** Shop을 생성하는데 사용하는 dto class

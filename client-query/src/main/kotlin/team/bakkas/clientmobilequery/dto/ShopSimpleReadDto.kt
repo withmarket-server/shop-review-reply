@@ -3,7 +3,6 @@ package team.bakkas.clientmobilequery.dto
 import com.fasterxml.jackson.annotation.JsonProperty
 import team.bakkas.common.category.Category
 import team.bakkas.common.category.DetailCategory
-import java.time.LocalDateTime
 
 /**
  * Shop Entity에 대한 Query용 dto (CQRS 패턴 적용에 대비하기 위해서 command와 분리를 의식적으로 시켜둠)

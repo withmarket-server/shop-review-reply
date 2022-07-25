@@ -1,19 +1,21 @@
 package team.bakkas.domainshopcommand.service
 
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.common.runBlocking
+import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.spyk
-import org.junit.jupiter.api.Assertions.*
+import kotlinx.coroutines.reactor.mono
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
+import reactor.core.publisher.Mono
 import team.bakkas.clientcommand.dto.shop.ShopCreateDto
 import team.bakkas.common.category.Category
 import team.bakkas.common.category.DetailCategory
+import team.bakkas.common.exceptions.RegionNotKoreaException
 import team.bakkas.domaindynamo.entity.Shop
 import team.bakkas.domaindynamo.repository.ShopDynamoRepository
 import java.time.LocalDateTime
@@ -39,10 +41,24 @@ internal class ShopCommandServiceTest {
     fun failCreateShopTest1(): Unit = runBlocking {
         // given
         val fakeLatitude = 90.0
+        val fakeLongitude = 34.0
+
+        val mockShopDto = generateDto().apply {
+            latitude = fakeLatitude
+            longitude = fakeLongitude
+        }
+        val mockShop = generateShopFromDto(mockShopDto, "fake-image", mutableListOf("fake-image-1", "fake-image-2"))
+
+        every { shopDynamoRepository.createShopAsync(mockShop) } returns Mono.empty()
 
         // when
+        val exception =
+            shouldThrow<RegionNotKoreaException> { shopCommandService.createShop(mockShopDto, "f", listOf("f", "g")) }
 
         // then
+        assert(exception is RegionNotKoreaException)
+
+        println("Test passed!!")
     }
 
     // create test용 dto를 생성해내는 메소드

@@ -9,7 +9,6 @@ dependencies {
     // 모듈 간 의존관계 주입
     api(project(":client-query"))
     api(project(":domain-dynamo"))
-    api(project(":common"))
 
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.junit.jupiter:junit-jupiter:5.8.1")
