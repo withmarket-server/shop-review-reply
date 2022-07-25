@@ -12,19 +12,20 @@ import team.bakkas.domaindynamo.repository.ShopDynamoRepository
 import java.time.LocalDateTime
 import java.util.UUID
 
+/** shop의 command query를 담당하는 비지니스 로직을 정의하는 service 클래스
+ * @param shopDynamoRepository dynamoDB에 접근하는데 사용하는 Data access layer의 repository
+ */
 @Service
 class ShopCommandService(
     private val shopDynamoRepository: ShopDynamoRepository
 ) {
 
-    // shop을 생성하는 비지니스 로직을 정의하는 메소드
-    suspend fun createShop(
-        shopCreateDto: ShopCreateDto,
-        mainImageUrl: String,
-        representativeImageUrlList: List<String>
-    ): Shop = withContext(Dispatchers.IO) {
+    /** shop을 생성하는 비지니스 로직을 정의하는 메소드
+     * @param shopCreateDto shop을 create 하는데 사용하는 dto parameter
+     */
+    suspend fun createShop(shopCreateDto: ShopCreateDto): Shop = withContext(Dispatchers.IO) {
 
-        // 예외 처리
+        // TODO 코드의 응집성을 위해서 validator로 뽑아내기
         with(shopCreateDto) {
             // 1. latitude, longitude가 우리나라 지역이 아닌 경우에 대한 예외 처리
             check(isInSouthKorea(latitude, longitude)) {
@@ -37,7 +38,7 @@ class ShopCommandService(
             }
         }
 
-        val generatedShop = generateShopFromDto(shopCreateDto, mainImageUrl, representativeImageUrlList)
+        val generatedShop = generateShopFromDto(shopCreateDto)
         val shopMono = shopDynamoRepository.createShopAsync(generatedShop)
         val shopDeferred = CoroutinesUtils.monoToDeferred(shopMono)
 
@@ -59,9 +60,7 @@ class ShopCommandService(
     }
 
     private fun generateShopFromDto(
-        shopDto: ShopCreateDto,
-        mainImageUrl: String,
-        representativeImageUrlList: List<String>
+        shopDto: ShopCreateDto
     ) = Shop(
         shopId = UUID.randomUUID().toString(),
         shopName = shopDto.shopName,
@@ -76,8 +75,8 @@ class ShopCommandService(
         branchName = shopDto.branchName,
         shopCategory = shopDto.shopCategory,
         shopDetailCategory = shopDto.shopDetailCategory,
-        mainImage = mainImageUrl,
-        representativeImageList = representativeImageUrlList,
+        mainImage = shopDto.mainImageUrl,
+        representativeImageList = shopDto.representativeImageUrlList,
         createdAt = LocalDateTime.now(),
         averageScore = 0.0,
         isOpen = false,

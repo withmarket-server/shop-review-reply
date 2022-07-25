@@ -54,16 +54,16 @@ internal class ShopCommandServiceTest {
             latitude = fakeLatitude
             longitude = fakeLongitude
         }
-        val mockShop = generateShopFromDto(mockShopDto, "fake-image", mutableListOf("fake-image-1", "fake-image-2"))
+        val mockShop = generateShopFromDto(mockShopDto)
 
         every { shopDynamoRepository.createShopAsync(mockShop) } returns Mono.empty()
 
         // when
         val exception =
-            shouldThrow<RegionNotKoreaException> { shopCommandService.createShop(mockShopDto, "f", listOf("f", "g")) }
+            shouldThrow<RegionNotKoreaException> { shopCommandService.createShop(mockShopDto) }
 
         // then
-        coVerify(exactly = 1) { shopCommandService.createShop(mockShopDto, "f", listOf("f", "g")) }
+        coVerify(exactly = 1) { shopCommandService.createShop(mockShopDto) }
         assert(exception is RegionNotKoreaException)
 
         println("Test passed!!")
@@ -77,19 +77,15 @@ internal class ShopCommandServiceTest {
             isBranch = false
             branchName = "분점 정보"
         }
-        val mockShop = generateShopFromDto(mockShopDto, "fake-image", mutableListOf("fake-image-1", "fake-image-2"))
+        val mockShop = generateShopFromDto(mockShopDto)
 
         // when
         val exception = shouldThrow<ShopBranchInfoInvalidException> {
-            shopCommandService.createShop(
-                mockShopDto,
-                "f",
-                listOf("f", "g")
-            )
+            shopCommandService.createShop(mockShopDto)
         }
 
         // then
-        coVerify(exactly = 1) { shopCommandService.createShop(mockShopDto, "f", listOf("f", "g")) }
+        coVerify(exactly = 1) { shopCommandService.createShop(mockShopDto) }
         assert(exception is ShopBranchInfoInvalidException)
 
         println("Test passed!!")
@@ -103,19 +99,15 @@ internal class ShopCommandServiceTest {
             isBranch = true
             branchName = null
         }
-        val mockShop = generateShopFromDto(mockShopDto, "fake-image", mutableListOf("fake-image-1", "fake-image-2"))
+        val mockShop = generateShopFromDto(mockShopDto)
 
         // when
         val exception = shouldThrow<ShopBranchInfoInvalidException> {
-            shopCommandService.createShop(
-                mockShopDto,
-                "fake-image",
-                listOf("fake-image-1", "fake-image-2")
-            )
+            shopCommandService.createShop(mockShopDto)
         }
 
         // then
-        coVerify(exactly = 1) { shopCommandService.createShop(mockShopDto, "fake-image", listOf("fake-image-1", "fake-image-2")) }
+        coVerify(exactly = 1) { shopCommandService.createShop(mockShopDto) }
         assert(exception is ShopBranchInfoInvalidException)
 
         println("Test passed!!")
@@ -133,14 +125,14 @@ internal class ShopCommandServiceTest {
         isBranch = false,
         shopDescription = "테스트용 가게입니다",
         shopCategory = Category.FOOD_BEVERAGE,
-        shopDetailCategory = DetailCategory.CAFE_BREAD
+        shopDetailCategory = DetailCategory.CAFE_BREAD,
+        mainImageUrl = "fake-image",
+        representativeImageUrlList = listOf("fake-image-1", "fake-image-2")
     )
 
     // dto로부터 shop을 생성해주는 메소드
     private fun generateShopFromDto(
-        shopDto: ShopCreateDto,
-        mainImageUrl: String,
-        representativeImageUrlList: List<String>
+        shopDto: ShopCreateDto
     ) = Shop(
         shopId = UUID.randomUUID().toString(),
         shopName = shopDto.shopName,
@@ -155,8 +147,8 @@ internal class ShopCommandServiceTest {
         branchName = shopDto.branchName,
         shopCategory = shopDto.shopCategory,
         shopDetailCategory = shopDto.shopDetailCategory,
-        mainImage = mainImageUrl,
-        representativeImageList = representativeImageUrlList,
+        mainImage = shopDto.mainImageUrl,
+        representativeImageList = shopDto.representativeImageUrlList,
         createdAt = LocalDateTime.now(),
         averageScore = 0.0,
         isOpen = false,

@@ -12,6 +12,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     // spring kafka
     implementation("org.springframework.kafka:spring-kafka:2.8.6")
+
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
 tasks.register("prepareKotlinBuildScriptModel") {}

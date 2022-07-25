@@ -32,5 +32,9 @@ data class ShopCreateDto(
     @JsonProperty("shop_category")
     var shopCategory: Category,
     @JsonProperty("shop_detail_category")
-    var shopDetailCategory: DetailCategory
+    var shopDetailCategory: DetailCategory,
+    @JsonProperty("main_image_url")
+    var mainImageUrl: String?,
+    @JsonProperty("representative_image_url")
+    var representativeImageUrlList: List<String>
 )
