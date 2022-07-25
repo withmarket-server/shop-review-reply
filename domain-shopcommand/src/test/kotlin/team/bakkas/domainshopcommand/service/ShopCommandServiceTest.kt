@@ -2,20 +2,27 @@ package team.bakkas.domainshopcommand.service
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.common.runBlocking
+import io.kotest.matchers.ints.exactly
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.spyk
+import io.mockk.verify
 import kotlinx.coroutines.reactor.mono
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import reactor.core.Disposable
 import reactor.core.publisher.Mono
 import team.bakkas.clientcommand.dto.shop.ShopCreateDto
 import team.bakkas.common.category.Category
 import team.bakkas.common.category.DetailCategory
 import team.bakkas.common.exceptions.RegionNotKoreaException
+import team.bakkas.common.exceptions.ShopBranchInfoInvalidException
 import team.bakkas.domaindynamo.entity.Shop
 import team.bakkas.domaindynamo.repository.ShopDynamoRepository
 import java.time.LocalDateTime
@@ -56,7 +63,60 @@ internal class ShopCommandServiceTest {
             shouldThrow<RegionNotKoreaException> { shopCommandService.createShop(mockShopDto, "f", listOf("f", "g")) }
 
         // then
+        coVerify(exactly = 1) { shopCommandService.createShop(mockShopDto, "f", listOf("f", "g")) }
         assert(exception is RegionNotKoreaException)
+
+        println("Test passed!!")
+    }
+
+    @Test
+    @DisplayName("[create shop] 2. isBranch가 false인데 branchName이 null이 아닌 경우 실패 테스트")
+    fun failCreateShopTest2(): Unit = runBlocking {
+        // given
+        val mockShopDto = generateDto().apply {
+            isBranch = false
+            branchName = "분점 정보"
+        }
+        val mockShop = generateShopFromDto(mockShopDto, "fake-image", mutableListOf("fake-image-1", "fake-image-2"))
+
+        // when
+        val exception = shouldThrow<ShopBranchInfoInvalidException> {
+            shopCommandService.createShop(
+                mockShopDto,
+                "f",
+                listOf("f", "g")
+            )
+        }
+
+        // then
+        coVerify(exactly = 1) { shopCommandService.createShop(mockShopDto, "f", listOf("f", "g")) }
+        assert(exception is ShopBranchInfoInvalidException)
+
+        println("Test passed!!")
+    }
+
+    @Test
+    @DisplayName("[create shop] 3. isBranch가 true인데 branchName이 null인 경우 실패 테스트")
+    fun failCreateShopTest3(): Unit = runBlocking {
+        // given
+        val mockShopDto = generateDto().apply {
+            isBranch = true
+            branchName = null
+        }
+        val mockShop = generateShopFromDto(mockShopDto, "fake-image", mutableListOf("fake-image-1", "fake-image-2"))
+
+        // when
+        val exception = shouldThrow<ShopBranchInfoInvalidException> {
+            shopCommandService.createShop(
+                mockShopDto,
+                "fake-image",
+                listOf("fake-image-1", "fake-image-2")
+            )
+        }
+
+        // then
+        coVerify(exactly = 1) { shopCommandService.createShop(mockShopDto, "fake-image", listOf("fake-image-1", "fake-image-2")) }
+        assert(exception is ShopBranchInfoInvalidException)
 
         println("Test passed!!")
     }
@@ -68,8 +128,8 @@ internal class ShopCommandServiceTest {
         closeTime = LocalTime.of(18, 0),
         lotNumberAddress = "경산시 가짜동",
         roadNameAddress = "경산시 대학로",
-        latitude = 35.838597,
-        longitude = 128.756576,
+        latitude = 128.7,
+        longitude = 35.8,
         isBranch = false,
         shopDescription = "테스트용 가게입니다",
         shopCategory = Category.FOOD_BEVERAGE,

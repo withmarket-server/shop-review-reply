@@ -31,14 +31,9 @@ class ShopCommandService(
                 throw RegionNotKoreaException("주어진 좌표가 한국(South Korea)내에 존재하지 않습니다.")
             }
 
-            // 2. isBranch가 true인데 branchName이 null인 경우에 대한 예외 처리
-            check(isBranch && branchName != null) {
-                throw ShopBranchInfoInvalidException("지점에 대한 정보가 주어지지 않았습니다.")
-            }
-
-            // 3. isBranch가 false인데 branchName이 null이 아닌 경우에 대한 예외 처리
-            check(!isBranch && branchName == null) {
-                throw ShopBranchInfoInvalidException("해당 가게는 본점입니다.")
+            // 2. 지점 정보가 잘못되었는지 검증
+            check((isBranch == true && !branchName.isNullOrEmpty()) || (isBranch == false && branchName.isNullOrEmpty())) {
+                throw ShopBranchInfoInvalidException("본점/지점 정보가 잘못 주어졌습니다.")
             }
         }
 
