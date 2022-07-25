@@ -3,7 +3,7 @@ package team.bakkas.applicationcommand
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = ["team.bakkas"])
 class ApplicationCommandApplication
 
 fun main(args: Array<String>) {
