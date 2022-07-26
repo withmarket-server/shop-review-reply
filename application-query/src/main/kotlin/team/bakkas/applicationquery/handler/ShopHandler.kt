@@ -11,7 +11,7 @@ import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.*
 import org.springframework.web.reactive.function.server.ServerResponse.ok
-import team.bakkas.applicationquery.service.ShopService
+import team.bakkas.domainqueryservice.service.ShopService
 import team.bakkas.clientmobilequery.dto.ShopSimpleReadDto
 import team.bakkas.common.ResultFactory
 import team.bakkas.common.error.ErrorCode

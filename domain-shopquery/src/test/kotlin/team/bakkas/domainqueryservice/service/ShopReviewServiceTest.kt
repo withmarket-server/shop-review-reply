@@ -1,4 +1,4 @@
-package team.bakkas.applicationquery.service
+package team.bakkas.domainqueryservice.service
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.common.runBlocking
@@ -8,7 +8,6 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.spyk
 import io.mockk.verify
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.reactor.mono
 import org.junit.jupiter.api.Assertions.assertEquals

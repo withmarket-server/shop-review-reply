@@ -5,7 +5,7 @@ include(
     ":application-command",
     ":domain-dynamo",
     ":domain-redis",
-    ":domain-service",
+    ":domain-shopquery",
     ":domain-shopcommand",
     ":common",
     ":client-query",

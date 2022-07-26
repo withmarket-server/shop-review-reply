@@ -1,4 +1,4 @@
-package team.bakkas.applicationquery.service
+package team.bakkas.domainqueryservice.service
 
 import io.kotest.assertions.throwables.shouldNotThrow
 import io.kotest.assertions.throwables.shouldThrow
@@ -26,6 +26,7 @@ import team.bakkas.common.category.DetailCategory
 import team.bakkas.common.exceptions.ShopNotFoundException
 import team.bakkas.domaindynamo.entity.Shop
 import team.bakkas.domainqueryservice.repository.ShopRepository
+import team.bakkas.domainqueryservice.service.ShopService
 import java.time.LocalDateTime
 import java.time.LocalTime
 

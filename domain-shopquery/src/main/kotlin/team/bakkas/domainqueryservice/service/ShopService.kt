@@ -1,4 +1,4 @@
-package team.bakkas.applicationquery.service
+package team.bakkas.domainqueryservice.service
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
