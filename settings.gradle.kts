@@ -9,6 +9,5 @@ include(
     ":domain-shopcommand",
     ":common",
     ":client-query",
-    ":client-command",
-    ":client-kafka"
+    ":client-command"
 )

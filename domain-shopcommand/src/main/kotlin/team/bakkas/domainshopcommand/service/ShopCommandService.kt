@@ -3,6 +3,7 @@ package team.bakkas.domainshopcommand.service
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.springframework.core.CoroutinesUtils
+import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
 import team.bakkas.clientcommand.dto.shop.ShopCreateDto
 import team.bakkas.common.exceptions.RegionNotKoreaException
@@ -17,7 +18,8 @@ import java.util.UUID
  */
 @Service
 class ShopCommandService(
-    private val shopDynamoRepository: ShopDynamoRepository
+    private val shopDynamoRepository: ShopDynamoRepository,
+    private val kafkaTemplate: KafkaTemplate<String, Shop>
 ) {
 
     /** shop을 생성하는 비지니스 로직을 정의하는 메소드

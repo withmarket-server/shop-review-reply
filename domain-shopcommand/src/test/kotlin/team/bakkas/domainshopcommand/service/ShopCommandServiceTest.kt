@@ -16,6 +16,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.kafka.core.KafkaTemplate
 import reactor.core.Disposable
 import reactor.core.publisher.Mono
 import team.bakkas.clientcommand.dto.shop.ShopCreateDto
@@ -35,11 +36,14 @@ internal class ShopCommandServiceTest {
     @MockK(relaxed = true)
     private lateinit var shopDynamoRepository: ShopDynamoRepository
 
+    @MockK(relaxed = true)
+    private lateinit var kafkaTemplate: KafkaTemplate<String, Shop>
+
     private lateinit var shopCommandService: ShopCommandService
 
     @BeforeEach
     fun setUp() {
-        shopCommandService = spyk(ShopCommandService(shopDynamoRepository)) // shopCommandService를 spyK mock으로 선언
+        shopCommandService = spyk(ShopCommandService(shopDynamoRepository, kafkaTemplate)) // shopCommandService를 spyK mock으로 선언
     }
 
     // 좌표가 안 맞아서 에러가 터지는 경우 테스트
