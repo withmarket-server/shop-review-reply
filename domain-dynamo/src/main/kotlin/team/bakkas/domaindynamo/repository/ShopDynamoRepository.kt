@@ -90,6 +90,12 @@ class ShopDynamoRepository(
         return Mono.fromFuture(shopFuture)
     }
 
+    // shop을 제거하는 메소드
+    fun deleteShopAsync(shopId: String, shopName: String): Mono<Shop> {
+        val deleteShopFuture = asyncTable.deleteItem(generateKey(shopId, shopName))
+        return Mono.fromFuture(deleteShopFuture)
+    }
+
     private fun generateKey(shopId: String, shopName: String): Key = Key.builder()
         .partitionValue(shopId)
         .sortValue(shopName)

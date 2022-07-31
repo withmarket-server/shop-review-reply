@@ -47,7 +47,7 @@ data class Shop(
     @get:DynamoDbAttribute("review_number")
     var reviewNumber: Int,
     @get:DynamoDbAttribute("main_image")
-    var mainImage: String,
+    var mainImage: String?,
     @get:DynamoDbAttribute("representative_image_list")
     var representativeImageList: List<String>,
     @get:DynamoDbAttribute("shop_description")

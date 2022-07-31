@@ -6,8 +6,8 @@ plugins {
 extra["springCloudVersion"] = "2021.0.2"
 
 dependencies {
-    // 모듈 간 의존관계 주입
-    api(project(":domain-shopquery"))
+
+    api(project(":domain-shopcommand"))
 
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     testImplementation("org.springframework.boot:spring-boot-starter-test")

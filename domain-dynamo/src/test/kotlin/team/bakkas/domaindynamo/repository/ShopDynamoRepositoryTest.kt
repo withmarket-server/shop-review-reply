@@ -233,6 +233,37 @@ internal class ShopDynamoRepositoryTest @Autowired constructor(
         CoroutinesUtils.monoToDeferred(createdShopMono).await()
     }
 
+    @ParameterizedTest
+    @CsvSource(value = ["xxxxxxxx-ffa9-4ae3-ab84-f64307802c66:포스마트"], delimiter = ':')
+    @DisplayName("Shop 하나를 제거하는데 실패한다")
+    @Rollback(value = false)
+    fun deleteShopAsyncFail(shopId: String, shopName: String): Unit = runBlocking {
+        val deleteShopMono = shopDynamoRepository.deleteShopAsync(shopId, shopName)
+        val deletedShop = CoroutinesUtils.monoToDeferred(deleteShopMono).await()
+
+        assertNull(deletedShop)
+
+        println("Test passed!!")
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = ["93e2b356-ffa9-4ae3-ab84-f64307802c66:포스마트"], delimiter = ':')
+    @DisplayName("Shop 하나를 제거하는데 성공한다")
+    fun deleteShopAsyncSuccess(shopId: String, shopName: String): Unit = runBlocking {
+        val deleteShopMono = shopDynamoRepository.deleteShopAsync(shopId, shopName)
+        val deletedShop = CoroutinesUtils.monoToDeferred(deleteShopMono).await()
+
+        // then
+        assertNotNull(deletedShop)
+        with(deletedShop) {
+            assertEquals(this.shopId, shopId)
+            assertEquals(this.shopName, shopName)
+        }
+
+        println("Test passed!!")
+        println(deletedShop)
+    }
+
     fun generateKey(shopId: String, shopName: String) = Key.builder()
         .partitionValue(shopId)
         .sortValue(shopName)

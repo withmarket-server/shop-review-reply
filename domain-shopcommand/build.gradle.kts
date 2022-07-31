@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     kotlin("jvm")
     kotlin("plugin.spring")
@@ -6,17 +8,22 @@ plugins {
 extra["springCloudVersion"] = "2021.0.2"
 
 dependencies {
-    // 모듈 간 의존관계 주입
-    api(project(":domain-shopquery"))
+    api(project(":domain-dynamo"))
+    api(project(":client-command"))
 
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation(kotlin("stdlib-jdk8"))
+    implementation(kotlin("reflect"))
     implementation("org.springframework.boot:spring-boot-starter-webflux")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    implementation("org.springframework.kafka:spring-kafka:2.8.6")
 
     implementation("org.springframework.cloud:spring-cloud-starter-config")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.6.3")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.3")
+
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
 
     // mockk
     testImplementation("io.mockk:mockk:1.12.0")
@@ -31,4 +38,4 @@ dependencyManagement {
     }
 }
 
-tasks.register("prepareKotlinBuildScriptModel"){}
+tasks.register("prepareKotlinBuildScriptModel") {}
