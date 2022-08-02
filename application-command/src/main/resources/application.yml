@@ -1,0 +1,6 @@
+server:
+  port: 10101
+
+spring:
+  profiles:
+    active: localdynamo, localcache, serverkafka

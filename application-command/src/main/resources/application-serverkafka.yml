@@ -1,0 +1,12 @@
+spring:
+  kafka:
+    producer:
+      bootstrap-servers: 43.200.107.196:9092,43.200.107.196:9093,43.200.107.196:9094
+      acks: all
+
+    consumer:
+      bootstrap-servers: 43.200.107.196:9092,43.200.107.196:9093,43.200.107.196:9094
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: team.bakkas.domaindynamo.entity

@@ -4,7 +4,3 @@ server:
 spring:
   profiles:
     active: localdynamo, localcache
-
-  mvc:
-    pathmatch:
-      matching-strategy: ant_path_matcher # swagger ui를 사용허기 위한 설정
