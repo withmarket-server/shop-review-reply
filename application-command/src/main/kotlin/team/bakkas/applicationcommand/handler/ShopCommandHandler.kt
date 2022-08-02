@@ -3,14 +3,15 @@ package team.bakkas.applicationcommand.handler
 import kotlinx.coroutines.coroutineScope
 import org.springframework.core.CoroutinesUtils
 import org.springframework.http.MediaType
+import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Component
-import org.springframework.web.reactive.function.server.ServerRequest
-import org.springframework.web.reactive.function.server.ServerResponse
+import org.springframework.web.reactive.function.server.*
 import org.springframework.web.reactive.function.server.ServerResponse.ok
-import org.springframework.web.reactive.function.server.bodyToMono
-import org.springframework.web.reactive.function.server.bodyValueAndAwait
+import reactor.core.publisher.Mono
 import team.bakkas.clientcommand.dto.shop.ShopCreateDto
 import team.bakkas.common.ResultFactory
+import team.bakkas.common.exceptions.RequestBodyLostException
+import team.bakkas.domaindynamo.entity.Shop
 import team.bakkas.domainshopcommand.service.ShopCommandService
 
 /** shop에 대한 command 로직을 담당하는 handler 클래스
@@ -20,19 +21,27 @@ import team.bakkas.domainshopcommand.service.ShopCommandService
 @Component
 class ShopCommandHandler(
     private val shopCommandService: ShopCommandService,
+    private val shopKafkaTemplate: KafkaTemplate<String, Shop>,
     private val resultFactory: ResultFactory
 ) {
 
-    // shop을 생성하는 메소드
+    companion object {
+        val shopCreateTopic = "withmarket.shop.create"
+    }
+
+    /** shop을 하나 생성하는 메소드
+     * @param request shop 생성에 관한 request
+     * @return ServerResponse
+     */
     suspend fun createShop(request: ServerRequest): ServerResponse = coroutineScope {
-        val shopDtoMono = request.bodyToMono<ShopCreateDto>()
-        val shopDtoDeferred = CoroutinesUtils.monoToDeferred(shopDtoMono)
+        val shopDtoMono = request.bodyToMono(ShopCreateDto::class.java)
+        val shopDto = CoroutinesUtils.monoToDeferred(shopDtoMono).await()
 
         // shop을 생성
-        val createdShop = shopCommandService.createShop(shopDtoDeferred.await())
+        val createdShop = shopCommandService.createShop(shopDto)
 
-        // TODO kafka message를 produce하여 redis에다가 캐시를 반영시킨다
-
+        // Kafka에다가 생성된 shop을 메시지로 전송하여 consume하는 쪽에서 redis에 캐싱하도록 구현한다
+        shopKafkaTemplate.send(shopCreateTopic, createdShop)
 
         return@coroutineScope ok().contentType(MediaType.APPLICATION_JSON)
             .bodyValueAndAwait(resultFactory.getSuccessResult())
