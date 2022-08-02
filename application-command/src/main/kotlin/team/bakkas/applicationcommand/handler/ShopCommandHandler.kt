@@ -1,6 +1,7 @@
 package team.bakkas.applicationcommand.handler
 
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.springframework.core.CoroutinesUtils
 import org.springframework.http.MediaType
 import org.springframework.kafka.core.KafkaTemplate
@@ -34,11 +35,16 @@ class ShopCommandHandler(
      * @return ServerResponse
      */
     suspend fun createShop(request: ServerRequest): ServerResponse = coroutineScope {
-        val shopDtoMono = request.bodyToMono(ShopCreateDto::class.java)
-        val shopDto = CoroutinesUtils.monoToDeferred(shopDtoMono).await()
+        val shopCreateDto = request.bodyToMono(ShopCreateDto::class.java)
+            .awaitSingleOrNull()
+
+        // body가 비어서 날아오는 경우에 대한 예외 처리
+        checkNotNull(shopCreateDto) {
+            throw RequestBodyLostException("Body is lost!!")
+        }
 
         // shop을 생성
-        val createdShop = shopCommandService.createShop(shopDto)
+        val createdShop = shopCommandService.createShop(shopCreateDto)
 
         // Kafka에다가 생성된 shop을 메시지로 전송하여 consume하는 쪽에서 redis에 캐싱하도록 구현한다
         shopKafkaTemplate.send(shopCreateTopic, createdShop)
