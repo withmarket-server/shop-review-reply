@@ -21,6 +21,7 @@ import software.amazon.awssdk.enhanced.dynamodb.Key
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 import team.bakkas.domaindynamo.entity.ShopReview
+import team.bakkas.domaindynamo.repository.dynamo.ShopReviewDynamoRepository
 import java.time.LocalDateTime
 import java.util.*
 

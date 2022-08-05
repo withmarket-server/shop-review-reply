@@ -9,14 +9,15 @@ import org.springframework.transaction.annotation.Transactional
 import team.bakkas.common.exceptions.ShopNotFoundException
 import team.bakkas.domaindynamo.entity.Shop
 import team.bakkas.domainqueryservice.repository.ShopRepository
+import team.bakkas.domainqueryservice.service.ifs.ShopQueryService
 
 /** Shop에 대한 비지니스 로직을 구현하는 service layer class
  * @param shopRepository shop에 대한 cache hit이 구현된 repository
  */
 @Service
-class ShopService(
+class ShopQueryServiceImpl(
     private val shopRepository: ShopRepository
-) {
+): ShopQueryService {
 
     /** shopId와 shopName을 이용해서 shop을 가져오는 service method
      * @param shopId
@@ -25,7 +26,7 @@ class ShopService(
      * @throws ShopNotFoundException
      */
     @Transactional
-    suspend fun findShopByIdAndName(shopId: String, shopName: String): Shop = withContext(Dispatchers.IO) {
+    override suspend fun findShopByIdAndName(shopId: String, shopName: String): Shop = withContext(Dispatchers.IO) {
         val shopMono = shopRepository.findShopByIdAndNameWithCaching(shopId, shopName)
         return@withContext CoroutinesUtils.monoToDeferred(shopMono).await()
             ?: throw ShopNotFoundException("Shop is not found!!")
@@ -36,7 +37,7 @@ class ShopService(
      * @return list of shop
      */
     @Transactional
-    suspend fun getAllShopList(): List<Shop> = withContext(Dispatchers.IO) {
+    override suspend fun getAllShopList(): List<Shop> = withContext(Dispatchers.IO) {
         val shopFlow = shopRepository.getAllShopsWithCaching()
 
         try {

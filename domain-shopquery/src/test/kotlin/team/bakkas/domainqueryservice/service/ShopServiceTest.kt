@@ -2,7 +2,6 @@ package team.bakkas.domainqueryservice.service
 
 import io.kotest.assertions.throwables.shouldNotThrow
 import io.kotest.assertions.throwables.shouldThrow
-import io.kotest.matchers.shouldBe
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -10,11 +9,9 @@ import io.mockk.junit5.MockKExtension
 import io.mockk.spyk
 import io.mockk.verify
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.reactor.mono
 import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -26,7 +23,6 @@ import team.bakkas.common.category.DetailCategory
 import team.bakkas.common.exceptions.ShopNotFoundException
 import team.bakkas.domaindynamo.entity.Shop
 import team.bakkas.domainqueryservice.repository.ShopRepository
-import team.bakkas.domainqueryservice.service.ShopService
 import java.time.LocalDateTime
 import java.time.LocalTime
 
@@ -39,11 +35,11 @@ internal class ShopServiceTest {
     @MockK(relaxed = true)
     private lateinit var shopRepository: ShopRepository // mock stub 오류를 안 잡아내게 설정
 
-    private lateinit var shopService: ShopService
+    private lateinit var shopService: ShopQueryServiceImpl
 
     @BeforeEach
     fun setUp() {
-        shopService = spyk(ShopService(shopRepository)) // 실제 내부 로직을 테스트하기 위해 spyK로 선언한다
+        shopService = spyk(ShopQueryServiceImpl(shopRepository)) // 실제 내부 로직을 테스트하기 위해 spyK로 선언한다
     }
 
     // 1-1, shop이 존재하지 않는 경우 테스트 (shop에 대한 key값이 잘못되었음)

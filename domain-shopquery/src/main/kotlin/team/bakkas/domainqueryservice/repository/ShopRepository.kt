@@ -6,7 +6,7 @@ import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
 import team.bakkas.domaindynamo.entity.Shop
-import team.bakkas.domaindynamo.repository.ShopDynamoRepository
+import team.bakkas.domaindynamo.repository.dynamo.ShopDynamoRepository
 import java.time.Duration
 
 /** Cache hit 방식으로 데이터에 access하는 repository 구현

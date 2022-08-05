@@ -10,7 +10,7 @@ import team.bakkas.clientcommand.dto.shop.ShopCreateDto
 import team.bakkas.common.exceptions.RegionNotKoreaException
 import team.bakkas.common.exceptions.ShopBranchInfoInvalidException
 import team.bakkas.domaindynamo.entity.Shop
-import team.bakkas.domaindynamo.repository.ShopDynamoRepository
+import team.bakkas.domaindynamo.repository.dynamo.ShopDynamoRepository
 import team.bakkas.domainshopcommand.service.ifs.ShopCommandService
 import java.time.LocalDateTime
 import java.util.UUID

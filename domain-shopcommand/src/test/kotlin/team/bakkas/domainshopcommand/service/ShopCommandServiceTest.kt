@@ -19,7 +19,7 @@ import team.bakkas.common.category.DetailCategory
 import team.bakkas.common.exceptions.RegionNotKoreaException
 import team.bakkas.common.exceptions.ShopBranchInfoInvalidException
 import team.bakkas.domaindynamo.entity.Shop
-import team.bakkas.domaindynamo.repository.ShopDynamoRepository
+import team.bakkas.domaindynamo.repository.dynamo.ShopDynamoRepository
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.*

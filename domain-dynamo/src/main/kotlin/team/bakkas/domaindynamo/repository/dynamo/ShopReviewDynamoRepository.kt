@@ -1,9 +1,8 @@
-package team.bakkas.domaindynamo.repository
+package team.bakkas.domaindynamo.repository.dynamo
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.reactive.asFlow
-import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbAsyncTable

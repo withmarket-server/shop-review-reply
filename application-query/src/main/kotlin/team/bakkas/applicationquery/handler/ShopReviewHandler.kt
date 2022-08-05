@@ -1,11 +1,6 @@
 package team.bakkas.applicationquery.handler
 
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.buffer
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.withContext
-import org.springframework.core.CoroutinesUtils
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.ServerRequest
@@ -13,17 +8,15 @@ import org.springframework.web.reactive.function.server.ServerResponse
 import org.springframework.web.reactive.function.server.ServerResponse.ok
 import org.springframework.web.reactive.function.server.bodyValueAndAwait
 import org.springframework.web.reactive.function.server.queryParamOrNull
-import team.bakkas.domainqueryservice.service.ShopReviewService
+import team.bakkas.domainqueryservice.service.ShopReviewQueryServiceImpl
 import team.bakkas.clientmobilequery.dto.ShopReviewSimpleReadDto
 import team.bakkas.common.ResultFactory
 import team.bakkas.common.exceptions.RequestParamLostException
-import team.bakkas.common.exceptions.ShopReviewNotFoundException
 import team.bakkas.domaindynamo.entity.ShopReview
-import team.bakkas.domainqueryservice.repository.ShopReviewRepository
 
 @Component
 class ShopReviewHandler(
-    private val shopReviewService: ShopReviewService,
+    private val shopReviewService: ShopReviewQueryServiceImpl,
     private val resultFactory: ResultFactory
 ) {
 

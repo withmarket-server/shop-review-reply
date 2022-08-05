@@ -27,11 +27,11 @@ internal class ShopReviewServiceTest {
     @MockK(relaxed = true)
     private lateinit var shopReviewRepository: ShopReviewRepository
 
-    private lateinit var shopReviewService: ShopReviewService
+    private lateinit var shopReviewService: ShopReviewQueryServiceImpl
 
     @BeforeEach
     fun setUp() {
-        shopReviewService = spyk(ShopReviewService(shopReviewRepository))
+        shopReviewService = spyk(ShopReviewQueryServiceImpl(shopReviewRepository))
     }
 
     // 1-1. 잘못된 review Key로 인해서 review를 가져오지 못하는 경우 테스트
