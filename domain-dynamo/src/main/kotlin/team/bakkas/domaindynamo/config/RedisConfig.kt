@@ -1,4 +1,4 @@
-package team.bakkas.domainredis.config
+package team.bakkas.domaindynamo.config
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean

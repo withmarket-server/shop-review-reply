@@ -1,4 +1,4 @@
-package team.bakkas.domainqueryservice.templates
+package team.bakkas.domaindynamo.config
 
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
