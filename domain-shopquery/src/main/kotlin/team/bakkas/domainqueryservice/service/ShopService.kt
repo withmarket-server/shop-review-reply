@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import org.springframework.core.CoroutinesUtils
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import team.bakkas.common.exceptions.ShopNotFoundException
 import team.bakkas.domaindynamo.entity.Shop
 import team.bakkas.domainqueryservice.repository.ShopRepository
@@ -23,6 +24,7 @@ class ShopService(
      * @return @NotNull shop
      * @throws ShopNotFoundException
      */
+    @Transactional
     suspend fun findShopByIdAndName(shopId: String, shopName: String): Shop = withContext(Dispatchers.IO) {
         val shopMono = shopRepository.findShopByIdAndNameWithCaching(shopId, shopName)
         return@withContext CoroutinesUtils.monoToDeferred(shopMono).await()
@@ -33,6 +35,7 @@ class ShopService(
      * @throws ShopNotFoundException
      * @return list of shop
      */
+    @Transactional
     suspend fun getAllShopList(): List<Shop> = withContext(Dispatchers.IO) {
         val shopFlow = shopRepository.getAllShopsWithCaching()
 

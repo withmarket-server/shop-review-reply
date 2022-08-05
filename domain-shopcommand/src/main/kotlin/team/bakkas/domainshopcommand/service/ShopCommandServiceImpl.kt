@@ -5,11 +5,13 @@ import kotlinx.coroutines.withContext
 import org.springframework.core.CoroutinesUtils
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import team.bakkas.clientcommand.dto.shop.ShopCreateDto
 import team.bakkas.common.exceptions.RegionNotKoreaException
 import team.bakkas.common.exceptions.ShopBranchInfoInvalidException
 import team.bakkas.domaindynamo.entity.Shop
 import team.bakkas.domaindynamo.repository.ShopDynamoRepository
+import team.bakkas.domainshopcommand.service.ifs.ShopCommandService
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -17,15 +19,16 @@ import java.util.UUID
  * @param shopDynamoRepository dynamoDB에 접근하는데 사용하는 Data access layer의 repository
  */
 @Service
-class ShopCommandService(
+class ShopCommandServiceImpl(
     private val shopDynamoRepository: ShopDynamoRepository,
     private val kafkaTemplate: KafkaTemplate<String, Shop>
-) {
+): ShopCommandService {
 
     /** shop을 생성하는 비지니스 로직을 정의하는 메소드
      * @param shopCreateDto shop을 create 하는데 사용하는 dto parameter
      */
-    suspend fun createShop(shopCreateDto: ShopCreateDto): Shop = withContext(Dispatchers.IO) {
+    @Transactional
+    override suspend fun createShop(shopCreateDto: ShopCreateDto): Shop = withContext(Dispatchers.IO) {
 
         // TODO 코드의 응집성을 위해서 validator로 뽑아내기
         with(shopCreateDto) {

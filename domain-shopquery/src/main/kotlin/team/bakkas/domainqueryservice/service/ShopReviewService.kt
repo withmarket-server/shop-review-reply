@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import org.springframework.core.CoroutinesUtils
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import team.bakkas.common.exceptions.ShopReviewNotFoundException
 import team.bakkas.domaindynamo.entity.ShopReview
 import team.bakkas.domainqueryservice.repository.ShopReviewRepository
@@ -22,6 +23,7 @@ class ShopReviewService(
      * @throws ShopReviewNotFoundException
      * @return ShopReview
      */
+    @Transactional
     suspend fun findReviewByIdAndTitle(reviewId: String, reviewTitle: String): ShopReview =
         withContext(Dispatchers.IO) {
             val reviewMono = shopReviewRepository.findShopReviewByIdAndTitleWithCaching(reviewId, reviewTitle)
@@ -30,6 +32,7 @@ class ShopReviewService(
             return@withContext reviewDeferred.await() ?: throw ShopReviewNotFoundException("review is not found!!")
         }
 
+    @Transactional
     suspend fun getReviewListByShop(shopId: String, shopName: String): List<ShopReview> = withContext(Dispatchers.IO) {
         val reviewFlow = shopReviewRepository.getShopReviewListFlowByShopIdAndNameWithCaching(shopId, shopName)
 

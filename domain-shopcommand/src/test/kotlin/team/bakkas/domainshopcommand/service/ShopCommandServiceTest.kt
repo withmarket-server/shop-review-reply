@@ -2,22 +2,16 @@ package team.bakkas.domainshopcommand.service
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.common.runBlocking
-import io.kotest.matchers.ints.exactly
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.spyk
-import io.mockk.verify
-import kotlinx.coroutines.reactor.mono
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.kafka.core.KafkaTemplate
-import reactor.core.Disposable
 import reactor.core.publisher.Mono
 import team.bakkas.clientcommand.dto.shop.ShopCreateDto
 import team.bakkas.common.category.Category
@@ -39,11 +33,11 @@ internal class ShopCommandServiceTest {
     @MockK(relaxed = true)
     private lateinit var kafkaTemplate: KafkaTemplate<String, Shop>
 
-    private lateinit var shopCommandService: ShopCommandService
+    private lateinit var shopCommandService: ShopCommandServiceImpl
 
     @BeforeEach
     fun setUp() {
-        shopCommandService = spyk(ShopCommandService(shopDynamoRepository, kafkaTemplate)) // shopCommandService를 spyK mock으로 선언
+        shopCommandService = spyk(ShopCommandServiceImpl(shopDynamoRepository, kafkaTemplate)) // shopCommandService를 spyK mock으로 선언
     }
 
     // 좌표가 안 맞아서 에러가 터지는 경우 테스트

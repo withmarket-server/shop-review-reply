@@ -2,18 +2,16 @@ package team.bakkas.applicationcommand.handler
 
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.reactor.awaitSingleOrNull
-import org.springframework.core.CoroutinesUtils
 import org.springframework.http.MediaType
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.*
 import org.springframework.web.reactive.function.server.ServerResponse.ok
-import reactor.core.publisher.Mono
 import team.bakkas.clientcommand.dto.shop.ShopCreateDto
 import team.bakkas.common.ResultFactory
 import team.bakkas.common.exceptions.RequestBodyLostException
 import team.bakkas.domaindynamo.entity.Shop
-import team.bakkas.domainshopcommand.service.ShopCommandService
+import team.bakkas.domainshopcommand.service.ShopCommandServiceImpl
 
 /** shop에 대한 command 로직을 담당하는 handler 클래스
  * @param shopCommandService shop에 대한 command service logic을 담당하는 클래스
@@ -21,7 +19,7 @@ import team.bakkas.domainshopcommand.service.ShopCommandService
  */
 @Component
 class ShopCommandHandler(
-    private val shopCommandService: ShopCommandService,
+    private val shopCommandService: ShopCommandServiceImpl,
     private val shopKafkaTemplate: KafkaTemplate<String, Shop>,
     private val resultFactory: ResultFactory
 ) {
