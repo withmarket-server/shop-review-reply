@@ -21,6 +21,7 @@ import team.bakkas.common.exceptions.ShopBranchInfoInvalidException
 import team.bakkas.domaindynamo.entity.Shop
 import team.bakkas.domaindynamo.repository.dynamo.ShopDynamoRepository
 import team.bakkas.domaindynamo.validator.ShopValidator
+import team.bakkas.domainshopcommand.extensions.toEntity
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.*
@@ -53,7 +54,7 @@ internal class ShopCommandServiceTest {
             latitude = fakeLatitude
             longitude = fakeLongitude
         }
-        val mockShop = generateShopFromDto(mockShopDto)
+        val mockShop = mockShopDto.toEntity()
 
         every { shopDynamoRepository.createShopAsync(mockShop) } returns Mono.empty()
 
@@ -76,7 +77,6 @@ internal class ShopCommandServiceTest {
             isBranch = false
             branchName = "분점 정보"
         }
-        val mockShop = generateShopFromDto(mockShopDto)
 
         // when
         val exception = shouldThrow<ShopBranchInfoInvalidException> {
@@ -98,7 +98,6 @@ internal class ShopCommandServiceTest {
             isBranch = true
             branchName = null
         }
-        val mockShop = generateShopFromDto(mockShopDto)
 
         // when
         val exception = shouldThrow<ShopBranchInfoInvalidException> {
@@ -127,31 +126,5 @@ internal class ShopCommandServiceTest {
         shopDetailCategory = DetailCategory.CAFE_BREAD,
         mainImageUrl = "fake-image",
         representativeImageUrlList = listOf("fake-image-1", "fake-image-2")
-    )
-
-    // dto로부터 shop을 생성해주는 메소드
-    private fun generateShopFromDto(
-        shopDto: ShopCommand.ShopCreateDto
-    ) = Shop(
-        shopId = UUID.randomUUID().toString(),
-        shopName = shopDto.shopName,
-        openTime = shopDto.openTime,
-        closeTime = shopDto.closeTime,
-        lotNumberAddress = shopDto.lotNumberAddress,
-        roadNameAddress = shopDto.roadNameAddress,
-        latitude = shopDto.latitude,
-        longitude = shopDto.longitude,
-        shopDescription = shopDto.shopDescription,
-        isBranch = shopDto.isBranch,
-        branchName = shopDto.branchName,
-        shopCategory = shopDto.shopCategory,
-        shopDetailCategory = shopDto.shopDetailCategory,
-        mainImage = shopDto.mainImageUrl,
-        representativeImageList = shopDto.representativeImageUrlList,
-        createdAt = LocalDateTime.now(),
-        averageScore = 0.0,
-        isOpen = false,
-        reviewNumber = 0,
-        updatedAt = null
     )
 }

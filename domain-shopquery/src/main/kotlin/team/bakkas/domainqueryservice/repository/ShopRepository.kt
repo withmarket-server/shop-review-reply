@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
 import team.bakkas.domaindynamo.entity.Shop
 import team.bakkas.domaindynamo.repository.dynamo.ShopDynamoRepository
-import java.time.Duration
+import team.bakkas.domaindynamo.repository.redis.ShopRedisRepository
 
 /** Cache hit 방식으로 데이터에 access하는 repository 구현
  * @param shopDynamoRepository DynamoDB의 shop 테이블에 접근하는 repository
@@ -16,7 +16,7 @@ import java.time.Duration
 @Repository
 class ShopRepository(
     private val shopDynamoRepository: ShopDynamoRepository,
-    private val shopReactiveRedisTemplate: ReactiveRedisTemplate<String, Shop>
+    private val shopRedisRepository: ShopRedisRepository
 ) {
     companion object {
         // Cache를 보관할 기간을 정의
@@ -36,15 +36,14 @@ class ShopRepository(
         val alternativeShopMono: Mono<Shop?> = shopDynamoRepository.findShopByIdAndNameAsync(shopId, shopName)
             .doOnSuccess {
                 it?.let {
-                    shopReactiveRedisTemplate.opsForValue().set(key, it, Duration.ofDays(DAYS_TO_LIVE))
-                        .subscribe()
+                    shopRedisRepository.cacheShop(it).subscribe()
                 }
             }.onErrorResume {
                 Mono.empty()
             }
         // Redis에서 key에 해당하는 값을 찾지 못한경우 alternativeShopMono를 이용해 Dynamo에서 찾아온다
         // Dynamo에서 찾아오는데 성공하는 경우 동시에 Redis에 캐싱한다
-        return shopReactiveRedisTemplate.opsForValue().get(key)
+        return shopRedisRepository.findShopByKey(key)
             .switchIfEmpty(alternativeShopMono)
     }
 

@@ -24,7 +24,7 @@ class ShopReviewQueryServiceImpl(
      * @throws ShopReviewNotFoundException
      * @return ShopReview
      */
-    @Transactional
+    @Transactional(readOnly = true)
     override suspend fun findReviewByIdAndTitle(reviewId: String, reviewTitle: String): ShopReview =
         withContext(Dispatchers.IO) {
             val reviewMono = shopReviewRepository.findShopReviewByIdAndTitleWithCaching(reviewId, reviewTitle)
@@ -33,7 +33,7 @@ class ShopReviewQueryServiceImpl(
             return@withContext reviewDeferred.await() ?: throw ShopReviewNotFoundException("review is not found!!")
         }
 
-    @Transactional
+    @Transactional(readOnly = true)
     override suspend fun getReviewListByShop(shopId: String, shopName: String): List<ShopReview> = withContext(Dispatchers.IO) {
         val reviewFlow = shopReviewRepository.getShopReviewListFlowByShopIdAndNameWithCaching(shopId, shopName)
 

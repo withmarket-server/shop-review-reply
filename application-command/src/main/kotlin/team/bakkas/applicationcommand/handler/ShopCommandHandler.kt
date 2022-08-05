@@ -7,6 +7,7 @@ import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.*
 import org.springframework.web.reactive.function.server.ServerResponse.ok
+import team.bakkas.applicationcommand.kafka.KafkaTopics
 import team.bakkas.clientcommand.dto.ShopCommand
 import team.bakkas.common.ResultFactory
 import team.bakkas.common.exceptions.RequestBodyLostException
@@ -23,10 +24,6 @@ class ShopCommandHandler(
     private val shopKafkaTemplate: KafkaTemplate<String, Shop>,
     private val resultFactory: ResultFactory
 ) {
-
-    companion object {
-        val shopCreateTopic = "withmarket.shop.create"
-    }
 
     /** shop을 하나 생성하는 메소드
      * @param request shop 생성에 관한 request
@@ -45,7 +42,7 @@ class ShopCommandHandler(
         val createdShop = shopCommandService.createShop(shopCreateDto)
 
         // Kafka에다가 생성된 shop을 메시지로 전송하여 consume하는 쪽에서 redis에 캐싱하도록 구현한다
-        shopKafkaTemplate.send(shopCreateTopic, createdShop)
+        shopKafkaTemplate.send(KafkaTopics.shopCreateTopic, createdShop)
 
         return@coroutineScope ok().contentType(MediaType.APPLICATION_JSON)
             .bodyValueAndAwait(resultFactory.getSuccessResult())

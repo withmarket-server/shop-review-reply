@@ -25,7 +25,7 @@ class ShopQueryServiceImpl(
      * @return @NotNull shop
      * @throws ShopNotFoundException
      */
-    @Transactional
+    @Transactional(readOnly = true)
     override suspend fun findShopByIdAndName(shopId: String, shopName: String): Shop = withContext(Dispatchers.IO) {
         val shopMono = shopRepository.findShopByIdAndNameWithCaching(shopId, shopName)
         return@withContext CoroutinesUtils.monoToDeferred(shopMono).await()
@@ -36,7 +36,7 @@ class ShopQueryServiceImpl(
      * @throws ShopNotFoundException
      * @return list of shop
      */
-    @Transactional
+    @Transactional(readOnly = true)
     override suspend fun getAllShopList(): List<Shop> = withContext(Dispatchers.IO) {
         val shopFlow = shopRepository.getAllShopsWithCaching()
 
