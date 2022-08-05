@@ -35,7 +35,7 @@ class ShopReviewQueryServiceImpl(
 
     @Transactional
     override suspend fun getReviewListByShop(shopId: String, shopName: String): List<ShopReview> = withContext(Dispatchers.IO) {
-        val reviewFlow의 = shopReviewRepository.getShopReviewListFlowByShopIdAndNameWithCaching(shopId, shopName)
+        val reviewFlow = shopReviewRepository.getShopReviewListFlowByShopIdAndNameWithCaching(shopId, shopName)
 
         // flow에 item이 하나도 전달이 안 되는 경우의 예외 처리
         try {

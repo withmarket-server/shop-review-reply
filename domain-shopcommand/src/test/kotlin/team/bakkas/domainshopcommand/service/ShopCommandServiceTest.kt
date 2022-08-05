@@ -13,13 +13,14 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.kafka.core.KafkaTemplate
 import reactor.core.publisher.Mono
-import team.bakkas.clientcommand.dto.shop.ShopCreateDto
+import team.bakkas.clientcommand.dto.ShopCommand
 import team.bakkas.common.category.Category
 import team.bakkas.common.category.DetailCategory
 import team.bakkas.common.exceptions.RegionNotKoreaException
 import team.bakkas.common.exceptions.ShopBranchInfoInvalidException
 import team.bakkas.domaindynamo.entity.Shop
 import team.bakkas.domaindynamo.repository.dynamo.ShopDynamoRepository
+import team.bakkas.domaindynamo.validator.ShopValidator
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.*
@@ -30,14 +31,14 @@ internal class ShopCommandServiceTest {
     @MockK(relaxed = true)
     private lateinit var shopDynamoRepository: ShopDynamoRepository
 
-    @MockK(relaxed = true)
-    private lateinit var kafkaTemplate: KafkaTemplate<String, Shop>
-
+    // 실제 객체들을 활용하기 위해 spyk로 선언할 객체들
+    private lateinit var shopValidator: ShopValidator
     private lateinit var shopCommandService: ShopCommandServiceImpl
 
     @BeforeEach
     fun setUp() {
-        shopCommandService = spyk(ShopCommandServiceImpl(shopDynamoRepository, kafkaTemplate)) // shopCommandService를 spyK mock으로 선언
+        shopValidator = spyk(ShopValidator())
+        shopCommandService = spyk(ShopCommandServiceImpl(shopDynamoRepository, shopValidator)) // shopCommandService를 spyK mock으로 선언
     }
 
     // 좌표가 안 맞아서 에러가 터지는 경우 테스트
@@ -112,7 +113,7 @@ internal class ShopCommandServiceTest {
     }
 
     // create test용 dto를 생성해내는 메소드
-    private fun generateDto(): ShopCreateDto = ShopCreateDto(
+    private fun generateDto(): ShopCommand.ShopCreateDto = ShopCommand.ShopCreateDto(
         shopName = "카페 경사다",
         openTime = LocalTime.of(9, 0),
         closeTime = LocalTime.of(18, 0),
@@ -130,7 +131,7 @@ internal class ShopCommandServiceTest {
 
     // dto로부터 shop을 생성해주는 메소드
     private fun generateShopFromDto(
-        shopDto: ShopCreateDto
+        shopDto: ShopCommand.ShopCreateDto
     ) = Shop(
         shopId = UUID.randomUUID().toString(),
         shopName = shopDto.shopName,

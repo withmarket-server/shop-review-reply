@@ -7,7 +7,7 @@ import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.*
 import org.springframework.web.reactive.function.server.ServerResponse.ok
-import team.bakkas.clientcommand.dto.shop.ShopCreateDto
+import team.bakkas.clientcommand.dto.ShopCommand
 import team.bakkas.common.ResultFactory
 import team.bakkas.common.exceptions.RequestBodyLostException
 import team.bakkas.domaindynamo.entity.Shop
@@ -33,7 +33,7 @@ class ShopCommandHandler(
      * @return ServerResponse
      */
     suspend fun createShop(request: ServerRequest): ServerResponse = coroutineScope {
-        val shopCreateDto = request.bodyToMono(ShopCreateDto::class.java)
+        val shopCreateDto = request.bodyToMono(ShopCommand.ShopCreateDto::class.java)
             .awaitSingleOrNull()
 
         // body가 비어서 날아오는 경우에 대한 예외 처리
