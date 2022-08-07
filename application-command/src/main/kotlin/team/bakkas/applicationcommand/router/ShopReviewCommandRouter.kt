@@ -1,4 +1,18 @@
 package team.bakkas.applicationcommand.router
 
-class ShopReviewCommandRouter {
+import org.springframework.context.annotation.Configuration
+import org.springframework.web.reactive.function.server.coRouter
+import team.bakkas.applicationcommand.handler.ShopReviewCommandHandler
+
+// ShopReview에 대한 command end-point를 정의한 Router class
+@Configuration
+class ShopReviewCommandRouter(
+    private val shopReviewCommandHandler: ShopReviewCommandHandler
+) {
+
+    fun shopReviewCommandRoutes() = coRouter {
+        "/v2/shop-review".nest {
+            POST("/", shopReviewCommandHandler::createReview)
+        }
+    }
 }

@@ -13,6 +13,7 @@ import team.bakkas.common.ResultFactory
 import team.bakkas.common.exceptions.RequestBodyLostException
 import team.bakkas.domaindynamo.entity.Shop
 import team.bakkas.domainshopcommand.service.ShopCommandServiceImpl
+import team.bakkas.domainshopcommand.service.ifs.ShopCommandService
 
 /** shop에 대한 command 로직을 담당하는 handler 클래스
  * @param shopCommandService shop에 대한 command service logic을 담당하는 클래스
@@ -20,7 +21,7 @@ import team.bakkas.domainshopcommand.service.ShopCommandServiceImpl
  */
 @Component
 class ShopCommandHandler(
-    private val shopCommandService: ShopCommandServiceImpl,
+    private val shopCommandService: ShopCommandService,
     private val shopKafkaTemplate: KafkaTemplate<String, Shop>,
     private val resultFactory: ResultFactory
 ) {

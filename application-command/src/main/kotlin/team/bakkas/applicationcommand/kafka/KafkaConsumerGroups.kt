@@ -3,4 +3,6 @@ package team.bakkas.applicationcommand.kafka
 object KafkaConsumerGroups {
 
     const val createShopGroup = "withmarket-shop-create-group"
+
+    const val createShopReviewGroup = "withmarket-shopReview-create-group"
 }

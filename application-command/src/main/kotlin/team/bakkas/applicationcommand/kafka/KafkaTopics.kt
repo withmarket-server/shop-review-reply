@@ -4,4 +4,6 @@ package team.bakkas.applicationcommand.kafka
 object KafkaTopics {
 
     const val shopCreateTopic = "withmarket.shop.create"
+
+    const val shopReviewCreateTopic = "withmarket.shopReview.create"
 }

@@ -10,6 +10,7 @@ import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.kafka.core.ProducerFactory
 import org.springframework.kafka.support.serializer.JsonSerializer
 import team.bakkas.domaindynamo.entity.Shop
+import team.bakkas.domaindynamo.entity.ShopReview
 
 @Configuration
 class KafkaProducerConfig(
@@ -25,6 +26,18 @@ class KafkaProducerConfig(
 
     // Shop에 대한 Kafka Template를 사용하기 위한 Producer Factory
     private fun shopProducerFactory(): ProducerFactory<String, Shop> {
+        val configProps = producerConfig()
+        return DefaultKafkaProducerFactory(configProps)
+    }
+
+    // ShopRwview에 대한 Kafka Template
+    @Bean
+    fun shopReviewKafkaTemplate(): KafkaTemplate<String, ShopReview> {
+        return KafkaTemplate(shopReviewProducerFactory())
+    }
+
+    // ShopReview에 대한 Template를 사용하기 위한 Producer Factory
+    private fun shopReviewProducerFactory(): ProducerFactory<String, ShopReview> {
         val configProps = producerConfig()
         return DefaultKafkaProducerFactory(configProps)
     }
