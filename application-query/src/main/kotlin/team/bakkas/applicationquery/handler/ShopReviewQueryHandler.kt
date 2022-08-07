@@ -15,7 +15,7 @@ import team.bakkas.common.exceptions.RequestParamLostException
 import team.bakkas.domaindynamo.entity.ShopReview
 
 @Component
-class ShopReviewHandler(
+class ShopReviewQueryHandler(
     private val shopReviewService: ShopReviewQueryServiceImpl,
     private val resultFactory: ResultFactory
 ) {

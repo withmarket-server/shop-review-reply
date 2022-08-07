@@ -2,14 +2,12 @@ package team.bakkas.applicationquery.router
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.web.reactive.config.EnableWebFlux
-import org.springframework.web.reactive.function.server.RequestPredicates
 import org.springframework.web.reactive.function.server.coRouter
-import team.bakkas.applicationquery.handler.ShopHandler
+import team.bakkas.applicationquery.handler.ShopQueryHandler
 
 @Configuration
-class ShopRouter(
-    private val shopHandler: ShopHandler
+class ShopQueryRouter(
+    private val shopHandler: ShopQueryHandler
 ) {
 
     @Bean

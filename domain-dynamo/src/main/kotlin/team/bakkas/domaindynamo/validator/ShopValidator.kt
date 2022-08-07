@@ -7,7 +7,7 @@ import org.springframework.validation.ValidationUtils
 import org.springframework.validation.Validator
 import team.bakkas.common.exceptions.RegionNotKoreaException
 import team.bakkas.common.exceptions.RequestFieldException
-import team.bakkas.common.exceptions.ShopBranchInfoInvalidException
+import team.bakkas.common.exceptions.shop.ShopBranchInfoInvalidException
 import team.bakkas.domaindynamo.entity.Shop
 
 // Shop을 검증하는 로직을 정의하는 클래스

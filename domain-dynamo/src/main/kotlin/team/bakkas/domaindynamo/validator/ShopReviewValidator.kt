@@ -11,7 +11,7 @@ import org.springframework.web.util.UriComponentsBuilder
 import reactor.core.publisher.Mono
 import team.bakkas.common.Results
 import team.bakkas.common.exceptions.RequestFieldException
-import team.bakkas.common.exceptions.ShopNotFoundException
+import team.bakkas.common.exceptions.shop.ShopNotFoundException
 import team.bakkas.common.urls.ServerUrlsInterface
 import team.bakkas.domaindynamo.entity.ShopReview
 

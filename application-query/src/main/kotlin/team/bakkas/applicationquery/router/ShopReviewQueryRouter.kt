@@ -3,11 +3,11 @@ package team.bakkas.applicationquery.router
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.reactive.function.server.coRouter
-import team.bakkas.applicationquery.handler.ShopReviewHandler
+import team.bakkas.applicationquery.handler.ShopReviewQueryHandler
 
 @Configuration
-class ShopReviewRouter(
-    private val shopReviewHandler: ShopReviewHandler
+class ShopReviewQueryRouter(
+    private val shopReviewHandler: ShopReviewQueryHandler
 ) {
 
     @Bean

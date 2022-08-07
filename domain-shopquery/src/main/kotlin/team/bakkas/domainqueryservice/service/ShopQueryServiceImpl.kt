@@ -6,7 +6,7 @@ import kotlinx.coroutines.withContext
 import org.springframework.core.CoroutinesUtils
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import team.bakkas.common.exceptions.ShopNotFoundException
+import team.bakkas.common.exceptions.shop.ShopNotFoundException
 import team.bakkas.domaindynamo.entity.Shop
 import team.bakkas.domainqueryservice.repository.ShopRepository
 import team.bakkas.domainqueryservice.service.ifs.ShopQueryService

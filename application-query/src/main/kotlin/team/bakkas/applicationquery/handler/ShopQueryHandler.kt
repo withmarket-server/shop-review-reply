@@ -12,7 +12,7 @@ import team.bakkas.common.exceptions.RequestParamLostException
 import team.bakkas.domaindynamo.entity.Shop
 
 @Component
-class ShopHandler(
+class ShopQueryHandler(
     private val shopService: ShopQueryServiceImpl,
     private val resultFactory: ResultFactory
 ) {

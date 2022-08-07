@@ -1,4 +1,4 @@
-package team.bakkas.common.exceptions
+package team.bakkas.common.exceptions.shopReview
 
 /** Shop review를 찾지 못했을 때를 담당하는 예외 class
  * @author Brian

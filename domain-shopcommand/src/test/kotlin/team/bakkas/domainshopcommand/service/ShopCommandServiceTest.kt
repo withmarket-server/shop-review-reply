@@ -11,20 +11,16 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.springframework.kafka.core.KafkaTemplate
 import reactor.core.publisher.Mono
 import team.bakkas.clientcommand.dto.ShopCommand
 import team.bakkas.common.category.Category
 import team.bakkas.common.category.DetailCategory
 import team.bakkas.common.exceptions.RegionNotKoreaException
-import team.bakkas.common.exceptions.ShopBranchInfoInvalidException
-import team.bakkas.domaindynamo.entity.Shop
+import team.bakkas.common.exceptions.shop.ShopBranchInfoInvalidException
 import team.bakkas.domaindynamo.repository.dynamo.ShopDynamoRepository
 import team.bakkas.domaindynamo.validator.ShopValidator
 import team.bakkas.domainshopcommand.extensions.toEntity
-import java.time.LocalDateTime
 import java.time.LocalTime
-import java.util.*
 
 @ExtendWith(MockKExtension::class)
 internal class ShopCommandServiceTest {
