@@ -1,20 +1,42 @@
 package team.bakkas.domaindynamo.validator
 
+import org.springframework.core.CoroutinesUtils
 import org.springframework.stereotype.Component
 import org.springframework.validation.BeanPropertyBindingResult
 import org.springframework.validation.Errors
 import org.springframework.validation.ValidationUtils
 import org.springframework.validation.Validator
+import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.util.UriComponentsBuilder
+import reactor.core.publisher.Mono
+import team.bakkas.common.Results
 import team.bakkas.common.exceptions.RequestFieldException
+import team.bakkas.common.exceptions.ShopNotFoundException
+import team.bakkas.common.urls.ServerUrlsInterface
 import team.bakkas.domaindynamo.entity.ShopReview
 
+/** Shop Review에 대한 검증을 수행하는 Validator class
+ * @param urlComponent 활성화된 환경에 따라 url을 변동적으로 관리해주는 bean class. local/server 환경을 분리해서 관리한다
+ */
 @Component
-class ShopReviewValidator: Validator {
+class ShopReviewValidator(
+    private val urlComponent: ServerUrlsInterface
+): Validator {
 
-    fun validateCreatable(shopReview: ShopReview) = with(shopReview) {
+    private val shopWebClient = WebClient.create(urlComponent.SHOP_QUERY_SERVER_URL)
+
+    // 해당 리뷰가 생성 가능한지 검증하는 메소드
+    suspend fun validateCreatable(shopReview: ShopReview) = with(shopReview) {
         validateFirst(this) // 우선 필드를 모두 검증한다
 
-        // TODO WebClient를 이용해서 review에 대응하는 shop이 이미 존재하는지를 검증한다
+        // WebClient를 이용해서 해당 shop이 존재하는지 여부만 뽑아온다
+        val shopResultMono: Mono<Boolean> = isExistsShop(shopId, shopName)
+        val shopResultDeferred = CoroutinesUtils.monoToDeferred(shopResultMono)
+
+        // shop이 존재하지 않는 경우 예외를 발생시킨다
+        check(shopResultDeferred.await()) {
+            throw ShopNotFoundException("shop review에 대응하는 shop이 존재하지 않습니다.")
+        }
     }
 
     override fun supports(clazz: Class<*>): Boolean {
@@ -46,5 +68,18 @@ class ShopReviewValidator: Validator {
         check(errors == null || errors.allErrors.isEmpty()) {
             throw RequestFieldException(errors.allErrors.toString())
         }
+    }
+
+    private fun isExistsShop(shopId: String, shopName: String): Mono<Boolean> {
+        return shopWebClient.get()
+            .uri(
+                UriComponentsBuilder
+                    .fromUriString("/v2/shop/simple")
+                    .queryParam("id", shopId)
+                    .queryParam("name", shopName)
+                    .toUriString()
+            ).retrieve()
+            .bodyToMono(Results.SingleResult::class.java)
+            .map { result -> result.success }
     }
 }
