@@ -1,5 +1,6 @@
 package team.bakkas.applicationcommand.router
 
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.reactive.function.server.coRouter
 import team.bakkas.applicationcommand.handler.ShopReviewCommandHandler
@@ -9,7 +10,7 @@ import team.bakkas.applicationcommand.handler.ShopReviewCommandHandler
 class ShopReviewCommandRouter(
     private val shopReviewCommandHandler: ShopReviewCommandHandler
 ) {
-
+    @Bean
     fun shopReviewCommandRoutes() = coRouter {
         "/v2/shop-review".nest {
             POST("/", shopReviewCommandHandler::createReview)
