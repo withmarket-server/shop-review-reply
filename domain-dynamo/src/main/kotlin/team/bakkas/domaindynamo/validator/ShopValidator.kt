@@ -20,9 +20,9 @@ class ShopValidator: Validator {
 
     override fun validate(target: Any, errors: Errors) {
         // shopName, lotNumberAddress, roadNameAddress에 대한 필드 유효성 검증
-        ValidationUtils.rejectIfEmpty(errors, "shopName", "field.required")
-        ValidationUtils.rejectIfEmpty(errors, "lotNumberAddress", "field.required")
-        ValidationUtils.rejectIfEmpty(errors, "roadNameAddress", "field.required")
+        ValidationUtils.rejectIfEmpty(errors, "shopName", "field.required", "shopName이 비어있습니다.")
+        ValidationUtils.rejectIfEmpty(errors, "lotNumberAddress", "field.required", "지번주소가 제공되지 않았습니다.")
+        ValidationUtils.rejectIfEmpty(errors, "roadNameAddress", "field.required", "도로명 주소가 제공되지 않았습니다.")
 
         // TODO 패턴을 분석하길 원하면 Pattern.compile을 이용해 정규표현식으로 패턴을 구현하고, errors.rejectValue를 이용해 에러 때린다
     }
