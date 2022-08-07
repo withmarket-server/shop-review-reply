@@ -135,6 +135,13 @@ class ShopReviewDynamoRepository(
         }
     }
 
+    // review를 하나 생성하는 메소드
+    fun createReviewAsync(shopReview: ShopReview): Mono<Void> {
+        val reviewFuture = asyncTable.putItem(shopReview)
+
+        return Mono.fromFuture(reviewFuture)
+    }
+
     /** Key를 반환하는 private method
      * @param reviewId Partition Key of shop_review
      * @param reviewTitle Sort Key of shop_review

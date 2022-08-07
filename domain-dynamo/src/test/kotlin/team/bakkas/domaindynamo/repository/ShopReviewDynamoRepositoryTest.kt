@@ -396,6 +396,17 @@ internal class ShopReviewDynamoRepositoryTest @Autowired constructor(
             }
     }
 
+    @ParameterizedTest
+    @CsvSource(value = ["ecdc2-test005:저는 만족 못해요:33daf043-7f36-4a52-b791-018f9d5eb218:역전할머니맥주 영남대점"], delimiter = ':')
+    @DisplayName("[Repository] Async 방식으로 review를 하나 생성한다")
+    @Rollback(value = false)
+    fun createShopAsync(reviewId: String, reviewTitle: String, shopId: String, shopName: String): Unit = runBlocking {
+        val mockReview = getMockReview(reviewId, reviewTitle, shopId, shopName)
+
+        val reviewMono = shopReviewDynamoRepository.createReviewAsync(mockReview)
+        CoroutinesUtils.monoToDeferred(reviewMono).await()
+    }
+
     // 키를 생성하는 메소드
     private fun generateKey(reviewId: String, reviewTitle: String): Key = Key.builder()
         .partitionValue(reviewId)
@@ -409,7 +420,7 @@ internal class ShopReviewDynamoRepositoryTest @Autowired constructor(
             reviewTitle = reviewTitle,
             shopId = shopId,
             shopName = shopName,
-            reviewContent = "저는 아주 불만족했어요! ^^",
+            reviewContent = "매우 불만족.",
             reviewScore = 1.0,
             reviewPhotoList = listOf(),
             createdAt = LocalDateTime.now(),
