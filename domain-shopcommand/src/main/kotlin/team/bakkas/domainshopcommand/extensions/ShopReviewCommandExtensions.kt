@@ -3,10 +3,11 @@ package team.bakkas.domainshopcommand.extensions
 import team.bakkas.clientcommand.dto.ShopReviewCommand
 import team.bakkas.domaindynamo.entity.ShopReview
 import java.time.LocalDateTime
+import java.util.UUID
 
 // ReviewCreateDto를 Entity로 변환해주는 메소드
 fun ShopReviewCommand.CreateDto.toEntity() = ShopReview(
-    reviewId = this.reviewId,
+    reviewId = UUID.randomUUID().toString(),
     reviewTitle = this.reviewTitle,
     shopId = this.shopId,
     shopName = this.shopName,

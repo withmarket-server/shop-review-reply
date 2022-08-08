@@ -7,7 +7,6 @@ sealed class ShopReviewCommand {
 
     // shop review를 생성하는데 사용하는 dto class
     data class CreateDto(
-        @JsonProperty("review_id") var reviewId: String,
         @JsonProperty("review_title") var reviewTitle: String,
         @JsonProperty("shop_id") var shopId: String,
         @JsonProperty("shop_name") var shopName: String,

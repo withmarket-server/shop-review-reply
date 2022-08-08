@@ -8,20 +8,26 @@ import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.ServerResponse
 import org.springframework.web.reactive.function.server.ServerResponse.ok
-import org.springframework.web.reactive.function.server.bodyToMono
 import org.springframework.web.reactive.function.server.bodyValueAndAwait
-import team.bakkas.applicationcommand.kafka.KafkaConsumerGroups
 import team.bakkas.applicationcommand.kafka.KafkaTopics
+import team.bakkas.clientcommand.dto.ShopCommand
 import team.bakkas.clientcommand.dto.ShopReviewCommand
 import team.bakkas.common.ResultFactory
 import team.bakkas.common.exceptions.RequestBodyLostException
 import team.bakkas.domaindynamo.entity.ShopReview
 import team.bakkas.domainshopcommand.service.ifs.ShopReviewCommandService
 
+/** ShopReview에 대한 command handler class
+ * @param shopReviewCommandService
+ * @param shopReviewKafkaTemplate
+ * @param reviewCountEventKafkaTemplate
+ * @param resultFactory
+ */
 @Component
 class ShopReviewCommandHandler(
     private val shopReviewCommandService: ShopReviewCommandService,
     private val shopReviewKafkaTemplate: KafkaTemplate<String, ShopReview>,
+    private val reviewCountEventKafkaTemplate: KafkaTemplate<String, ShopCommand.ReviewCountEventDto>,
     private val resultFactory: ResultFactory
 ) {
 
@@ -39,8 +45,18 @@ class ShopReviewCommandHandler(
         // TODO service의 createReview 로직 작성
         val createdReview = shopReviewCommandService.createReview(reviewCreateDto)
 
-        // Kafka로 보낸다
-        shopReviewKafkaTemplate.send(KafkaTopics.shopReviewCreateTopic, createdReview)
+        // Kafka에 이벤트를 전파하는 로직
+        with(createdReview) {
+            // 생성된 review를 redis에서 처리하도록 이벤트 발행
+            shopReviewKafkaTemplate.send(KafkaTopics.shopReviewCreateTopic, this)
+
+            // review가 생성되었음을 shop table로 전파
+            reviewCountEventKafkaTemplate.send(
+                KafkaTopics.reviewCountEventTopic, ShopCommand.ReviewCountEventDto(
+                    shopId, shopName, true
+                )
+            )
+        }
 
         return@coroutineScope ok()
             .contentType(MediaType.APPLICATION_JSON)

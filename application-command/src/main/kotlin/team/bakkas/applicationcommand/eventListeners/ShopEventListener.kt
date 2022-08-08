@@ -1,6 +1,5 @@
-package team.bakkas.applicationcommand.listeners
+package team.bakkas.applicationcommand.eventListeners
 
-import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.stereotype.Component
 import team.bakkas.applicationcommand.kafka.KafkaConsumerGroups
@@ -10,7 +9,7 @@ import team.bakkas.domaindynamo.repository.redis.ShopRedisRepository
 
 // Kafka에 발행된 shop관련 메시지를 redis에 캐싱하는 리스너를 정의하는 클래스
 @Component
-class ShopListener(
+class ShopEventListener(
     private val shopRedisRepository: ShopRedisRepository
 ) {
 
