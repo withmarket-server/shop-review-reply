@@ -12,7 +12,6 @@ import team.bakkas.clientcommand.dto.ShopCommand
 import team.bakkas.common.ResultFactory
 import team.bakkas.common.exceptions.RequestBodyLostException
 import team.bakkas.domaindynamo.entity.Shop
-import team.bakkas.domainshopcommand.service.ShopCommandServiceImpl
 import team.bakkas.domainshopcommand.service.ifs.ShopCommandService
 
 /** shop에 대한 command 로직을 담당하는 handler 클래스

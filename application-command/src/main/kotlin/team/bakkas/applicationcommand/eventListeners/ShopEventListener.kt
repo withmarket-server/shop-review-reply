@@ -18,4 +18,6 @@ class ShopEventListener(
     suspend fun cacheCreatedShop(shop: Shop) {
         shopRedisRepository.cacheShop(shop).subscribe()
     }
+
+
 }

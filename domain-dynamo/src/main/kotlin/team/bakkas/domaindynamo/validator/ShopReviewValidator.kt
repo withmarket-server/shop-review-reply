@@ -10,6 +10,7 @@ import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.util.UriComponentsBuilder
 import reactor.core.publisher.Mono
 import team.bakkas.common.Results
+import team.bakkas.common.WebClientHelper
 import team.bakkas.common.exceptions.RequestFieldException
 import team.bakkas.common.exceptions.shop.ShopNotFoundException
 import team.bakkas.common.urls.ServerUrlsInterface
@@ -21,9 +22,15 @@ import team.bakkas.domaindynamo.entity.ShopReview
 @Component
 class ShopReviewValidator(
     private val urlComponent: ServerUrlsInterface
-): Validator {
+) : Validator {
 
-    private val shopWebClient = WebClient.create(urlComponent.SHOP_QUERY_SERVER_URL)
+    private val baseUrl = urlComponent.SHOP_QUERY_SERVER_URL
+
+    private val shopWebClient = WebClient
+        .builder()
+        .uriBuilderFactory(WebClientHelper.uriBuilderFactory(baseUrl))
+        .baseUrl(baseUrl)
+        .build()
 
     // 해당 리뷰가 생성 가능한지 검증하는 메소드
     suspend fun validateCreatable(shopReview: ShopReview) = with(shopReview) {
@@ -47,14 +54,14 @@ class ShopReviewValidator(
     // reviewContent는 200자 이상으로는 못 쓰도록 검증한다
     override fun validate(target: Any, errors: Errors) {
         // reviewId, reviewTitle, shopId, shopName, reviewContent : 비어있는지 검증
-        listOf("reviewId, reviewTitle, shopId, shopName, reviewContent").forEach { fieldName ->
+        listOf("reviewId", "reviewTitle", "shopId", "shopName", "reviewContent").forEach { fieldName ->
             ValidationUtils.rejectIfEmpty(errors, fieldName, "field.required", "${fieldName}이 제공되지 않았습니다.")
         }
 
         val review = target as ShopReview
 
         // reviewContent의 길이를 200으로 제한한다
-        check(review.reviewContent.length <= 200) {
+        if (review.reviewContent.length > 200) {
             errors.rejectValue("reviewContent", "field.max.length", "review의 내용은 200을 넘어서는 안됩니다.")
         }
     }
@@ -80,6 +87,9 @@ class ShopReviewValidator(
                     .toUriString()
             ).retrieve()
             .bodyToMono(Results.SingleResult::class.java)
+            .doOnError {
+                throw ShopNotFoundException("Shop is not found!!")
+            }
             .map { result -> result.success }
     }
 }
