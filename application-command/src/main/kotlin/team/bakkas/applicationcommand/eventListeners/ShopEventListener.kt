@@ -7,6 +7,7 @@ import team.bakkas.applicationcommand.kafka.KafkaTopics
 import team.bakkas.domaindynamo.entity.Shop
 import team.bakkas.domaindynamo.repository.redis.ShopRedisRepository
 
+// TODO 별도의 어플리케이션으로 분리해야함
 // Kafka에 발행된 shop관련 메시지를 redis에 캐싱하는 리스너를 정의하는 클래스
 @Component
 class ShopEventListener(

@@ -8,15 +8,15 @@ import org.springframework.web.reactive.function.server.ServerResponse
 import org.springframework.web.reactive.function.server.ServerResponse.ok
 import org.springframework.web.reactive.function.server.bodyValueAndAwait
 import org.springframework.web.reactive.function.server.queryParamOrNull
-import team.bakkas.domainqueryservice.service.ShopReviewQueryServiceImpl
 import team.bakkas.clientmobilequery.dto.ShopReviewSimpleReadDto
 import team.bakkas.common.ResultFactory
 import team.bakkas.common.exceptions.RequestParamLostException
 import team.bakkas.domaindynamo.entity.ShopReview
+import team.bakkas.domainqueryservice.service.ifs.ShopReviewQueryService
 
 @Component
 class ShopReviewQueryHandler(
-    private val shopReviewService: ShopReviewQueryServiceImpl,
+    private val shopReviewService: ShopReviewQueryService,
     private val resultFactory: ResultFactory
 ) {
 

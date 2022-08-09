@@ -5,15 +5,15 @@ import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.*
 import org.springframework.web.reactive.function.server.ServerResponse.ok
-import team.bakkas.domainqueryservice.service.ShopQueryServiceImpl
 import team.bakkas.clientmobilequery.dto.ShopSimpleReadDto
 import team.bakkas.common.ResultFactory
 import team.bakkas.common.exceptions.RequestParamLostException
 import team.bakkas.domaindynamo.entity.Shop
+import team.bakkas.domainqueryservice.service.ifs.ShopQueryService
 
 @Component
 class ShopQueryHandler(
-    private val shopService: ShopQueryServiceImpl,
+    private val shopService: ShopQueryService,
     private val resultFactory: ResultFactory
 ) {
 
