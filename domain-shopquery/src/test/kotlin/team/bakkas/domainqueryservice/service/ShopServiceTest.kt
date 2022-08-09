@@ -22,7 +22,7 @@ import team.bakkas.common.category.Category
 import team.bakkas.common.category.DetailCategory
 import team.bakkas.common.exceptions.shop.ShopNotFoundException
 import team.bakkas.domaindynamo.entity.Shop
-import team.bakkas.domainqueryservice.repository.ShopRepository
+import team.bakkas.domainqueryservice.repository.ifs.ShopRepository
 import java.time.LocalDateTime
 import java.time.LocalTime
 

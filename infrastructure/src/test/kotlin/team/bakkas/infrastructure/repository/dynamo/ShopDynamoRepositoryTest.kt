@@ -1,4 +1,4 @@
-package team.bakkas.domaindynamo.repository
+package team.bakkas.infrastructure.repository.dynamo
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.buffer
@@ -23,7 +23,6 @@ import software.amazon.awssdk.enhanced.dynamodb.TableSchema
 import team.bakkas.common.category.Category
 import team.bakkas.common.category.DetailCategory
 import team.bakkas.domaindynamo.entity.Shop
-import team.bakkas.domaindynamo.repository.dynamo.ShopDynamoRepositoryImpl
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.*

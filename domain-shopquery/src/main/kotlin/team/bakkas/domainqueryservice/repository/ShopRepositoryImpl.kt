@@ -5,18 +5,20 @@ import kotlinx.coroutines.flow.map
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
 import team.bakkas.domaindynamo.entity.Shop
-import team.bakkas.domaindynamo.repository.dynamo.ShopDynamoRepositoryImpl
-import team.bakkas.domaindynamo.repository.redis.ShopRedisRepositoryImpl
+import team.bakkas.domaindynamo.repository.dynamo.ShopDynamoRepository
+import team.bakkas.domaindynamo.repository.redis.ShopRedisRepository
+import team.bakkas.domainqueryservice.repository.ifs.ShopRepository
 
+// TODO CQRS 패턴이 완전 정착되면 삭제할 예정임
 /** Cache hit 방식으로 데이터에 access하는 repository 구현
  * @param shopDynamoRepository DynamoDB의 shop 테이블에 접근하는 repository
  * @param shopReactiveRedisTemplate Redis에 Shop entity를 논블로킹 방식으로 캐싱하는데 사용하는 template
  */
 @Repository
-class ShopRepository(
-    private val shopDynamoRepository: ShopDynamoRepositoryImpl,
-    private val shopRedisRepository: ShopRedisRepositoryImpl
-) {
+class ShopRepositoryImpl(
+    private val shopDynamoRepository: ShopDynamoRepository,
+    private val shopRedisRepository: ShopRedisRepository
+): ShopRepository {
     companion object {
         // Cache를 보관할 기간을 정의
         val DAYS_TO_LIVE = 1L
@@ -30,7 +32,7 @@ class ShopRepository(
      * @param shopName 가게의 이름
      * @return Mono<Shop?>
      */
-    fun findShopByIdAndNameWithCaching(shopId: String, shopName: String): Mono<Shop?> {
+    override fun findShopByIdAndNameWithCaching(shopId: String, shopName: String): Mono<Shop?> {
         val key = generateRedisKey(shopId, shopName)
         val alternativeShopMono: Mono<Shop?> = shopDynamoRepository.findShopByIdAndNameAsync(shopId, shopName)
             .doOnSuccess {
@@ -50,7 +52,7 @@ class ShopRepository(
 
 
     // 모든 Shop을 가져오는 flow를 반환해주는 메소드
-    fun getAllShopsWithCaching(): Flow<Mono<Shop?>> {
+    override fun getAllShopsWithCaching(): Flow<Mono<Shop?>> {
         val shopKeysFlow = shopDynamoRepository.getAllShopKeys() // shop Key Pair들의 flow를 가져온다
         return shopKeysFlow.map {
             findShopByIdAndNameWithCaching(it.first, it.second)

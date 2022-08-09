@@ -1,9 +1,10 @@
-package team.bakkas.domaindynamo.repository.redis
+package team.bakkas.infrastructure.repository.redis
 
 import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
 import team.bakkas.domaindynamo.entity.Shop
+import team.bakkas.domaindynamo.repository.redis.ShopRedisRepository
 import java.time.Duration
 
 // Shop을 redis에 캐싱하는 메소드들을 정의하는 repository

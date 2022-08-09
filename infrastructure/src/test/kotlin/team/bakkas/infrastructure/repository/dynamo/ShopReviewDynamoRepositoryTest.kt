@@ -1,4 +1,4 @@
-package team.bakkas.domaindynamo.repository
+package team.bakkas.infrastructure.repository.dynamo
 
 import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.collect
@@ -6,24 +6,19 @@ import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.core.CoroutinesUtils
 import org.springframework.test.annotation.Rollback
-import org.springframework.util.StopWatch
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedAsyncClient
-import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient
 import software.amazon.awssdk.enhanced.dynamodb.Expression
 import software.amazon.awssdk.enhanced.dynamodb.Key
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 import team.bakkas.domaindynamo.entity.ShopReview
-import team.bakkas.domaindynamo.repository.dynamo.ShopReviewDynamoRepositoryImpl
 import java.time.LocalDateTime
-import java.util.*
 
 /** ShopReviewRepository에 대한 Test Class.
  * @author Brian

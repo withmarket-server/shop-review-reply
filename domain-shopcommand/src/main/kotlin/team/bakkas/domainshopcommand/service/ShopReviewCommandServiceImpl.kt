@@ -4,14 +4,14 @@ import org.springframework.core.CoroutinesUtils
 import org.springframework.stereotype.Service
 import team.bakkas.clientcommand.dto.ShopReviewCommand
 import team.bakkas.domaindynamo.entity.ShopReview
-import team.bakkas.domaindynamo.repository.dynamo.ShopReviewDynamoRepositoryImpl
+import team.bakkas.domaindynamo.repository.dynamo.ShopReviewDynamoRepository
 import team.bakkas.domaindynamo.validator.ShopReviewValidator
 import team.bakkas.domainshopcommand.extensions.toEntity
 import team.bakkas.domainshopcommand.service.ifs.ShopReviewCommandService
 
 @Service
 class ShopReviewCommandServiceImpl(
-    private val shopReviewDynamoRepository: ShopReviewDynamoRepositoryImpl,
+    private val shopReviewDynamoRepository: ShopReviewDynamoRepository,
     private val shopReviewValidator: ShopReviewValidator
 ): ShopReviewCommandService {
 

@@ -1,4 +1,4 @@
-package team.bakkas.domaindynamo.config
+package team.bakkas.infrastructure.config
 
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value

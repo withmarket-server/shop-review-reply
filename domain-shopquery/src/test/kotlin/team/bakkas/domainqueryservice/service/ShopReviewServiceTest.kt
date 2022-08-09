@@ -19,7 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import reactor.core.publisher.Mono
 import team.bakkas.common.exceptions.shopReview.ShopReviewNotFoundException
 import team.bakkas.domaindynamo.entity.ShopReview
-import team.bakkas.domainqueryservice.repository.ShopReviewRepository
+import team.bakkas.domainqueryservice.repository.ifs.ShopReviewRepository
 import java.time.LocalDateTime
 
 @ExtendWith(MockKExtension::class)

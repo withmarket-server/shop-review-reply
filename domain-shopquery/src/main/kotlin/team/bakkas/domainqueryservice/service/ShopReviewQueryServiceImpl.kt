@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import team.bakkas.common.exceptions.shopReview.ShopReviewNotFoundException
 import team.bakkas.domaindynamo.entity.ShopReview
-import team.bakkas.domainqueryservice.repository.ShopReviewRepository
+import team.bakkas.domainqueryservice.repository.ifs.ShopReviewRepository
 import team.bakkas.domainqueryservice.service.ifs.ShopReviewQueryService
 
 @Service

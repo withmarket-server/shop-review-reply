@@ -1,9 +1,11 @@
-package team.bakkas.domaindynamo.repository.redis
+package team.bakkas.infrastructure.repository.redis
 
 import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
 import team.bakkas.domaindynamo.entity.ShopReview
+import team.bakkas.domaindynamo.repository.redis.ShopReviewRedisRepository
+import java.time.Duration
 
 @Repository
 class ShopReviewRedisRepositoryImpl(
@@ -19,6 +21,6 @@ class ShopReviewRedisRepositoryImpl(
     override fun cacheReview(shopReview: ShopReview): Mono<Boolean> = with(shopReview) {
         val reviewKey = generateRedisKey(reviewId, reviewTitle)
 
-        shopReviewReactiveRedisTemplate.opsForValue().set(reviewKey, this)
+        shopReviewReactiveRedisTemplate.opsForValue().set(reviewKey, this, Duration.ofDays(team.bakkas.infrastructure.repository.redis.ShopReviewRedisRepositoryImpl.DAYS_TO_LIVE))
     }
 }

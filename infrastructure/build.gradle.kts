@@ -9,6 +9,9 @@ extra["springCloudVersion"] = "2021.0.2"
 
 dependencies {
 
+    // domain의 respository를 구현해야하므로 domain module에 의존한다
+    api(project(":domain-dynamo"))
+
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation(kotlin("stdlib-jdk8"))
     implementation(kotlin("reflect"))

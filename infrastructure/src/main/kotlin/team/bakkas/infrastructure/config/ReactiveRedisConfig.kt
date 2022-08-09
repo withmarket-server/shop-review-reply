@@ -1,4 +1,4 @@
-package team.bakkas.domaindynamo.config
+package team.bakkas.infrastructure.config
 
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper

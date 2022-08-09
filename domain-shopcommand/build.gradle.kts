@@ -10,6 +10,7 @@ extra["springCloudVersion"] = "2021.0.2"
 dependencies {
     api(project(":domain-dynamo"))
     api(project(":client-command"))
+    api(project(":infrastructure"))
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation(kotlin("stdlib-jdk8"))

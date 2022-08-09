@@ -14,13 +14,13 @@ import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.util.StopWatch
 import reactor.core.publisher.Mono
 import team.bakkas.domaindynamo.entity.Shop
-import team.bakkas.domaindynamo.repository.dynamo.ShopDynamoRepositoryImpl
+import team.bakkas.domaindynamo.repository.dynamo.ShopDynamoRepository
 import java.time.Duration
 
 @SpringBootTest
 internal class ShopRepositoryTest @Autowired constructor(
-    val shopDynamoRepository: ShopDynamoRepositoryImpl,
-    val shopRepository: ShopRepository,
+    val shopDynamoRepository: ShopDynamoRepository,
+    val shopRepository: ShopRepositoryImpl,
     val shopReactiveRedisTemplate: ReactiveRedisTemplate<String, Shop>
 ) {
 

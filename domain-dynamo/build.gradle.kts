@@ -20,11 +20,9 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.6.3")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.3")
 
     implementation("org.springframework.cloud:spring-cloud-starter-config")
 
-    implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("software.amazon.awssdk:dynamodb-enhanced:2.17.191")
 }
 

@@ -6,7 +6,8 @@ import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
 import team.bakkas.domaindynamo.entity.ShopReview
-import team.bakkas.domaindynamo.repository.dynamo.ShopReviewDynamoRepositoryImpl
+import team.bakkas.domaindynamo.repository.dynamo.ShopReviewDynamoRepository
+import team.bakkas.domainqueryservice.repository.ifs.ShopReviewRepository
 import java.time.Duration
 
 /** shopReview에 대해서 Cache hit을 통한 Repository를 구현한 클래스
@@ -14,10 +15,10 @@ import java.time.Duration
  * @param shopReviewReactiveRedisTemplate Cache hit을 구현하기 위해서 Redis에 접근하는 template
  */
 @Repository
-class ShopReviewRepository(
-    private val shopReviewDynamoRepository: ShopReviewDynamoRepositoryImpl,
+class ShopReviewRepositoryImpl(
+    private val shopReviewDynamoRepository: ShopReviewDynamoRepository,
     private val shopReviewReactiveRedisTemplate: ReactiveRedisTemplate<String, ShopReview>
-) {
+): ShopReviewRepository {
 
     companion object {
         val DAYS_TO_LIVE = 1L
@@ -30,7 +31,7 @@ class ShopReviewRepository(
      * @param reviewTitle
      * @return Mono<ShopReview?>
      */
-    fun findShopReviewByIdAndTitleWithCaching(reviewId: String, reviewTitle: String): Mono<ShopReview?> {
+    override fun findShopReviewByIdAndTitleWithCaching(reviewId: String, reviewTitle: String): Mono<ShopReview?> {
         val key = generateRedisKey(reviewId, reviewTitle)
         val alternativeMono = shopReviewDynamoRepository.findReviewByIdAndTitleAsync(reviewId, reviewTitle)
             .doOnSuccess {
@@ -51,7 +52,7 @@ class ShopReviewRepository(
      * @param shopName
      * @return Flow<Mono<ShopReview>> flow consisted with monos of shopReview
      */
-    fun getShopReviewListFlowByShopIdAndNameWithCaching(shopId: String, shopName: String): Flow<Mono<ShopReview?>> {
+    override fun getShopReviewListFlowByShopIdAndNameWithCaching(shopId: String, shopName: String): Flow<Mono<ShopReview?>> {
         val reviewKeysFlow = shopReviewDynamoRepository.getAllReviewKeyFlowByShopIdAndName(shopId, shopName)
         return reviewKeysFlow.map {
             findShopReviewByIdAndTitleWithCaching(it.first, it.second)

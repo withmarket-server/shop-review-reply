@@ -5,12 +5,12 @@ import org.springframework.stereotype.Component
 import team.bakkas.applicationcommand.kafka.KafkaConsumerGroups
 import team.bakkas.applicationcommand.kafka.KafkaTopics
 import team.bakkas.domaindynamo.entity.Shop
-import team.bakkas.domaindynamo.repository.redis.ShopRedisRepositoryImpl
+import team.bakkas.domaindynamo.repository.redis.ShopRedisRepository
 
 // Kafka에 발행된 shop관련 메시지를 redis에 캐싱하는 리스너를 정의하는 클래스
 @Component
 class ShopEventListener(
-    private val shopRedisRepository: ShopRedisRepositoryImpl
+    private val shopRedisRepository: ShopRedisRepository
 ) {
 
     // withmarket.shop.create 토픽에 있는 메시지를 읽어내서 redis에 캐싱하는 메소드
