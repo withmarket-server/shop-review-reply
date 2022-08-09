@@ -8,5 +8,6 @@ include(
     ":domain-shopcommand",
     ":common",
     ":client-query",
-    ":client-command"
+    ":client-command",
+    ":infrastructure"
 )

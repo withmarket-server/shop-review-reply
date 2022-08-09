@@ -21,7 +21,7 @@ import team.bakkas.domaindynamo.entity.ShopReview
  * @see <a href="https://github.com/awsdocs/aws-doc-sdk-examples/tree/main/kotlin/services/dynamodb#code-examples">Query method with Global Secondary Index</a>
  */
 @Repository
-class ShopReviewDynamoRepository(
+class ShopReviewDynamoRepositoryImpl(
     private val dynamoDbEnhancedClient: DynamoDbEnhancedClient,
     private val dynamoDbEnhancedAsyncClient: DynamoDbEnhancedAsyncClient
 ) {

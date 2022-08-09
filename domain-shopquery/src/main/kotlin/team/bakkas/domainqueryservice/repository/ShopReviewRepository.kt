@@ -6,7 +6,7 @@ import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
 import team.bakkas.domaindynamo.entity.ShopReview
-import team.bakkas.domaindynamo.repository.dynamo.ShopReviewDynamoRepository
+import team.bakkas.domaindynamo.repository.dynamo.ShopReviewDynamoRepositoryImpl
 import java.time.Duration
 
 /** shopReview에 대해서 Cache hit을 통한 Repository를 구현한 클래스
@@ -15,7 +15,7 @@ import java.time.Duration
  */
 @Repository
 class ShopReviewRepository(
-    private val shopReviewDynamoRepository: ShopReviewDynamoRepository,
+    private val shopReviewDynamoRepository: ShopReviewDynamoRepositoryImpl,
     private val shopReviewReactiveRedisTemplate: ReactiveRedisTemplate<String, ShopReview>
 ) {
 

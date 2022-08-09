@@ -23,14 +23,14 @@ import software.amazon.awssdk.enhanced.dynamodb.TableSchema
 import team.bakkas.common.category.Category
 import team.bakkas.common.category.DetailCategory
 import team.bakkas.domaindynamo.entity.Shop
-import team.bakkas.domaindynamo.repository.dynamo.ShopDynamoRepository
+import team.bakkas.domaindynamo.repository.dynamo.ShopDynamoRepositoryImpl
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.*
 
 @SpringBootTest
 internal class ShopDynamoRepositoryTest @Autowired constructor(
-    private val shopDynamoRepository: ShopDynamoRepository,
+    private val shopDynamoRepository: ShopDynamoRepositoryImpl,
     private val dynamoDbEnhancedAsyncClient: DynamoDbEnhancedAsyncClient
 ) {
 

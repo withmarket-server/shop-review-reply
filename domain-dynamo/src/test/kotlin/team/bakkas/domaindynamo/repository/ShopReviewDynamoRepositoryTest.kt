@@ -21,7 +21,7 @@ import software.amazon.awssdk.enhanced.dynamodb.Key
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 import team.bakkas.domaindynamo.entity.ShopReview
-import team.bakkas.domaindynamo.repository.dynamo.ShopReviewDynamoRepository
+import team.bakkas.domaindynamo.repository.dynamo.ShopReviewDynamoRepositoryImpl
 import java.time.LocalDateTime
 import java.util.*
 
@@ -34,7 +34,7 @@ import java.util.*
 internal class ShopReviewDynamoRepositoryTest @Autowired constructor(
     private val dynamoDbEnhancedClient: DynamoDbEnhancedClient,
     private val dynamoDbEnhancedAsyncClient: DynamoDbEnhancedAsyncClient,
-    private val shopReviewDynamoRepository: ShopReviewDynamoRepository
+    private val shopReviewDynamoRepository: ShopReviewDynamoRepositoryImpl
 ) {
     // 테이블 정의
     val table = dynamoDbEnhancedClient.table("shop_review", TableSchema.fromBean(ShopReview::class.java))

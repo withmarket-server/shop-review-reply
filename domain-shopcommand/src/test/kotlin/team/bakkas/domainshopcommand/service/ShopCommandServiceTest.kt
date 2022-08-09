@@ -17,7 +17,7 @@ import team.bakkas.common.category.Category
 import team.bakkas.common.category.DetailCategory
 import team.bakkas.common.exceptions.RegionNotKoreaException
 import team.bakkas.common.exceptions.shop.ShopBranchInfoInvalidException
-import team.bakkas.domaindynamo.repository.dynamo.ShopDynamoRepository
+import team.bakkas.domaindynamo.repository.dynamo.ShopDynamoRepositoryImpl
 import team.bakkas.domaindynamo.validator.ShopValidator
 import team.bakkas.domainshopcommand.extensions.toEntity
 import java.time.LocalTime
@@ -26,7 +26,7 @@ import java.time.LocalTime
 internal class ShopCommandServiceTest {
 
     @MockK(relaxed = true)
-    private lateinit var shopDynamoRepository: ShopDynamoRepository
+    private lateinit var shopDynamoRepository: ShopDynamoRepositoryImpl
 
     // 실제 객체들을 활용하기 위해 spyk로 선언할 객체들
     private lateinit var shopValidator: ShopValidator

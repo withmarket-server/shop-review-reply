@@ -8,7 +8,7 @@ import java.time.Duration
 
 // Shop을 redis에 캐싱하는 메소드들을 정의하는 repository
 @Repository
-class ShopRedisRepository(private val shopReactiveRedisTemplate: ReactiveRedisTemplate<String, Shop>) {
+class ShopRedisRepositoryImpl(private val shopReactiveRedisTemplate: ReactiveRedisTemplate<String, Shop>) {
 
     companion object {
         // Cache를 보관할 기간을 정의

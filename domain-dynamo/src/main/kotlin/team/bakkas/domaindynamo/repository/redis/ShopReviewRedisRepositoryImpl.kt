@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository
 import team.bakkas.domaindynamo.entity.ShopReview
 
 @Repository
-class ShopReviewRedisRepository(
+class ShopReviewRedisRepositoryImpl(
     private val shopReviewReactiveRedisTemplate: ReactiveRedisTemplate<String, ShopReview>
 ) {
     companion object {

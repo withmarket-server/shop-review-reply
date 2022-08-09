@@ -22,7 +22,7 @@ import team.bakkas.domaindynamo.entity.Shop
  * @author Brian
  */
 @Repository
-class ShopDynamoRepository(
+class ShopDynamoRepositoryImpl(
     private val dynamoDbEnhancedClient: DynamoDbEnhancedClient,
     private val dynamoDbEnhancedAsyncClient: DynamoDbEnhancedAsyncClient
 ) {

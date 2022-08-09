@@ -2,12 +2,11 @@ package team.bakkas.domainqueryservice.repository
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
 import team.bakkas.domaindynamo.entity.Shop
-import team.bakkas.domaindynamo.repository.dynamo.ShopDynamoRepository
-import team.bakkas.domaindynamo.repository.redis.ShopRedisRepository
+import team.bakkas.domaindynamo.repository.dynamo.ShopDynamoRepositoryImpl
+import team.bakkas.domaindynamo.repository.redis.ShopRedisRepositoryImpl
 
 /** Cache hit 방식으로 데이터에 access하는 repository 구현
  * @param shopDynamoRepository DynamoDB의 shop 테이블에 접근하는 repository
@@ -15,8 +14,8 @@ import team.bakkas.domaindynamo.repository.redis.ShopRedisRepository
  */
 @Repository
 class ShopRepository(
-    private val shopDynamoRepository: ShopDynamoRepository,
-    private val shopRedisRepository: ShopRedisRepository
+    private val shopDynamoRepository: ShopDynamoRepositoryImpl,
+    private val shopRedisRepository: ShopRedisRepositoryImpl
 ) {
     companion object {
         // Cache를 보관할 기간을 정의
