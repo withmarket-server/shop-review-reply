@@ -78,7 +78,7 @@
 
 * * *
 
-### 👉 **본 프로젝트 모듈 구조 (Architecture of this project)**
+### 👉 **본 프로젝트 모듈 구조 (Module Structure of This Project)**
 
 이 섹션에서는 본 프로젝트의 모듈에 대해서 설명하고자한다. 프로젝트 모듈을 분리하면서 주의해야할 점을 먼저 소개한 다음에, 본격적으로 본 프로젝트의 아키텍처를 설명하고자한다.
 
@@ -121,3 +121,24 @@ domain layer에 존재하는 repository에 대해서 실제 구현체를 보관�
 System에는 관여하지 않지만, System을 구현함에 있어서 필요한 타입을 정의하는 모듈이다.
 
 **System에 관여하지 않는 타입클래스 혹은 툴만 여기다 위치시켜서 common hell에 빠지지 않도록 항상 주의하자.**
+
+* * *
+
+### 👉 **본 프로젝트 전체적인 아키텍처(Architecture of This Project)**
+
+우선 8월 10일 까지 구현한 아키텍처 기준으로 설명을 드리겠습니다.
+
+<img src="./img/withmarket-architecture-big-picture.png" height="600">
+
+* Application Query에서는 읽기 DB로 Redis를 사용한다. Redis의 경우 In-memory Database이기 때문에 높은 throghput을 자랑하며, 초당 100만 요청까지 처리 가능한 것으로 알려져있다.
+* Redis는 DynamoDB를 Look Aside 관계로 의존하는 형태이며, 찾고자하는 데이터가 Redis에 캐싱이 안 되어있거나, 혹은 DynamoDB와 싱크가 안 맞는 현상을 대비하기 위해 약한 결합을 띄고있다.
+* Application Command의 경우 명령 요청을 처리하는 Application이다. 명령 요청이 떨어지면 DynamoDB에 저장된 데이터에 변형이 발생하게된다. 예시를 한번 들어보면서 설명을 드리자면, 
+
+1. ShopReview가 1번 가게에 작성이 되었다고 가정한다.
+2. ShopReview의 경우 Application Command에서 잘 처리되어 dynamoDB의 shop-review table에 잘 저장이된다.
+3. 그러나, review가 작성이 되면 shop 테이블의 1번 가게의 리뷰 카운트 수를 늘려야한다. 
+4. 동시에, redis에도 review가 캐시가 되어야한다.
+
+* 3, 4번의 상황의 경우 Application Command 자체에서 처리하기에는 설계적 결함이 발생할 수 있습니다. ShopReview를 조작하는 코드에서 Shop까지 건드려서 저장한다? 당장에는 좋아도 만일 도메인별로 시스템을 찢게되면 나중에 이러한 커플링을 끊어야할지도 모릅니다.
+* 저는 도메인 간의 디커플링을 최대한 이뤄내기 위해서 Apache Kafka를 도입하기로 결정했습니다. Application Command에서 명령 로직이 떨어지면 파생되는 이벤트를 발행해서 Kafka에 싣고, 이를 어디선가 consume하여 DynamoDB, Redis로 반영하면 되니까요.
+* 이를 통해 shopReview를 건드리는 로직에서 Shop을 건드리지 않은 상태로 DynamoDB의 1번 가게 리뷰 카운트를 늘리고, 동시에 redis에도 캐싱을 할수있게 됩니다.
