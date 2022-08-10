@@ -74,29 +74,56 @@
 
 * * *
 
-### **본 프로젝트 모듈의 계층 (Hierarchy of modules in this project)**
+### 👉 **모듈 분리에 관한 의사결정 과정**
 
-1️⃣ Application Layer (Application 역할과 책임을 수행하는 레이어)
+저는 모듈의 분리에 관한 목적은 **코드의 역할과 책임에 따른 명확한 분리**에 있다고 생각합니다. 따라서 저는 **역할과 책임**을 분리하는 기준을 명확하게 할 필요가 있다고 보았습니다.
 
-* **application-query**
-가게 시스템에 대해서 Read Logic만을 처리하는 애플리케이션이다.
-domain-queryservice 모듈을 참조하여 해당 모듈에서 짜여진 service code를 controller로 가공하는 역할을 한다.
+따라서 저는 3단계의 필터를 두어서 System에 관여하는 모듈을 4개 정도로 나누고자 하였습니다.
 
-2️⃣ Domain Layer (Domain과 관련된 역할과 책임을 수행하는 레이어)
+<img src="./img/module-segregation-diagram.png" height="480">
 
-* **domain-dynamo**
-dynamoDB에 대한 설정과 repository, entity를 담고있는 모듈이다. 동시에 repository 단계에서 redis로의 캐싱을 정의한다.
+* * *
 
-* **domain-redis**
-redis에 대한 설정을 담고있는 모듈이다. domain-dynamo에서 본 모듈을 참조하여 redis에 대한 캐싱을 정의한다
+### 👉 **본 프로젝트 모듈 구조 (Architecture of this project)**
 
-* **domain-queryservice**
-domain-dynamo, client-mobilequery, common 모듈을 참조하여 가게 노출에 대한 서비스 로직을 담당하는 모듈이다.
+이 섹션에서는 본 프로젝트의 모듈에 대해서 설명하고자한다. 프로젝트 모듈을 분리하면서 주의해야할 점을 먼저 소개한 다음에, 본격적으로 본 프로젝트의 아키텍처를 설명하고자한다.
 
-3️⃣ System Layer (Domain과 관련은 없지만, System을 알고있는 코드를 모아둔 레이어)
+1️⃣ 분리한 module 간에는 Bi-Directional Dependency (Dependency Cycle)이 발생하지 않도록 주의하자. 쌍방 의존이 안좋은것도 맞고, 그냥 gradle에서 빌드 자체가 안된다.
 
-* **client-mobilequery**
-CRUD 중에 R을 위한 DTO 클래스들을 모아둔 레이어이다.
-추후에 CQRS 패턴 구현을 위해서 command를 담당하는 client와 분리해둔 상태이다.
+2️⃣ 분리한 module 간에는 Common 모듈이 아닌 이상 2단계 아래 참조는 웬만하면 금지한다. 2단게 아래 참조를 한다는건 모듈 분리가 잘못됐다는 증거다. (Infrastructure layer는 제외)
 
-4️⃣ Common Layer (System을 모르지만, System을 구성하기 위해 필요한 데이터들을 모아둔 레이어)
+이제부터 본격적으로 프로젝트의 아키텍처에 대해서 설명하겠다.
+
+![](./img/withmarket-architecture-detail.png)
+
+1. **Application Layer**
+
+응용계층, 표현 계층을 관리하는 모듈. 즉, Handler, Router class 들을 관리하는 모듈이다.
+
+* Application-query: 조회 로직을 관리하는 application module
+* Application-command: 커맨드 로직을 관리하는 application module
+
+2. **System Layer**
+
+어플리케이션 로직을 모르고, 도메인 로직을 모르지만, System에는 관여하는 코드들을 모아둔 모듈이다. 주로 DTO가 여기에 위치한다.
+
+* client-query: 조회 DTO를 모아둔 모듈
+* client-command: 명령 로직에 사용되는 DTO를 모아둔 모듈
+
+3. **Domain Layer**
+
+Entity, Service, Repository, Validator를 구현하는 Layer.
+
+* domain-dynamo: dynamo에 관련된 도메인을 관리하는 모듈. Entity, Repository, Validator를 보관하며, Repository에 대해서는 실제 구현체가 아닌 interface만을 보관한다.
+* domain-query: query 로직에 대한 Service를 구현하는 모듈
+* domain-command: command 로직에 대한 Service를 구현하는 모듈
+
+4. **Infrastructure**
+
+domain layer에 존재하는 repository에 대해서 실제 구현체를 보관하는 모듈이다. DB에 접근하기 위한 config, RepositoryImpl을 여기서 구현해서 Bean으로 등록한다.
+
+5. **Common**
+
+System에는 관여하지 않지만, System을 구현함에 있어서 필요한 타입을 정의하는 모듈이다.
+
+**System에 관여하지 않는 타입클래스 혹은 툴만 여기다 위치시켜서 common hell에 빠지지 않도록 항상 주의하자.**
