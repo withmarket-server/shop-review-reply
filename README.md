@@ -128,7 +128,7 @@ System에는 관여하지 않지만, System을 구현함에 있어서 필요한 
 
 우선 8월 10일 까지 구현한 아키텍처 기준으로 설명을 드리겠습니다.
 
-<img src="./img/withmarket-architecture-big-picture.png" height="600">
+<img src="img/withmarket-architecture-total.png" height="600">
 
 * Application Query에서는 읽기 DB로 Redis를 사용한다. Redis의 경우 In-memory Database이기 때문에 높은 throghput을 자랑하며, 초당 100만 요청까지 처리 가능한 것으로 알려져있다.
 * Redis는 DynamoDB를 Look Aside 관계로 의존하는 형태이며, 찾고자하는 데이터가 Redis에 캐싱이 안 되어있거나, 혹은 DynamoDB와 싱크가 안 맞는 현상을 대비하기 위해 약한 결합을 띄고있다.
