@@ -10,12 +10,12 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import team.bakkas.common.exceptions.shopReview.ShopReviewNotFoundException
 import team.bakkas.domaindynamo.entity.ShopReview
-import team.bakkas.domainqueryservice.repository.ifs.ShopReviewRepository
+import team.bakkas.domainqueryservice.repository.ifs.ShopReviewReader
 import team.bakkas.domainqueryservice.service.ifs.ShopReviewQueryService
 
 @Service
 class ShopReviewQueryServiceImpl(
-    private val shopReviewRepository: ShopReviewRepository
+    private val shopReviewReader: ShopReviewReader
 ): ShopReviewQueryService {
 
     /** reviewId와 reviewTitle을 기반으로 ShopReview를 가져오는 메소드
@@ -27,7 +27,7 @@ class ShopReviewQueryServiceImpl(
     @Transactional(readOnly = true)
     override suspend fun findReviewByIdAndTitle(reviewId: String, reviewTitle: String): ShopReview =
         withContext(Dispatchers.IO) {
-            val reviewMono = shopReviewRepository.findShopReviewByIdAndTitleWithCaching(reviewId, reviewTitle)
+            val reviewMono = shopReviewReader.findShopReviewByIdAndTitleWithCaching(reviewId, reviewTitle)
             val reviewDeferred = CoroutinesUtils.monoToDeferred(reviewMono)
 
             return@withContext reviewDeferred.await() ?: throw ShopReviewNotFoundException("review is not found!!")
@@ -35,7 +35,7 @@ class ShopReviewQueryServiceImpl(
 
     @Transactional(readOnly = true)
     override suspend fun getReviewListByShop(shopId: String, shopName: String): List<ShopReview> = withContext(Dispatchers.IO) {
-        val reviewFlow = shopReviewRepository.getShopReviewListFlowByShopIdAndNameWithCaching(shopId, shopName)
+        val reviewFlow = shopReviewReader.getShopReviewListFlowByShopIdAndNameWithCaching(shopId, shopName)
 
         // flow에 item이 하나도 전달이 안 되는 경우의 예외 처리
         try {

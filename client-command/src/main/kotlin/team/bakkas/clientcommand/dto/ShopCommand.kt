@@ -34,6 +34,7 @@ sealed class ShopCommand {
     data class ReviewCountEventDto(
         var shopId: String,
         var shopName: String,
-        var isGenerated: Boolean
+        var isGenerated: Boolean,
+        var reviewScore: Double
     )
 }

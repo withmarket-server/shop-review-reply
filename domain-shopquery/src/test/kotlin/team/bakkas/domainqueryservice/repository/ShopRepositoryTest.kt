@@ -20,7 +20,7 @@ import java.time.Duration
 @SpringBootTest
 internal class ShopRepositoryTest @Autowired constructor(
     val shopDynamoRepository: ShopDynamoRepository,
-    val shopRepository: ShopRepositoryImpl,
+    val shopRepository: ShopReaderImpl,
     val shopReactiveRedisTemplate: ReactiveRedisTemplate<String, Shop>
 ) {
 

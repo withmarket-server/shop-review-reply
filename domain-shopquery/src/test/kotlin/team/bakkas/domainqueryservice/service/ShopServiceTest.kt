@@ -22,7 +22,7 @@ import team.bakkas.common.category.Category
 import team.bakkas.common.category.DetailCategory
 import team.bakkas.common.exceptions.shop.ShopNotFoundException
 import team.bakkas.domaindynamo.entity.Shop
-import team.bakkas.domainqueryservice.repository.ifs.ShopRepository
+import team.bakkas.domainqueryservice.repository.ifs.ShopReader
 import java.time.LocalDateTime
 import java.time.LocalTime
 
@@ -33,7 +33,7 @@ import java.time.LocalTime
 @ExtendWith(MockKExtension::class)
 internal class ShopServiceTest {
     @MockK(relaxed = true)
-    private lateinit var shopRepository: ShopRepository // mock stub 오류를 안 잡아내게 설정
+    private lateinit var shopRepository: ShopReader // mock stub 오류를 안 잡아내게 설정
 
     private lateinit var shopService: ShopQueryServiceImpl
 

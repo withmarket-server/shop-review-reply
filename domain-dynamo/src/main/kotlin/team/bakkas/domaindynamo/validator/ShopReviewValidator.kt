@@ -10,7 +10,7 @@ import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.util.UriComponentsBuilder
 import reactor.core.publisher.Mono
 import team.bakkas.common.Results
-import team.bakkas.common.WebClientHelper
+import team.bakkas.common.utils.WebClientHelper
 import team.bakkas.common.exceptions.RequestFieldException
 import team.bakkas.common.exceptions.shop.ShopNotFoundException
 import team.bakkas.common.urls.ServerUrlsInterface
@@ -63,6 +63,11 @@ class ShopReviewValidator(
         // reviewContent의 길이를 200으로 제한한다
         if (review.reviewContent.length > 200) {
             errors.rejectValue("reviewContent", "field.max.length", "review의 내용은 200을 넘어서는 안됩니다.")
+        }
+
+        // reivewScore가 0점인 경우 제한한다
+        if(review.reviewScore <= 0 || review.reviewScore > 10) {
+            errors.rejectValue("reviewScore", "field.value.range", "review score은 무조건 0 초과 10 이하입니다.")
         }
     }
 

@@ -7,7 +7,7 @@ import reactor.core.publisher.Mono
 import team.bakkas.domaindynamo.entity.Shop
 import team.bakkas.domaindynamo.repository.dynamo.ShopDynamoRepository
 import team.bakkas.domaindynamo.repository.redis.ShopRedisRepository
-import team.bakkas.domainqueryservice.repository.ifs.ShopRepository
+import team.bakkas.domainqueryservice.repository.ifs.ShopReader
 
 // TODO CQRS 패턴이 완전 정착되면 삭제할 예정임
 /** Cache hit 방식으로 데이터에 access하는 repository 구현
@@ -15,10 +15,10 @@ import team.bakkas.domainqueryservice.repository.ifs.ShopRepository
  * @param shopReactiveRedisTemplate Redis에 Shop entity를 논블로킹 방식으로 캐싱하는데 사용하는 template
  */
 @Repository
-class ShopRepositoryImpl(
+class ShopReaderImpl(
     private val shopDynamoRepository: ShopDynamoRepository,
     private val shopRedisRepository: ShopRedisRepository
-): ShopRepository {
+): ShopReader {
     companion object {
         // Cache를 보관할 기간을 정의
         val DAYS_TO_LIVE = 1L

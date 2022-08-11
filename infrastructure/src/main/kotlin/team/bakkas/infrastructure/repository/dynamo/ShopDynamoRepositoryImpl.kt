@@ -3,6 +3,7 @@ package team.bakkas.infrastructure.repository.dynamo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.reactive.asFlow
+import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbAsyncTable

@@ -1,4 +1,4 @@
-package team.bakkas.common
+package team.bakkas.common.utils
 
 import org.springframework.web.util.DefaultUriBuilderFactory
 

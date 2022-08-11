@@ -53,7 +53,7 @@ class ShopReviewCommandHandler(
             // review가 생성되었음을 shop table로 전파
             reviewCountEventKafkaTemplate.send(
                 KafkaTopics.reviewCountEventTopic, ShopCommand.ReviewCountEventDto(
-                    shopId, shopName, true
+                    shopId, shopName, true, reviewScore
                 )
             )
         }
