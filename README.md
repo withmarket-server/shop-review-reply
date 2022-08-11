@@ -142,3 +142,34 @@ System에는 관여하지 않지만, System을 구현함에 있어서 필요한 
 * 3, 4번의 상황의 경우 Application Command 자체에서 처리하기에는 설계적 결함이 발생할 수 있습니다. ShopReview를 조작하는 코드에서 Shop까지 건드려서 저장한다? 당장에는 좋아도 만일 도메인별로 시스템을 찢게되면 나중에 이러한 커플링을 끊어야할지도 모릅니다.
 * 저는 도메인 간의 디커플링을 최대한 이뤄내기 위해서 Apache Kafka를 도입하기로 결정했습니다. Application Command에서 명령 로직이 떨어지면 파생되는 이벤트를 발행해서 Kafka에 싣고, 이를 어디선가 consume하여 DynamoDB, Redis로 반영하면 되니까요.
 * 이를 통해 shopReview를 건드리는 로직에서 Shop을 건드리지 않은 상태로 DynamoDB의 1번 가게 리뷰 카운트를 늘리고, 동시에 redis에도 캐싱을 할수있게 됩니다.
+
+* * *
+
+### 👉 발견한 에러 혹은 해결해야할 부분들
+
+<details>
+
+<summary>Spring Kafka에 Coroutine 적용시 에러가 걸리는 현상</summary>
+
+<div markdown="1">
+Spring Kafka로 Coroutines를 이용해 message를 프로듀싱하는데는 문제가 없으나,이 메시지를 KafkaListener를 이용해서 consume할 때 문제가 발생한다.
+
+~~~
+Cannot convert from [team.bakkas.domaindynamo.entity.ShopReview] to [kotlin.coroutines.Continuation] for GenericMessage 
+[payload=ShopReview(reviewId=2d2b89fa-0e47-4643-bdff-92a9c0d99f1d, reviewTitle=꾸덕꾸덕한게 맛있네요!, shopId=85485be6-f065-4305-a8c6-ff23997ae9f1, shopName=Hash, reviewContent=아주아주 추천해요!, reviewScore=10.0, reviewPhotoList=[], createdAt=2022-08-11T20:27:36.023015, updatedAt=null), 
+headers={kafka_offset=0, kafka_consumer=org.apache.kafka.clients.consumer.KafkaConsumer@43963b4d, kafka_timestampType=CREATE_TIME, kafka_receivedPartitionId=1, kafka_receivedTopic=withmarket.shopReview.create, kafka_receivedTimestamp=1660217256882, ...]
+~~~
+
+**위의 내용을 해석하자면, Message를 읽어서 Continuations를 생성할 때 문제가 발생한다는 것이다.** 
+
+코틀린 코루틴은 Continuations를 기반으로한 CPS 방식으로 동작하기 때문에, **Continuation이 생성되지 않는다는 것은 곧 Spring Kafka와 Coroutines를 함께 이용해서는 Event를 컨슘할 수 없다는 뜻이다.** 😭
+
+내가 해볼 시도는 다음과 같다
+
+* (TODO) Spring Kafka Listener에서는 **Kotlin Coroutines가 아닌 Mono를 이용해서 처리한다.** -> 확인 시점에서 안 되어있을 수도 있음.
+* (TODO) 그래도 안되면...동기식으로 처리한다.
+
+
+</div>
+
+</details>
