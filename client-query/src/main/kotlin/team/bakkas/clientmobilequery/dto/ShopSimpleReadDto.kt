@@ -10,34 +10,19 @@ import team.bakkas.common.category.DetailCategory
  * @since 22/05/22
  */
 data class ShopSimpleReadDto(
-    @JsonProperty("shop_id")
-    var shopId: String,
-    @JsonProperty("shop_name")
-    var shopName: String,
-    @JsonProperty("is_open")
-    var isOpen: Boolean,
-    @JsonProperty("lot_number_address")
-    var lotNumberAddress: String,
-    @JsonProperty("road_name_address")
-    var roadNameAddress: String,
-    @JsonProperty("latitude")
-    var latitude: Double,
-    @JsonProperty("longitude")
-    var longitude: Double,
-    @JsonProperty("average_score")
-    var averageScore: Double,
-    @JsonProperty("review_number")
-    var reviewNumber: Int,
-    @JsonProperty("main_image")
-    var mainImage: String?,
-    @JsonProperty("description")
-    var shopDescription: String?,
-    @JsonProperty("category")
-    var shopCategory: Category,
-    @JsonProperty("detail_category")
-    var shopDetailCategory: DetailCategory,
-    @JsonProperty("is_branch")
-    var isBranch: Boolean,
-    @JsonProperty("branch_name")
-    var branchName: String?
+    @JsonProperty("shop_id") var shopId: String,
+    @JsonProperty("shop_name") var shopName: String,
+    @JsonProperty("is_open") var isOpen: Boolean,
+    @JsonProperty("lot_number_address") var lotNumberAddress: String,
+    @JsonProperty("road_name_address") var roadNameAddress: String,
+    @JsonProperty("latitude") var latitude: Double,
+    @JsonProperty("longitude") var longitude: Double,
+    @JsonProperty("average_score") var averageScore: Double,
+    @JsonProperty("review_number") var reviewNumber: Int,
+    @JsonProperty("main_image") var mainImage: String?,
+    @JsonProperty("description") var shopDescription: String?,
+    @JsonProperty("category") var shopCategory: Category,
+    @JsonProperty("detail_category") var shopDetailCategory: DetailCategory,
+    @JsonProperty("is_branch") var isBranch: Boolean,
+    @JsonProperty("branch_name") var branchName: String?
 )

@@ -20,7 +20,7 @@ import team.bakkas.domainshopcommand.service.ifs.ShopCommandService
 class ShopCommandServiceImpl(
     private val shopDynamoRepository: ShopDynamoRepository,
     private val shopValidator: ShopValidator
-): ShopCommandService {
+) : ShopCommandService {
 
     /** shop을 생성하는 비지니스 로직을 정의하는 메소드
      * @param shopCreateDto shop을 create 하는데 사용하는 dto parameter

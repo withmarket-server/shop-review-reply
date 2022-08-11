@@ -24,7 +24,7 @@ import team.bakkas.domaindynamo.repository.dynamo.ShopDynamoRepository
 @Repository
 class ShopDynamoRepositoryImpl(
     private val dynamoDbEnhancedAsyncClient: DynamoDbEnhancedAsyncClient
-): ShopDynamoRepository {
+) : ShopDynamoRepository {
     val asyncTable: DynamoDbAsyncTable<Shop> =
         dynamoDbEnhancedAsyncClient.table("shop", TableSchema.fromBean(Shop::class.java))
 

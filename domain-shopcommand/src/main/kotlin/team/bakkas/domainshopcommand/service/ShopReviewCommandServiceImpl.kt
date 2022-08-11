@@ -3,6 +3,7 @@ package team.bakkas.domainshopcommand.service
 import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.core.CoroutinesUtils
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import team.bakkas.clientcommand.dto.ShopReviewCommand
 import team.bakkas.domaindynamo.entity.ShopReview
 import team.bakkas.domaindynamo.repository.dynamo.ShopReviewDynamoRepository
@@ -14,8 +15,9 @@ import team.bakkas.domainshopcommand.service.ifs.ShopReviewCommandService
 class ShopReviewCommandServiceImpl(
     private val shopReviewDynamoRepository: ShopReviewDynamoRepository,
     private val shopReviewValidator: ShopReviewValidator
-): ShopReviewCommandService {
+) : ShopReviewCommandService {
 
+    @Transactional
     override suspend fun createReview(reviewCreateDto: ShopReviewCommand.CreateDto): ShopReview {
         val review = reviewCreateDto.toEntity()
         // 검증

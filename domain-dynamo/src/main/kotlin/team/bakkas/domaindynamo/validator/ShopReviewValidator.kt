@@ -66,7 +66,7 @@ class ShopReviewValidator(
         }
 
         // reivewScore가 0점인 경우 제한한다
-        if(review.reviewScore <= 0 || review.reviewScore > 10) {
+        if (review.reviewScore <= 0 || review.reviewScore > 10) {
             errors.rejectValue("reviewScore", "field.value.range", "review score은 무조건 0 초과 10 이하입니다.")
         }
     }

@@ -16,7 +16,7 @@ import team.bakkas.domainqueryservice.service.ifs.ShopReviewQueryService
 @Service
 class ShopReviewQueryServiceImpl(
     private val shopReviewReader: ShopReviewReader
-): ShopReviewQueryService {
+) : ShopReviewQueryService {
 
     /** reviewId와 reviewTitle을 기반으로 ShopReview를 가져오는 메소드
      * @param reviewId review id
@@ -34,29 +34,30 @@ class ShopReviewQueryServiceImpl(
         }
 
     @Transactional(readOnly = true)
-    override suspend fun getReviewListByShop(shopId: String, shopName: String): List<ShopReview> = withContext(Dispatchers.IO) {
-        val reviewFlow = shopReviewReader.getShopReviewListFlowByShopIdAndNameWithCaching(shopId, shopName)
+    override suspend fun getReviewListByShop(shopId: String, shopName: String): List<ShopReview> =
+        withContext(Dispatchers.IO) {
+            val reviewFlow = shopReviewReader.getShopReviewListFlowByShopIdAndNameWithCaching(shopId, shopName)
 
-        // flow에 item이 하나도 전달이 안 되는 경우의 예외 처리
-        try {
-            val firstItem = CoroutinesUtils.monoToDeferred(reviewFlow.first()).await()
-            checkNotNull(firstItem)
-        } catch (_: Exception) {
-            throw ShopReviewNotFoundException("Shop review is not found!!")
-        }
+            // flow에 item이 하나도 전달이 안 되는 경우의 예외 처리
+            try {
+                val firstItem = CoroutinesUtils.monoToDeferred(reviewFlow.first()).await()
+                checkNotNull(firstItem)
+            } catch (_: Exception) {
+                throw ShopReviewNotFoundException("Shop review is not found!!")
+            }
 
-        val reviewList = mutableListOf<ShopReview>()
+            val reviewList = mutableListOf<ShopReview>()
 
-        reviewFlow.buffer().collect {
+            reviewFlow.buffer().collect {
                 val review = CoroutinesUtils.monoToDeferred(it).await()
                 reviewList.add(review!!)
             }
 
-        // review가 하나도 안 모였다면 바로 에러 처리
-        check(reviewList.size != 0) {
-            throw ShopReviewNotFoundException("Shop review is not found!!")
-        }
+            // review가 하나도 안 모였다면 바로 에러 처리
+            check(reviewList.size != 0) {
+                throw ShopReviewNotFoundException("Shop review is not found!!")
+            }
 
-        reviewList
-    }
+            reviewList
+        }
 }

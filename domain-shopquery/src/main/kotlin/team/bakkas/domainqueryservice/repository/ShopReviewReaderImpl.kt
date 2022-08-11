@@ -18,7 +18,7 @@ import java.time.Duration
 class ShopReviewReaderImpl(
     private val shopReviewDynamoRepository: ShopReviewDynamoRepository,
     private val shopReviewReactiveRedisTemplate: ReactiveRedisTemplate<String, ShopReview>
-): ShopReviewReader {
+) : ShopReviewReader {
 
     companion object {
         val DAYS_TO_LIVE = 1L
@@ -52,7 +52,10 @@ class ShopReviewReaderImpl(
      * @param shopName
      * @return Flow<Mono<ShopReview>> flow consisted with monos of shopReview
      */
-    override fun getShopReviewListFlowByShopIdAndNameWithCaching(shopId: String, shopName: String): Flow<Mono<ShopReview?>> {
+    override fun getShopReviewListFlowByShopIdAndNameWithCaching(
+        shopId: String,
+        shopName: String
+    ): Flow<Mono<ShopReview?>> {
         val reviewKeysFlow = shopReviewDynamoRepository.getAllReviewKeyFlowByShopIdAndName(shopId, shopName)
         return reviewKeysFlow.map {
             findShopReviewByIdAndTitleWithCaching(it.first, it.second)

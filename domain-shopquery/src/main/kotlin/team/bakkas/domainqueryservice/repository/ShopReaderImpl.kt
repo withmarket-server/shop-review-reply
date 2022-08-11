@@ -18,7 +18,7 @@ import team.bakkas.domainqueryservice.repository.ifs.ShopReader
 class ShopReaderImpl(
     private val shopDynamoRepository: ShopDynamoRepository,
     private val shopRedisRepository: ShopRedisRepository
-): ShopReader {
+) : ShopReader {
     companion object {
         // Cache를 보관할 기간을 정의
         val DAYS_TO_LIVE = 1L
@@ -47,8 +47,6 @@ class ShopReaderImpl(
         return shopRedisRepository.findShopByKey(key)
             .switchIfEmpty(alternativeShopMono)
     }
-
-
 
 
     // 모든 Shop을 가져오는 flow를 반환해주는 메소드

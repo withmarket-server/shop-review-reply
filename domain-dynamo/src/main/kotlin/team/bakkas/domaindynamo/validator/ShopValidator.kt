@@ -12,7 +12,7 @@ import team.bakkas.domaindynamo.entity.Shop
 
 // Shop을 검증하는 로직을 정의하는 클래스
 @Component
-class ShopValidator: Validator {
+class ShopValidator : Validator {
 
     override fun supports(clazz: Class<*>): Boolean {
         return Shop::class.java.isAssignableFrom(clazz)

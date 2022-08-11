@@ -18,7 +18,7 @@ import team.bakkas.domainqueryservice.service.ifs.ShopQueryService
 @Service
 class ShopQueryServiceImpl(
     private val shopReader: ShopReader
-): ShopQueryService {
+) : ShopQueryService {
 
     /** shopId와 shopName을 이용해서 shop을 가져오는 service method
      * @param shopId shop의 primary key
