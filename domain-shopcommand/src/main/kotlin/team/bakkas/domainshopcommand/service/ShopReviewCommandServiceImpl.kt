@@ -1,5 +1,6 @@
 package team.bakkas.domainshopcommand.service
 
+import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.core.CoroutinesUtils
 import org.springframework.stereotype.Service
 import team.bakkas.clientcommand.dto.ShopReviewCommand
@@ -21,8 +22,7 @@ class ShopReviewCommandServiceImpl(
         shopReviewValidator.validateCreatable(review)
 
         // 검증이 끝나면 review 생성
-        CoroutinesUtils.monoToDeferred(shopReviewDynamoRepository.createReviewAsync(review))
-            .await()
+        shopReviewDynamoRepository.createReviewAsync(review).awaitSingle()
 
         return review
     }

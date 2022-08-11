@@ -1,6 +1,5 @@
 package team.bakkas.applicationcommand.eventListeners
 
-import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.stereotype.Component
 import team.bakkas.applicationcommand.kafka.KafkaConsumerGroups
@@ -30,6 +29,44 @@ class ShopEventListener(
         groupId = KafkaConsumerGroups.updateShopReviewCountGroup
     )
     fun updateReviewCount(reviewCountEventDto: ShopCommand.ReviewCountEventDto) {
+        /*
+        1. Shop을 DynamoDB로부터 가져온다
+        2. DynamoDB로부터 가져온 Shop에 대해서 averageScore, reviewCount를 조작한다.
+        3. 해당 Shop을 DynamoDB에 갱신하고, 동시에 Redis에도 갱신한다.
+         */
+        val shopMono = with(reviewCountEventDto) {
+            shopDynamoRepository.findShopByIdAndNameAsync(shopId, shopName)
+        }.map { it!! }
+            .map { changeShopInfo(it, reviewCountEventDto) }
 
+        // 비동기적으로 dynamo, redis에 해당 정보 저장
+        shopMono.flatMap { shopDynamoRepository.createShopAsync(it) }.subscribe()
+        shopMono.flatMap { shopRedisRepository.cacheShop(it) }.subscribe()
+    }
+
+    // shop의 변화를 반영해주는 메소드
+    private fun changeShopInfo(shop: Shop, reviewCountEventDto: ShopCommand.ReviewCountEventDto): Shop {
+        return when (reviewCountEventDto.isGenerated) {
+            true -> applyGenerateReview(shop, reviewCountEventDto.reviewScore)
+            false -> applyDeleteReview(shop, reviewCountEventDto.reviewScore)
+        }
+    }
+
+    // review가 삭제되었을 때 해당 리뷰 삭제를 shop에 반영해주는 메소드
+    private fun applyDeleteReview(shop: Shop, reviewScore: Double): Shop = with(shop) {
+        val newTotalScore = averageScore * reviewNumber - reviewScore // 새로 반영될 총점 계산
+        averageScore = newTotalScore / (reviewNumber - 1)
+        reviewNumber -= 1
+
+        return@with this
+    }
+
+    // review가 생성되었을 때 해당 리뷰 생성을 shop에 반영해주는 메소드
+    private fun applyGenerateReview(shop: Shop, reviewScore: Double): Shop = with(shop) {
+        val newTotalScore = averageScore * reviewNumber + reviewScore
+        averageScore = newTotalScore / (reviewNumber + 1)
+        reviewNumber += 1
+
+        return@with this
     }
 }
