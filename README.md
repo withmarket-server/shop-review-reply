@@ -166,9 +166,30 @@ headers={kafka_offset=0, kafka_consumer=org.apache.kafka.clients.consumer.KafkaC
 
 내가 해볼 시도는 다음과 같다
 
-* (TODO) Spring Kafka Listener에서는 **Kotlin Coroutines가 아닌 Mono를 이용해서 처리한다.** -> 확인 시점에서 안 되어있을 수도 있음.
-* (TODO) 그래도 안되면...동기식으로 처리한다.
+* (COMPLETE) Spring Kafka Listener에서는 **Kotlin Coroutines가 아닌 Mono를 이용해서 처리한다.**
 
+👉 **해결 방법**
+~~~kotlin
+@KafkaListener(
+    topics = [KafkaTopics.reviewCountEventTopic],
+    groupId = KafkaConsumerGroups.updateShopReviewCountGroup
+)
+fun updateReviewCount(reviewCountEventDto: ShopCommand.ReviewCountEventDto) {
+    /*
+    1. Shop을 DynamoDB로부터 가져온다
+    2. DynamoDB로부터 가져온 Shop에 대해서 averageScore, reviewCount를 조작한다.
+    3. 해당 Shop을 DynamoDB에 갱신하고, 동시에 Redis에도 갱신한다.
+     */
+    val shopMono = with(reviewCountEventDto) {
+        shopDynamoRepository.findShopByIdAndNameAsync(shopId, shopName)
+    }.map { it!! }
+        .map { changeShopInfo(it, reviewCountEventDto) }
+
+    // 비동기적으로 dynamo, redis에 해당 정보 저장
+    shopMono.flatMap { shopDynamoRepository.createShopAsync(it) }.subscribe()
+    shopMono.flatMap { shopRedisRepository.cacheShop(it) }.subscribe()
+}
+~~~
 
 </div>
 
