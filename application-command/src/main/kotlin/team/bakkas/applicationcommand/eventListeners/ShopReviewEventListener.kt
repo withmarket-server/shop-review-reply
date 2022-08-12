@@ -1,5 +1,6 @@
 package team.bakkas.applicationcommand.eventListeners
 
+import org.slf4j.LoggerFactory
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.stereotype.Component
 import team.bakkas.applicationcommand.kafka.KafkaConsumerGroups
@@ -13,10 +14,20 @@ import team.bakkas.domaindynamo.repository.redis.ShopReviewRedisRepository
 class ShopReviewEventListener(
     private val shopReviewRedisRepository: ShopReviewRedisRepository
 ) {
+    private val logger = LoggerFactory.getLogger(this::class.java)
+
     // review 생성 이벤트가 발행되면 처리하는 메소드
     @KafkaListener(topics = [KafkaTopics.shopReviewCreateTopic], groupId = KafkaConsumerGroups.createShopReviewGroup)
-    fun cacheCreatedShop(shopReview: ShopReview) {
+    fun cacheCreatedShopReview(shopReview: ShopReview) {
         shopReviewRedisRepository.cacheReview(shopReview)
+            .subscribe()
+    }
+
+    // review 삭제 이벤트가 발행되면 처리하는 메소드
+    @KafkaListener(topics = [KafkaTopics.shopReviewDeleteTopic], groupId = KafkaConsumerGroups.deleteShopReviewGroup)
+    fun deleteCache(shopReview: ShopReview) {
+        shopReviewRedisRepository.deleteReview(shopReview)
+            .doOnError { logger.info("(Delete review cache) Cache not exist!") }
             .subscribe()
     }
 }

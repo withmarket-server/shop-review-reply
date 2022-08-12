@@ -26,6 +26,5 @@ class ShopReviewRedisRepositoryImpl(
         shopReviewReactiveRedisTemplate.opsForValue().get(reviewKey)
             .single()
             .flatMap { shopReviewReactiveRedisTemplate.opsForValue().delete(reviewKey) }
-            .doOnError { }
     }
 }

@@ -55,7 +55,13 @@ class ShopEventListener(
     // review가 삭제되었을 때 해당 리뷰 삭제를 shop에 반영해주는 메소드
     private fun applyDeleteReview(shop: Shop, reviewScore: Double): Shop = with(shop) {
         val newTotalScore = averageScore * reviewNumber - reviewScore // 새로 반영될 총점 계산
-        averageScore = newTotalScore / (reviewNumber - 1)
+
+        // averageScore을 수정한다.
+        averageScore = when(reviewNumber) {
+            1 -> 0.0
+            else -> newTotalScore / (reviewNumber - 1)
+        }
+
         reviewNumber -= 1
 
         return@with this
