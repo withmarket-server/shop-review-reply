@@ -18,8 +18,10 @@ import team.bakkas.common.category.DetailCategory
 import team.bakkas.common.exceptions.RegionNotKoreaException
 import team.bakkas.common.exceptions.shop.ShopBranchInfoInvalidException
 import team.bakkas.domaindynamo.repository.dynamo.ShopDynamoRepository
-import team.bakkas.domaindynamo.validator.ShopValidator
+import team.bakkas.domaindynamo.validator.ShopValidatorImpl
+import team.bakkas.domaindynamo.validator.ifs.ShopValidator
 import team.bakkas.domainshopcommand.extensions.toEntity
+import team.bakkas.domainshopcommand.service.ifs.ShopCommandService
 import java.time.LocalTime
 
 @ExtendWith(MockKExtension::class)
@@ -30,11 +32,11 @@ internal class ShopCommandServiceTest {
 
     // 실제 객체들을 활용하기 위해 spyk로 선언할 객체들
     private lateinit var shopValidator: ShopValidator
-    private lateinit var shopCommandService: ShopCommandServiceImpl
+    private lateinit var shopCommandService: ShopCommandService
 
     @BeforeEach
     fun setUp() {
-        shopValidator = spyk(ShopValidator())
+        shopValidator = spyk(ShopValidatorImpl())
         shopCommandService = spyk(ShopCommandServiceImpl(shopDynamoRepository, shopValidator)) // shopCommandService를 spyK mock으로 선언
     }
 

@@ -4,15 +4,15 @@ import org.springframework.stereotype.Component
 import org.springframework.validation.BeanPropertyBindingResult
 import org.springframework.validation.Errors
 import org.springframework.validation.ValidationUtils
-import org.springframework.validation.Validator
 import team.bakkas.common.exceptions.RegionNotKoreaException
 import team.bakkas.common.exceptions.RequestFieldException
 import team.bakkas.common.exceptions.shop.ShopBranchInfoInvalidException
 import team.bakkas.domaindynamo.entity.Shop
+import team.bakkas.domaindynamo.validator.ifs.ShopValidator
 
 // Shop을 검증하는 로직을 정의하는 클래스
 @Component
-class ShopValidator : Validator {
+class ShopValidatorImpl : ShopValidator {
 
     override fun supports(clazz: Class<*>): Boolean {
         return Shop::class.java.isAssignableFrom(clazz)
@@ -28,7 +28,7 @@ class ShopValidator : Validator {
     }
 
     // 해당 가게가 생성 가능한지 검증하는 메소드
-    fun validateCreatable(shop: Shop) = with(shop) {
+    override fun validateCreatable(shop: Shop) = with(shop) {
         validateFirst(this)
 
         check(validateIsInSouthKorea(latitude, longitude)) {
@@ -45,7 +45,7 @@ class ShopValidator : Validator {
         val errors = BeanPropertyBindingResult(this, Shop::class.java.name)
         validate(this, errors)
 
-        check(errors == null || errors.allErrors.isEmpty()) {
+        check(errors.allErrors.isEmpty()) {
             throw RequestFieldException(errors.allErrors.toString())
         }
     }

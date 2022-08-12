@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional
 import team.bakkas.clientcommand.dto.ShopCommand
 import team.bakkas.domaindynamo.entity.Shop
 import team.bakkas.domaindynamo.repository.dynamo.ShopDynamoRepository
-import team.bakkas.domaindynamo.validator.ShopValidator
+import team.bakkas.domaindynamo.validator.ifs.ShopValidator
 import team.bakkas.domainshopcommand.extensions.toEntity
 import team.bakkas.domainshopcommand.service.ifs.ShopCommandService
 

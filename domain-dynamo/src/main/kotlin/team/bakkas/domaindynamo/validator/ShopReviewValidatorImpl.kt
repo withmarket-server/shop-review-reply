@@ -1,11 +1,10 @@
 package team.bakkas.domaindynamo.validator
 
-import org.springframework.core.CoroutinesUtils
+import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.stereotype.Component
 import org.springframework.validation.BeanPropertyBindingResult
 import org.springframework.validation.Errors
 import org.springframework.validation.ValidationUtils
-import org.springframework.validation.Validator
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.util.UriComponentsBuilder
 import reactor.core.publisher.Mono
@@ -15,14 +14,15 @@ import team.bakkas.common.exceptions.RequestFieldException
 import team.bakkas.common.exceptions.shop.ShopNotFoundException
 import team.bakkas.common.urls.ServerUrlsInterface
 import team.bakkas.domaindynamo.entity.ShopReview
+import team.bakkas.domaindynamo.validator.ifs.ShopReviewValidator
 
 /** Shop Review에 대한 검증을 수행하는 Validator class
  * @param urlComponent 활성화된 환경에 따라 url을 변동적으로 관리해주는 bean class. local/server 환경을 분리해서 관리한다
  */
 @Component
-class ShopReviewValidator(
+class ShopReviewValidatorImpl(
     private val urlComponent: ServerUrlsInterface
-) : Validator {
+) : ShopReviewValidator {
 
     private val baseUrl = urlComponent.SHOP_QUERY_SERVER_URL
 
@@ -33,15 +33,14 @@ class ShopReviewValidator(
         .build()
 
     // 해당 리뷰가 생성 가능한지 검증하는 메소드
-    suspend fun validateCreatable(shopReview: ShopReview) = with(shopReview) {
+    override suspend fun validateCreatable(shopReview: ShopReview) = with(shopReview) {
         validateFirst(this) // 우선 필드를 모두 검증한다
 
         // WebClient를 이용해서 해당 shop이 존재하는지 여부만 뽑아온다
         val shopResultMono: Mono<Boolean> = isExistsShop(shopId, shopName)
-        val shopResultDeferred = CoroutinesUtils.monoToDeferred(shopResultMono)
 
         // shop이 존재하지 않는 경우 예외를 발생시킨다
-        check(shopResultDeferred.await()) {
+        check(shopResultMono.awaitSingle()) {
             throw ShopNotFoundException("shop review에 대응하는 shop이 존재하지 않습니다.")
         }
     }
@@ -77,7 +76,7 @@ class ShopReviewValidator(
         validate(this, errors)
 
         // 기본 조건들을 만족하지 못하면 exception을 터뜨린다
-        check(errors == null || errors.allErrors.isEmpty()) {
+        check(errors.allErrors.isEmpty()) {
             throw RequestFieldException(errors.allErrors.toString())
         }
     }

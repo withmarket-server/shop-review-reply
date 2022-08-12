@@ -1,13 +1,12 @@
 package team.bakkas.domainshopcommand.service
 
 import kotlinx.coroutines.reactor.awaitSingle
-import org.springframework.core.CoroutinesUtils
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import team.bakkas.clientcommand.dto.ShopReviewCommand
 import team.bakkas.domaindynamo.entity.ShopReview
 import team.bakkas.domaindynamo.repository.dynamo.ShopReviewDynamoRepository
-import team.bakkas.domaindynamo.validator.ShopReviewValidator
+import team.bakkas.domaindynamo.validator.ifs.ShopReviewValidator
 import team.bakkas.domainshopcommand.extensions.toEntity
 import team.bakkas.domainshopcommand.service.ifs.ShopReviewCommandService
 
