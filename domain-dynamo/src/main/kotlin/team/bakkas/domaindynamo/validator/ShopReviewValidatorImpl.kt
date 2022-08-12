@@ -12,6 +12,7 @@ import team.bakkas.common.Results
 import team.bakkas.common.utils.WebClientHelper
 import team.bakkas.common.exceptions.RequestFieldException
 import team.bakkas.common.exceptions.shop.ShopNotFoundException
+import team.bakkas.common.exceptions.shopReview.ShopReviewNotFoundException
 import team.bakkas.common.urls.ServerUrlsInterface
 import team.bakkas.domaindynamo.entity.ShopReview
 import team.bakkas.domaindynamo.validator.ifs.ShopReviewValidator
@@ -42,6 +43,19 @@ class ShopReviewValidatorImpl(
         // shop이 존재하지 않는 경우 예외를 발생시킨다
         check(shopResultMono.awaitSingle()) {
             throw ShopNotFoundException("shop review에 대응하는 shop이 존재하지 않습니다.")
+        }
+    }
+
+    // 해당 review가 삭제 가능한지 검증하는 메소드
+    override suspend fun validateDeletable(shopReview: ShopReview) = with(shopReview) {
+        // 1. 기본 검증을 수행한다
+        validateFirst(this)
+
+        // 2. 해당 리뷰가 실제 존재하는건지는 체크해본다
+        val reviewResultMono = isExistsReview(reviewId, reviewTitle)
+
+        check(reviewResultMono.awaitSingle()) {
+            throw ShopReviewNotFoundException("shop review에 대응하는 shop이 존재하지 않습니다.")
         }
     }
 
@@ -81,11 +95,12 @@ class ShopReviewValidatorImpl(
         }
     }
 
+    // 해당 shop이 존재하는지 검증하는 메소드
     private fun isExistsShop(shopId: String, shopName: String): Mono<Boolean> {
         return shopWebClient.get()
             .uri(
                 UriComponentsBuilder
-                    .fromUriString("/v2/shop/simple")
+                    .fromUriString(urlComponent.SHOP_QUERY_URL)
                     .queryParam("id", shopId)
                     .queryParam("name", shopName)
                     .toUriString()
@@ -95,5 +110,20 @@ class ShopReviewValidatorImpl(
                 throw ShopNotFoundException("Shop is not found!!")
             }
             .map { result -> result.success }
+    }
+
+    // 해당 shopReview가 존재하는지 검증하는 메소드
+    private fun isExistsReview(reviewId: String, reviewTitle: String): Mono<Boolean> {
+        return shopWebClient.get()
+            .uri(
+                UriComponentsBuilder
+                    .fromUriString(urlComponent.SHOP_REVIEW_URL)
+                    .queryParam("id", reviewId)
+                    .queryParam("title", reviewTitle)
+                    .toUriString()
+            ).retrieve()
+            .bodyToMono(Results.SingleResult::class.java)
+            .doOnError { throw ShopReviewNotFoundException("Shop review is not found!!") }
+            .map { it.success }
     }
 }

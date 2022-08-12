@@ -7,4 +7,5 @@ interface ShopReviewRedisRepository {
 
     // review를 캐싱하는 메소드
     fun cacheReview(shopReview: ShopReview): Mono<Boolean>
+    fun deleteReview(shopReview: ShopReview): Mono<Boolean>
 }

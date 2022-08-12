@@ -76,6 +76,12 @@ class ShopReviewDynamoRepositoryImpl(
         return Mono.fromFuture(reviewFuture)
     }
 
+    // review를 삭제하는 메소드
+    override fun deleteReviewAsync(shopReview: ShopReview): Mono<ShopReview> = with(shopReview) {
+        val deleteReviewFuture = asyncTable.deleteItem(generateKey(reviewId, reviewTitle))
+        Mono.fromFuture(deleteReviewFuture)
+    }
+
     /** Key를 반환하는 private method
      * @param reviewId Partition Key of shop_review
      * @param reviewTitle Sort Key of shop_review
