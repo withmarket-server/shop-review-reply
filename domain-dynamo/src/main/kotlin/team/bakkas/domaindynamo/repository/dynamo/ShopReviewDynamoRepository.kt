@@ -16,5 +16,5 @@ interface ShopReviewDynamoRepository {
     fun createReviewAsync(shopReview: ShopReview): Mono<Void>
 
     // review를 삭제하는 메소드
-    fun deleteReviewAsync(shopReview: ShopReview): Mono<ShopReview>
+    fun deleteReviewAsync(reviewId: String, reviewTitle: String): Mono<ShopReview>
 }

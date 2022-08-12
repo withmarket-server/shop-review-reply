@@ -7,4 +7,5 @@ object KafkaTopics {
     const val reviewCountEventTopic = "withmarket.shop.review.count"
 
     const val shopReviewCreateTopic = "withmarket.shopReview.create"
+    const val shopReviewDeleteTopic = "withmarket.shopReview.delete"
 }

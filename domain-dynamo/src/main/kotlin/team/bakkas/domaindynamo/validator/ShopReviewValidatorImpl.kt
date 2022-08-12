@@ -47,15 +47,12 @@ class ShopReviewValidatorImpl(
     }
 
     // 해당 review가 삭제 가능한지 검증하는 메소드
-    override suspend fun validateDeletable(shopReview: ShopReview) = with(shopReview) {
-        // 1. 기본 검증을 수행한다
-        validateFirst(this)
-
-        // 2. 해당 리뷰가 실제 존재하는건지는 체크해본다
+    override suspend fun validateDeletable(reviewId: String, reviewTitle: String) {
+        // 해당 리뷰가 실제 존재하는건지는 체크해본다
         val reviewResultMono = isExistsReview(reviewId, reviewTitle)
 
         check(reviewResultMono.awaitSingle()) {
-            throw ShopReviewNotFoundException("shop review에 대응하는 shop이 존재하지 않습니다.")
+            throw ShopReviewNotFoundException("shop review가 존재하지 않습니다.")
         }
     }
 

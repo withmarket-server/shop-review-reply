@@ -9,11 +9,13 @@ import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.ServerResponse
 import org.springframework.web.reactive.function.server.ServerResponse.ok
 import org.springframework.web.reactive.function.server.bodyValueAndAwait
+import org.springframework.web.reactive.function.server.queryParamOrNull
 import team.bakkas.applicationcommand.kafka.KafkaTopics
 import team.bakkas.clientcommand.dto.ShopCommand
 import team.bakkas.clientcommand.dto.ShopReviewCommand
 import team.bakkas.common.ResultFactory
 import team.bakkas.common.exceptions.RequestBodyLostException
+import team.bakkas.common.exceptions.RequestParamLostException
 import team.bakkas.domaindynamo.entity.ShopReview
 import team.bakkas.domainshopcommand.service.ifs.ShopReviewCommandService
 
@@ -42,7 +44,7 @@ class ShopReviewCommandHandler(
             throw RequestBodyLostException("Body is lost!!")
         }
 
-        // TODO service의 createReview 로직 작성
+        // service의 createReview 로직 호출
         val createdReview = shopReviewCommandService.createReview(reviewCreateDto)
 
         // Kafka에 이벤트를 전파하는 로직
@@ -54,6 +56,32 @@ class ShopReviewCommandHandler(
             reviewCountEventKafkaTemplate.send(
                 KafkaTopics.reviewCountEventTopic, ShopCommand.ReviewCountEventDto(
                     shopId, shopName, true, reviewScore
+                )
+            )
+        }
+
+        return@coroutineScope ok()
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValueAndAwait(resultFactory.getSuccessResult())
+    }
+
+    // shopReview를 삭제하는 메소드
+    suspend fun deleteReview(request: ServerRequest): ServerResponse = coroutineScope {
+        val reviewId = request.queryParamOrNull("id") ?: throw RequestParamLostException("reviewId is lost")
+        val reviewTitle = request.queryParamOrNull("title") ?: throw RequestParamLostException("reviewTitle is lost")
+
+        // service의 deleteReview 로직 호출
+        val deletedReview = shopReviewCommandService.deleteReview(reviewId, reviewTitle)
+
+        // Kafka에 이벤트 전파
+        with(deletedReview) {
+            // 1. redis에 있는 review cache를 삭제하기 위해 이벤트 발행
+            shopReviewKafkaTemplate.send(KafkaTopics.shopReviewDeleteTopic, this)
+
+            // 2. dynamoDB의 shop의 review 정보를 갱신하기 위해 이벤트 발행
+            reviewCountEventKafkaTemplate.send(
+                KafkaTopics.reviewCountEventTopic, ShopCommand.ReviewCountEventDto(
+                    shopId, shopName, false, reviewScore
                 )
             )
         }
