@@ -4,7 +4,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.junit.jupiter.api.Assertions.*
@@ -391,31 +393,16 @@ internal class ShopReviewRepositoryTest @Autowired constructor(
     fun testGetReviewListFlowByShopIdAndNameSuccess1(shopId: String, shopName: String): Unit = runBlocking {
         // given
         val reviewFlow = shopReviewRepository.getShopReviewListFlowByShopIdAndNameWithCaching(shopId, shopName)
-        val reviewList = mutableListOf<ShopReview>()
-
-        // when
-        reviewFlow.map {
-            CoroutinesUtils.monoToDeferred(it)
-        }.buffer()
-            .collect {
-                withContext(Dispatchers.IO) {
-                    reviewList.add(it.await()!!)
-                }
-            }
+        val reviewList = reviewFlow.toList()
 
         // then
-        val redisReviewList = mutableListOf<ShopReview>()
-        val keyFlow = shopReviewDynamoRepository.getAllReviewKeyFlowByShopIdAndName(shopId, shopName)
-        keyFlow.map {
-            val redisKey = generateRedisKey(it.first, it.second)
-            val reviewMono = shopReviewReactiveRedisTemplate.opsForValue().get(redisKey)
-            CoroutinesUtils.monoToDeferred(reviewMono)
-        }.buffer()
-            .collect {
-                withContext(Dispatchers.IO) {
-                    redisReviewList.add(it.await()!!)
-                }
+        val redisReviewList = shopReviewDynamoRepository.getAllReviewKeyFlowByShopIdAndName(shopId, shopName)
+            .map {
+                val redisKey = generateRedisKey(it.first, it.second)
+                shopReviewReactiveRedisTemplate.opsForValue().get(redisKey).awaitSingle()
             }
+            .buffer()
+            .toList()
 
         assert(reviewList.size != 0)
         assert(redisReviewList.size != 0)
@@ -439,29 +426,16 @@ internal class ShopReviewRepositoryTest @Autowired constructor(
     fun testGetReviewListFlowByShopIdAndNameFail1(shopId: String, shopName: String): Unit = runBlocking {
         // given
         val reviewFlow = shopReviewRepository.getShopReviewListFlowByShopIdAndNameWithCaching(shopId, shopName)
-        val reviewList = mutableListOf<ShopReview>()
-
-        // when
-        reviewFlow.map {
-            CoroutinesUtils.monoToDeferred(it)
-        }.buffer()
-            .collect {
-                withContext(Dispatchers.IO) {
-                    reviewList.add(it.await()!!)
-                }
-            }
+        val reviewList = reviewFlow.toList()
 
         // then
-        val redisReviewList = mutableListOf<ShopReview>()
-        val keyFlow = shopReviewDynamoRepository.getAllReviewKeyFlowByShopIdAndName(shopId, shopName)
-        keyFlow.map {
-            val redisKey = generateRedisKey(it.first, it.second)
-            val reviewMono = shopReviewReactiveRedisTemplate.opsForValue().get(redisKey)
-            CoroutinesUtils.monoToDeferred(reviewMono)
-        }.buffer()
-            .collect {
-                redisReviewList.add(it.await()!!)
+        val redisReviewList = shopReviewDynamoRepository.getAllReviewKeyFlowByShopIdAndName(shopId, shopName)
+            .map {
+                val redisKey = generateRedisKey(it.first, it.second)
+                shopReviewReactiveRedisTemplate.opsForValue().get(redisKey).awaitSingle()
             }
+            .buffer()
+            .toList()
 
         assert(reviewList.size == 0)
         assert(redisReviewList.size == 0)
@@ -475,29 +449,16 @@ internal class ShopReviewRepositoryTest @Autowired constructor(
     fun testGetReviewListFlowByShopIdAndNameFail2(shopId: String, shopName: String): Unit = runBlocking {
         // given
         val reviewFlow = shopReviewRepository.getShopReviewListFlowByShopIdAndNameWithCaching(shopId, shopName)
-        val reviewList = mutableListOf<ShopReview>()
-
-        // when
-        reviewFlow.map {
-            CoroutinesUtils.monoToDeferred(it)
-        }.buffer()
-            .collect {
-                withContext(Dispatchers.IO) {
-                    reviewList.add(it.await()!!)
-                }
-            }
+        val reviewList = reviewFlow.toList()
 
         // then
-        val redisReviewList = mutableListOf<ShopReview>()
-        val keyFlow = shopReviewDynamoRepository.getAllReviewKeyFlowByShopIdAndName(shopId, shopName)
-        keyFlow.map {
-            val redisKey = generateRedisKey(it.first, it.second)
-            val reviewMono = shopReviewReactiveRedisTemplate.opsForValue().get(redisKey)
-            CoroutinesUtils.monoToDeferred(reviewMono)
-        }.buffer()
-            .collect {
-                redisReviewList.add(it.await()!!)
+        val redisReviewList = shopReviewDynamoRepository.getAllReviewKeyFlowByShopIdAndName(shopId, shopName)
+            .map {
+                val redisKey = generateRedisKey(it.first, it.second)
+                shopReviewReactiveRedisTemplate.opsForValue().get(redisKey).awaitSingle()
             }
+            .buffer()
+            .toList()
 
         assert(reviewList.size == 0)
         assert(redisReviewList.size == 0)

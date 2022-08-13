@@ -9,6 +9,7 @@ import io.mockk.junit5.MockKExtension
 import io.mockk.spyk
 import io.mockk.verify
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.reactor.mono
 import org.junit.jupiter.api.Assertions.*
@@ -154,7 +155,7 @@ internal class ShopServiceTest {
     @DisplayName("[service] shop에서 list를 가져오는데 실패하는 메소드")
     fun failGetShopList() = runBlocking {
         // given
-        every { shopRepository.getAllShopsWithCaching() } returns flowOf( Mono.empty() ) // 비어있는 플로우를 반환시킨다
+        every { shopRepository.getAllShopsWithCaching() } returns emptyFlow() // 비어있는 플로우를 반환시킨다
 
         // when
         val exception = shouldThrow<ShopNotFoundException> { shopService.getAllShopList() }

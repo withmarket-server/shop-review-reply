@@ -8,6 +8,8 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.spyk
 import io.mockk.verify
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.reactor.mono
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -94,7 +96,7 @@ internal class ShopReviewServiceTest {
         val shopId = "shop-fake-id"
         val shopName = "shop-fake-name"
         every { shopReviewRepository.getShopReviewListFlowByShopIdAndNameWithCaching(shopId, shopName) } returns
-                flowOf(Mono.empty())
+                emptyFlow()
 
         // when
         val exception = shouldThrow<ShopReviewNotFoundException> { shopReviewService.getReviewListByShop(shopId, shopName)}
