@@ -13,8 +13,8 @@ class ShopReviewCommandRouter(
     @Bean
     fun shopReviewCommandRoutes() = coRouter {
         "/v2/shop-review".nest {
-            POST("/", shopReviewCommandHandler::createReview)
-            DELETE("/", shopReviewCommandHandler::deleteReview)
+            POST("", shopReviewCommandHandler::createReview)
+            DELETE("", shopReviewCommandHandler::deleteReview)
         }
     }
 }
