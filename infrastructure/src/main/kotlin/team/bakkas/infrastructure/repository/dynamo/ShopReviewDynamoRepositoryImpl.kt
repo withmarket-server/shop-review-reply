@@ -34,7 +34,7 @@ class ShopReviewDynamoRepositoryImpl(
      * @param reviewTitle 리뷰의 제목
      * @return Mono<ShopReview?>
      */
-    override fun findReviewByIdAndTitleAsync(reviewId: String, reviewTitle: String): Mono<ShopReview?> {
+    override fun findReviewByIdAndTitleAsync(reviewId: String, reviewTitle: String): Mono<ShopReview> {
         val reviewKey = generateKey(reviewId, reviewTitle)
         val reviewFuture = asyncTable.getItem(reviewKey)
 
@@ -62,11 +62,10 @@ class ShopReviewDynamoRepositoryImpl(
             .expression("#shop_id = :id_val AND #shop_name = :name_val")
             .build()
 
-        return asyncTable.scan {
-            it.filterExpression(expression)
-        }.items().asFlow().map {
-            Pair(it.reviewId, it.reviewTitle)
-        }
+        return asyncTable.scan { it.filterExpression(expression) }
+            .items()
+            .asFlow()
+            .map { Pair(it.reviewId, it.reviewTitle) }
     }
 
     // review를 하나 생성하는 메소드

@@ -1,9 +1,7 @@
 package team.bakkas.domainqueryservice.service
 
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.buffer
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import org.springframework.core.CoroutinesUtils
 import org.springframework.stereotype.Service
@@ -40,18 +38,13 @@ class ShopReviewQueryServiceImpl(
 
             // flow에 item이 하나도 전달이 안 되는 경우의 예외 처리
             try {
-                val firstItem = CoroutinesUtils.monoToDeferred(reviewFlow.first()).await()
+                val firstItem = reviewFlow.firstOrNull()
                 checkNotNull(firstItem)
             } catch (_: Exception) {
                 throw ShopReviewNotFoundException("Shop review is not found!!")
             }
 
-            val reviewList = mutableListOf<ShopReview>()
-
-            reviewFlow.buffer().collect {
-                val review = CoroutinesUtils.monoToDeferred(it).await()
-                reviewList.add(review!!)
-            }
+            val reviewList = reviewFlow.toList()
 
             // review가 하나도 안 모였다면 바로 에러 처리
             check(reviewList.size != 0) {

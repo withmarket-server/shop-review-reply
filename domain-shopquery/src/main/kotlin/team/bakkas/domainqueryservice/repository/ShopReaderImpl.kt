@@ -1,7 +1,10 @@
 package team.bakkas.domainqueryservice.repository
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
 import team.bakkas.domaindynamo.entity.Shop
@@ -32,16 +35,13 @@ class ShopReaderImpl(
      * @param shopName 가게의 이름
      * @return Mono<Shop?>
      */
-    override fun findShopByIdAndNameWithCaching(shopId: String, shopName: String): Mono<Shop?> {
+    override fun findShopByIdAndNameWithCaching(shopId: String, shopName: String): Mono<Shop> {
         val key = generateRedisKey(shopId, shopName)
         val alternativeShopMono: Mono<Shop?> = shopDynamoRepository.findShopByIdAndNameAsync(shopId, shopName)
-            .doOnSuccess {
-                it?.let {
-                    shopRedisRepository.cacheShop(it).subscribe()
-                }
-            }.onErrorResume {
-                Mono.empty()
-            }
+            .single()
+            .doOnSuccess { shopRedisRepository.cacheShop(it).subscribe() }
+            .onErrorResume { Mono.empty() }
+
         // Redis에서 key에 해당하는 값을 찾지 못한경우 alternativeShopMono를 이용해 Dynamo에서 찾아온다
         // Dynamo에서 찾아오는데 성공하는 경우 동시에 Redis에 캐싱한다
         return shopRedisRepository.findShopByKey(key)
@@ -50,10 +50,9 @@ class ShopReaderImpl(
 
 
     // 모든 Shop을 가져오는 flow를 반환해주는 메소드
-    override fun getAllShopsWithCaching(): Flow<Mono<Shop?>> {
+    override fun getAllShopsWithCaching(): Flow<Shop> {
         val shopKeysFlow = shopDynamoRepository.getAllShopKeys() // shop Key Pair들의 flow를 가져온다
-        return shopKeysFlow.map {
-            findShopByIdAndNameWithCaching(it.first, it.second)
-        }
+
+        return shopKeysFlow.map { findShopByIdAndNameWithCaching(it.first, it.second).awaitSingle() }
     }
 }

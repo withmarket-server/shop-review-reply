@@ -3,6 +3,7 @@ package team.bakkas.domainqueryservice.service
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.reactor.awaitSingle
+import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.withContext
 import org.springframework.core.CoroutinesUtils
 import org.springframework.stereotype.Service
@@ -29,7 +30,7 @@ class ShopQueryServiceImpl(
     @Transactional(readOnly = true)
     override suspend fun findShopByIdAndName(shopId: String, shopName: String): Shop = withContext(Dispatchers.IO) {
         val shopMono = shopReader.findShopByIdAndNameWithCaching(shopId, shopName)
-        return@withContext shopMono.awaitSingle()
+        return@withContext shopMono.awaitSingleOrNull()
             ?: throw ShopNotFoundException("Shop is not found!!")
     }
 
@@ -42,19 +43,13 @@ class ShopQueryServiceImpl(
         val shopFlow = shopReader.getAllShopsWithCaching()
 
         try {
-            val firstItem = CoroutinesUtils.monoToDeferred(shopFlow.first()).await()
+            val firstItem = shopFlow.firstOrNull()
             checkNotNull(firstItem)
         } catch (e: Exception) {
             throw ShopNotFoundException("Shop is not found!!")
         }
 
-        val shopList = mutableListOf<Shop>()
-
-        shopFlow.buffer()
-            .collect {
-                val shop = CoroutinesUtils.monoToDeferred(it).await()
-                shopList.add(shop!!)
-            }
+        val shopList = shopFlow.toList()
 
         check(shopList.size != 0) {
             throw ShopNotFoundException("Shop is not found!!")
