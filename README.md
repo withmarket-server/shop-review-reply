@@ -23,7 +23,7 @@
 * * *
 
 ### 👉 프로젝트 참여자 (Contributors of this project)
-1️⃣ Doyeop Kim (18k7102dy@naver.com)
+1️⃣ BrianDYKim (18k7102dy@naver.com) -> 레포지토리 주인장
 
 * * *
 
