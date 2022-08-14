@@ -10,6 +10,7 @@ import reactor.core.publisher.Mono
 import team.bakkas.common.utils.RedisUtils
 import team.bakkas.domaindynamo.entity.ShopReview
 import team.bakkas.domaindynamo.repository.dynamo.ShopReviewDynamoRepository
+import team.bakkas.domaindynamo.repository.redis.ShopReviewRedisRepository
 import team.bakkas.domainqueryservice.repository.ifs.ShopReviewReader
 import java.time.Duration
 
@@ -20,7 +21,7 @@ import java.time.Duration
 @Repository
 class ShopReviewReaderImpl(
     private val shopReviewDynamoRepository: ShopReviewDynamoRepository,
-    private val shopReviewReactiveRedisTemplate: ReactiveRedisTemplate<String, ShopReview>
+    private val shopReviewRedisRepository: ShopReviewRedisRepository
 ) : ShopReviewReader {
 
     /** Cache hit 방식으로 ShopReview를 찾아오는 메소드
@@ -32,13 +33,10 @@ class ShopReviewReaderImpl(
         val key = RedisUtils.generateReviewRedisKey(reviewId, reviewTitle)
         val alternativeMono = shopReviewDynamoRepository.findReviewByIdAndTitleAsync(reviewId, reviewTitle)
             .single()
-            .doOnSuccess {
-                shopReviewReactiveRedisTemplate.opsForValue().set(key, it, Duration.ofDays(RedisUtils.DAYS_TO_LIVE))
-                    .subscribe()
-            }
+            .doOnSuccess { shopReviewRedisRepository.cacheReview(it).subscribe() }
             .onErrorResume { Mono.empty() }
 
-        return shopReviewReactiveRedisTemplate.opsForValue().get(key)
+        return shopReviewRedisRepository.findReviewByKey(key)
             .switchIfEmpty(alternativeMono)
     }
 

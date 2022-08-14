@@ -19,6 +19,10 @@ class ShopReviewRedisRepositoryImpl(
         shopReviewReactiveRedisTemplate.opsForValue().set(reviewKey, this, Duration.ofDays(RedisUtils.DAYS_TO_LIVE))
     }
 
+    // review Key를 이용해서 review를 가져오는 메소드
+    override fun findReviewByKey(reviewKey: String): Mono<ShopReview> =
+        shopReviewReactiveRedisTemplate.opsForValue().get(reviewKey)
+
     // review를 삭제하는데 사용하는 메소드
     override fun deleteReview(shopReview: ShopReview): Mono<Boolean> = with(shopReview) {
         val reviewKey = RedisUtils.generateReviewRedisKey(reviewId, reviewTitle)
