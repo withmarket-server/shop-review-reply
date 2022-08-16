@@ -88,7 +88,7 @@
 
 이제부터 본격적으로 프로젝트의 아키텍처에 대해서 설명하겠습니다.
 
-![](./img/withmarket-architecture-detail.png)
+![](./img/withmarket-architecture-code-level.png)
 
 1. **Application Layer**
 
