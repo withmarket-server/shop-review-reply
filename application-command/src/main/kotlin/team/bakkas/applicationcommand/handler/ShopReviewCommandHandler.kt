@@ -29,8 +29,7 @@ import team.bakkas.domainshopcommand.service.ifs.ShopReviewCommandService
 class ShopReviewCommandHandler(
     private val shopReviewCommandService: ShopReviewCommandService,
     private val shopReviewKafkaTemplate: KafkaTemplate<String, ShopReview>,
-    private val reviewCountEventKafkaTemplate: KafkaTemplate<String, ShopCommand.ReviewCountEventDto>,
-    private val resultFactory: ResultFactory
+    private val reviewCountEventKafkaTemplate: KafkaTemplate<String, ShopCommand.ReviewCountEventDto>
 ) {
 
     // shopReview를 하나 생성하는 메소드
@@ -62,7 +61,7 @@ class ShopReviewCommandHandler(
 
         return@coroutineScope ok()
             .contentType(MediaType.APPLICATION_JSON)
-            .bodyValueAndAwait(resultFactory.getSuccessResult())
+            .bodyValueAndAwait(ResultFactory.getSuccessResult())
     }
 
     // shopReview를 삭제하는 메소드
@@ -88,6 +87,6 @@ class ShopReviewCommandHandler(
 
         return@coroutineScope ok()
             .contentType(MediaType.APPLICATION_JSON)
-            .bodyValueAndAwait(resultFactory.getSuccessResult())
+            .bodyValueAndAwait(ResultFactory.getSuccessResult())
     }
 }

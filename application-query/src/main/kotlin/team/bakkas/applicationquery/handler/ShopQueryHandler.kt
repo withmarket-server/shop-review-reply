@@ -13,8 +13,7 @@ import team.bakkas.domainqueryservice.service.ifs.ShopQueryService
 
 @Component
 class ShopQueryHandler(
-    private val shopService: ShopQueryService,
-    private val resultFactory: ResultFactory
+    private val shopService: ShopQueryService
 ) {
 
     // shopId와 shopName을 기반으로 shop에 대한 response를 반환해주는 메소드
@@ -27,7 +26,7 @@ class ShopQueryHandler(
 
         return@coroutineScope ok()
             .contentType(MediaType.APPLICATION_JSON)
-            .bodyValueAndAwait(resultFactory.getSingleResult(toSimpleReadDto(shop)))
+            .bodyValueAndAwait(ResultFactory.getSingleResult(toSimpleReadDto(shop)))
     }
 
     // 모든 shop에 대한 list를 반환해주는 메소드
@@ -38,7 +37,7 @@ class ShopQueryHandler(
             toSimpleReadDto(it)
         }
 
-        ok().bodyValueAndAwait(resultFactory.getMultipleResult(shopDtoList))
+        ok().bodyValueAndAwait(ResultFactory.getMultipleResult(shopDtoList))
     }
 
     private fun toSimpleReadDto(shop: Shop) = ShopSimpleReadDto(

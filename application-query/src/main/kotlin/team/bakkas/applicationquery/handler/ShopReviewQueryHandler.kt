@@ -16,8 +16,7 @@ import team.bakkas.domainqueryservice.service.ifs.ShopReviewQueryService
 
 @Component
 class ShopReviewQueryHandler(
-    private val shopReviewService: ShopReviewQueryService,
-    private val resultFactory: ResultFactory
+    private val shopReviewService: ShopReviewQueryService
 ) {
 
     /** reviewId와 reviewTitle을 기반으로 review 하나를 가져오는 메소드
@@ -35,7 +34,7 @@ class ShopReviewQueryHandler(
 
         return@coroutineScope ok()
             .contentType(MediaType.APPLICATION_JSON)
-            .bodyValueAndAwait(resultFactory.getSingleResult(toSimpleReadDto(review)))
+            .bodyValueAndAwait(ResultFactory.getSingleResult(toSimpleReadDto(review)))
     }
 
     /** shopId와 shopName을 기반으로 review의 목록을 가져오는 메소드
@@ -53,7 +52,7 @@ class ShopReviewQueryHandler(
         val reviewDtoList = reviewList.map { toSimpleReadDto(it) }
 
         return@coroutineScope ok().contentType(MediaType.APPLICATION_JSON)
-            .bodyValueAndAwait(resultFactory.getMultipleResult(reviewDtoList))
+            .bodyValueAndAwait(ResultFactory.getMultipleResult(reviewDtoList))
     }
 
     private fun toSimpleReadDto(shopReview: ShopReview) = ShopReviewSimpleReadDto(

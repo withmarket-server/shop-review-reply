@@ -9,8 +9,7 @@ import team.bakkas.common.error.ErrorResponse
  * @author Brian
  * @since 22/05/22
  */
-@Component
-class ResultFactory {
+object ResultFactory {
 
     // 성공에 대한 결과를 리턴하는 메소드
     fun getSuccessResult(): Results.CommonResult = Results.CommonResult(true)

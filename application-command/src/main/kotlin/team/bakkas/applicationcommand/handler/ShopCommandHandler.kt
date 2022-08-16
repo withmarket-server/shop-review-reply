@@ -21,8 +21,7 @@ import team.bakkas.domainshopcommand.service.ifs.ShopCommandService
 @Component
 class ShopCommandHandler(
     private val shopCommandService: ShopCommandService,
-    private val shopKafkaTemplate: KafkaTemplate<String, Shop>,
-    private val resultFactory: ResultFactory
+    private val shopKafkaTemplate: KafkaTemplate<String, Shop>
 ) {
 
     /** shop을 하나 생성하는 메소드
@@ -45,6 +44,6 @@ class ShopCommandHandler(
         shopKafkaTemplate.send(KafkaTopics.shopCreateTopic, createdShop)
 
         return@coroutineScope ok().contentType(MediaType.APPLICATION_JSON)
-            .bodyValueAndAwait(resultFactory.getSuccessResult())
+            .bodyValueAndAwait(ResultFactory.getSuccessResult())
     }
 }
