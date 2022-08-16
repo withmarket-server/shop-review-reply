@@ -37,19 +37,11 @@ class ShopReviewQueryServiceImpl(
             val reviewFlow = shopReviewReader.getShopReviewListFlowByShopIdAndNameWithCaching(shopId, shopName)
 
             // flow에 item이 하나도 전달이 안 되는 경우의 예외 처리
-            try {
-                val firstItem = reviewFlow.firstOrNull()
-                checkNotNull(firstItem)
-            } catch (_: Exception) {
+            checkNotNull(reviewFlow.firstOrNull()) {
                 throw ShopReviewNotFoundException("Shop review is not found!!")
             }
 
             val reviewList = reviewFlow.toList()
-
-            // review가 하나도 안 모였다면 바로 에러 처리
-            check(reviewList.size != 0) {
-                throw ShopReviewNotFoundException("Shop review is not found!!")
-            }
 
             reviewList
         }
