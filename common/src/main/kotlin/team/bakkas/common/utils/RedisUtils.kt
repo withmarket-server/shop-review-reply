@@ -7,5 +7,5 @@ object RedisUtils {
 
     fun generateShopRedisKey(shopId: String, shopName: String) = "shop:${shopId}-${shopName}"
 
-    fun generateReviewRedisKey(reviewId: String, reviewTitle: String) = "shopReview-$reviewId-$reviewTitle"
+    fun generateReviewRedisKey(reviewId: String, reviewTitle: String) = "shopReview:$reviewId-$reviewTitle"
 }

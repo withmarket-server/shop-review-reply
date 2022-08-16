@@ -1,6 +1,7 @@
 package team.bakkas.infrastructure.repository.dynamo
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.reactive.asFlow
 import org.springframework.stereotype.Repository
@@ -47,22 +48,7 @@ class ShopReviewDynamoRepositoryImpl(
      * @return Flow consisted with Pair of reviewId and reviewTitle (Pair<String, String>)
      */
     override fun getAllReviewKeyFlowByShopIdAndName(shopId: String, shopName: String): Flow<Pair<String, String>> {
-        val attributeAliasMap = mutableMapOf<String, String>()
-        val attributeValueMap = mutableMapOf<String, AttributeValue>()
-
-        attributeAliasMap["#shop_id"] = "shop_id"
-        attributeAliasMap["#shop_name"] = "shop_name"
-
-        attributeValueMap[":id_val"] = AttributeValue.fromS(shopId)
-        attributeValueMap[":name_val"] = AttributeValue.fromS(shopName)
-
-        val expression = Expression.builder()
-            .expressionNames(attributeAliasMap)
-            .expressionValues(attributeValueMap)
-            .expression("#shop_id = :id_val AND #shop_name = :name_val")
-            .build()
-
-        return asyncTable.scan { it.filterExpression(expression) }
+        return asyncTable.scan { it.filterExpression(generateShopExpression(shopId, shopName)) }
             .items()
             .asFlow()
             .map { Pair(it.reviewId, it.reviewTitle) }
@@ -90,4 +76,25 @@ class ShopReviewDynamoRepositoryImpl(
         .partitionValue(reviewId)
         .sortValue(reviewTitle)
         .build()
+
+    /** shopId, shopName에 대한 expression을 반환해주는 메소드
+     * @param shopId
+     * @param shopName
+     */
+    private fun generateShopExpression(shopId: String, shopName: String): Expression {
+        val attributeAliasMap = mutableMapOf<String, String>()
+        val attributeValueMap = mutableMapOf<String, AttributeValue>()
+
+        attributeAliasMap["#shop_id"] = "shop_id"
+        attributeAliasMap["#shop_name"] = "shop_name"
+
+        attributeValueMap[":id_val"] = AttributeValue.fromS(shopId)
+        attributeValueMap[":name_val"] = AttributeValue.fromS(shopName)
+
+        return Expression.builder()
+            .expressionNames(attributeAliasMap)
+            .expressionValues(attributeValueMap)
+            .expression("#shop_id = :id_val AND #shop_name = :name_val")
+            .build()
+    }
 }
