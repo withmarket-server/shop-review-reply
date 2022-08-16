@@ -8,9 +8,9 @@
 
 ### 👉 본 프로젝트의 목적
 
-본 프로젝트는 졸업작품을 위한 것 뿐만 아니라 본인의 실력 향상에도 목적을 두고있다.
+본 프로젝트는 졸업작품을 위한 것 뿐만 아니라 본인의 실력 향상에도 목적을 두고있습니다.
 
-따라서 본 프로젝트의 구현에 있어서 우선순위는 다음과 같다.
+따라서 본 프로젝트의 구현에 있어서 우선순위는 다음과 같습니다.
 
 1️⃣ 확장에 유연한 아키텍처 설계 능력 향상
 
@@ -80,26 +80,26 @@
 
 ### 👉 **본 프로젝트 모듈 구조 (Module Structure of This Project)**
 
-이 섹션에서는 본 프로젝트의 모듈에 대해서 설명하고자한다. 프로젝트 모듈을 분리하면서 주의해야할 점을 먼저 소개한 다음에, 본격적으로 본 프로젝트의 아키텍처를 설명하고자한다.
+이 섹션에서는 본 프로젝트의 모듈에 대해서 설명하고자한다. 프로젝트 모듈을 분리하면서 주의해야할 점을 먼저 소개한 다음에, 본격적으로 본 프로젝트의 아키텍처를 설명하고자합니다.
 
 1️⃣ 분리한 module 간에는 Bi-Directional Dependency (Dependency Cycle)이 발생하지 않도록 주의하자. 쌍방 의존이 안좋은것도 맞고, 그냥 gradle에서 빌드 자체가 안된다.
 
-2️⃣ 분리한 module 간에는 Common 모듈이 아닌 이상 2단계 아래 참조는 웬만하면 금지한다. 2단게 아래 참조를 한다는건 모듈 분리가 잘못됐다는 증거다. (Infrastructure layer는 제외)
+2️⃣ 분리한 module 간에는 Common 모듈이 아닌 이상 2단계 아래 참조는 웬만하면 금지한다. 2단게 아래 참조를 한다는건 모듈 분리가 잘못됐다는 증거다.
 
-이제부터 본격적으로 프로젝트의 아키텍처에 대해서 설명하겠다.
+이제부터 본격적으로 프로젝트의 아키텍처에 대해서 설명하겠습니다.
 
 ![](./img/withmarket-architecture-detail.png)
 
 1. **Application Layer**
 
-응용계층, 표현 계층을 관리하는 모듈. 즉, Handler, Router class 들을 관리하는 모듈이다.
+응용계층, 표현 계층을 관리하는 모듈. 즉, Handler, Router class 들을 관리하는 모듈입니다.
 
 * Application-query: 조회 로직을 관리하는 application module
 * Application-command: 커맨드 로직을 관리하는 application module
 
 2. **System Layer**
 
-어플리케이션 로직을 모르고, 도메인 로직을 모르지만, System에는 관여하는 코드들을 모아둔 모듈이다. 주로 DTO가 여기에 위치한다.
+어플리케이션 로직을 모르고, 도메인 로직을 모르지만, System에는 관여하는 코드들을 모아둔 모듈입니다. 주로 DTO가 여기에 위치합니다.
 
 * client-query: 조회 DTO를 모아둔 모듈
 * client-command: 명령 로직에 사용되는 DTO를 모아둔 모듈
@@ -108,19 +108,19 @@
 
 Entity, Service, Repository, Validator를 구현하는 Layer.
 
-* domain-dynamo: dynamo에 관련된 도메인을 관리하는 모듈. Entity, Repository, Validator를 보관하며, Repository에 대해서는 실제 구현체가 아닌 interface만을 보관한다.
+* domain-dynamo: dynamo에 관련된 도메인을 관리하는 모듈. Entity, Repository, Validator를 보관하며, Repository에 대해서는 실제 구현체가 아닌 interface만을 보관합니다.
 * domain-query: query 로직에 대한 Service를 구현하는 모듈
 * domain-command: command 로직에 대한 Service를 구현하는 모듈
 
 4. **Infrastructure**
 
-domain layer에 존재하는 repository에 대해서 실제 구현체를 보관하는 모듈이다. DB에 접근하기 위한 config, RepositoryImpl을 여기서 구현해서 Bean으로 등록한다.
+domain layer에 존재하는 repository에 대해서 실제 구현체를 보관하는 모듈입니다. DB에 접근하기 위한 config, RepositoryImpl을 여기서 구현해서 Bean으로 등록합니다.
 
 5. **Common**
 
-System에는 관여하지 않지만, System을 구현함에 있어서 필요한 타입을 정의하는 모듈이다.
+System에는 관여하지 않지만, System을 구현함에 있어서 필요한 타입을 정의하는 모듈입니다.
 
-**System에 관여하지 않는 타입클래스 혹은 툴만 여기다 위치시켜서 common hell에 빠지지 않도록 항상 주의하자.**
+**System에 관여하지 않는 타입클래스 혹은 툴만 여기다 위치시켜서 common hell에 빠지지 않도록 항상 주의합니다.**
 
 * * *
 
@@ -130,12 +130,12 @@ System에는 관여하지 않지만, System을 구현함에 있어서 필요한 
 
 <img src="img/withmarket-architecture-total.png" height="600">
 
-* Application Query에서는 읽기 DB로 Redis를 사용한다. Redis의 경우 In-memory Database이기 때문에 높은 throghput을 자랑하며, 초당 100만 요청까지 처리 가능한 것으로 알려져있다.
-* Redis는 DynamoDB를 Look Aside 관계로 의존하는 형태이며, 찾고자하는 데이터가 Redis에 캐싱이 안 되어있거나, 혹은 DynamoDB와 싱크가 안 맞는 현상을 대비하기 위해 약한 결합을 띄고있다.
-* Application Command의 경우 명령 요청을 처리하는 Application이다. 명령 요청이 떨어지면 DynamoDB에 저장된 데이터에 변형이 발생하게된다. 예시를 한번 들어보면서 설명을 드리자면, 
+* Application Query에서는 읽기 DB로 Redis를 사용합니다. Redis의 경우 In-memory Database이기 때문에 높은 throghput을 자랑하며, 초당 100만 요청까지 처리 가능한 것으로 알려져있습니다.
+* Redis는 DynamoDB를 Look Aside 관계로 의존하는 형태이며, 찾고자하는 데이터가 Redis에 캐싱이 안 되어있거나, 혹은 DynamoDB와 싱크가 안 맞는 현상을 대비하기 위해 약한 결합을 띄고있습니다.
+* Application Command의 경우 명령 요청을 처리하는 Application입니다. 명령 요청이 떨어지면 DynamoDB에 저장된 데이터에 변형이 발생하게됩니다. 예시를 한번 들어보면서 설명을 드리자면, 
 
 1. ShopReview가 1번 가게에 작성이 되었다고 가정한다.
-2. ShopReview의 경우 Application Command에서 잘 처리되어 dynamoDB의 shop-review table에 잘 저장이된다.
+2. ShopReview의 경우 Application Command에서 잘 처리되어 dynamoDB의 shop-review table에 잘 저장된다.
 3. 그러나, review가 작성이 되면 shop 테이블의 1번 가게의 리뷰 카운트 수를 늘려야한다. 
 4. 동시에, redis에도 review가 캐시가 되어야한다.
 
@@ -152,7 +152,7 @@ System에는 관여하지 않지만, System을 구현함에 있어서 필요한 
 <summary>Spring Kafka에 Coroutine 적용시 에러가 걸리는 현상</summary>
 
 <div markdown="1">
-Spring Kafka로 Coroutines를 이용해 message를 프로듀싱하는데는 문제가 없으나,이 메시지를 KafkaListener를 이용해서 consume할 때 문제가 발생한다.
+Spring Kafka로 Coroutines를 이용해 message를 프로듀싱하는데는 문제가 없으나,이 메시지를 KafkaListener를 이용해서 consume할 때 문제가 발생합니다.
 
 ~~~
 Cannot convert from [team.bakkas.domaindynamo.entity.ShopReview] to [kotlin.coroutines.Continuation] for GenericMessage 
@@ -160,11 +160,11 @@ Cannot convert from [team.bakkas.domaindynamo.entity.ShopReview] to [kotlin.coro
 headers={kafka_offset=0, kafka_consumer=org.apache.kafka.clients.consumer.KafkaConsumer@43963b4d, kafka_timestampType=CREATE_TIME, kafka_receivedPartitionId=1, kafka_receivedTopic=withmarket.shopReview.create, kafka_receivedTimestamp=1660217256882, ...]
 ~~~
 
-**위의 내용을 해석하자면, Message를 읽어서 Continuations를 생성할 때 문제가 발생한다는 것이다.** 
+**위의 내용을 해석하자면, Message를 읽어서 Continuations를 생성할 때 문제가 발생한다는 것입니다.** 
 
-코틀린 코루틴은 Continuations를 기반으로한 CPS 방식으로 동작하기 때문에, **Continuation이 생성되지 않는다는 것은 곧 Spring Kafka와 Coroutines를 함께 이용해서는 Event를 컨슘할 수 없다는 뜻이다.** 😭
+코틀린 코루틴은 Continuations를 기반으로한 CPS 방식으로 동작하기 때문에, **Continuation이 생성되지 않는다는 것은 곧 Spring Kafka와 Coroutines를 함께 이용해서는 Event를 컨슘할 수 없다는 뜻입니다.** 😭
 
-내가 해볼 시도는 다음과 같다
+제가 해볼 시도는 다음과 같습니다
 
 * (COMPLETE) Spring Kafka Listener에서는 **Kotlin Coroutines가 아닌 Mono를 이용해서 처리한다.**
 
