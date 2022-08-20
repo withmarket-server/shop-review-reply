@@ -11,4 +11,7 @@ interface ShopReviewReader {
 
     // review list에 대한 flow를 반환해주는 메소드
     fun getShopReviewListFlowByShopIdAndNameWithCaching(shopId: String, shopName: String): Flow<ShopReview>
+
+    // redis에 있는 review의 목록을 반환해주는 메소드
+    fun getReviewFlowByShopIdAndName(shopId: String, shopName: String): Flow<ShopReview>
 }

@@ -45,14 +45,14 @@ class ShopQueryHandler(
         // shop이 redis에서 하나도 발견되지 않은 경우 예외 처리
         check(shopList.isNotEmpty()) {
             // TODO 1. shop이 하나도 발견되지 않았으므로 shop을 redis로 올리는 이벤트를 발행한다
-            shopCountKafkaTemplate.send(KafkaTopics.shopCountTopic, ShopQuery.ShopCountDto(0))
+            shopCountKafkaTemplate.send(KafkaTopics.shopCountValidateTopic, ShopQuery.ShopCountDto(0))
             throw ShopNotFoundException("Shop is not found!!")
         }
 
         val shopDtoList = shopList.map { toSimpleReadDto(it) }
 
         // TODO 2. dynamo에 있는 shop의 개수와 redis에 있는 shop의 개수가 맞는지 검증하는 이벤트를 발행한다
-        shopCountKafkaTemplate.send(KafkaTopics.shopCountTopic, ShopQuery.ShopCountDto(shopDtoList.count()))
+        shopCountKafkaTemplate.send(KafkaTopics.shopCountValidateTopic, ShopQuery.ShopCountDto(shopDtoList.count()))
 
         ok().bodyValueAndAwait(ResultFactory.getMultipleResult(shopDtoList))
     }

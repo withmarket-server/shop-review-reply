@@ -11,6 +11,7 @@ import org.springframework.kafka.core.ProducerFactory
 import org.springframework.kafka.support.serializer.JsonSerializer
 import team.bakkas.clientcommand.dto.ShopCommand
 import team.bakkas.clientquery.dto.ShopQuery
+import team.bakkas.clientquery.dto.ShopReviewQuery
 import team.bakkas.domaindynamo.entity.Shop
 import team.bakkas.domaindynamo.entity.ShopReview
 
@@ -40,8 +41,14 @@ class KafkaProducerConfig(
 
     // Shop에 대해서 review 생성 이벤트를 처리하는데 사용하는 template
     @Bean
-    fun reviewCountKafkaTemplate(): KafkaTemplate<String, ShopCommand.ReviewCountEventDto> {
-        return KafkaTemplate(reviewCountEventProducerFactory())
+    fun reviewGeneratedEventKafkaTemplate(): KafkaTemplate<String, ShopCommand.ReviewCountEventDto> {
+        return KafkaTemplate(reviewGeneratedEventProducerFactory())
+    }
+
+    // shop에 대한 review의 목록이 조회되었을 때 이벤트를 발행하기 위한 template
+    @Bean
+    fun reviewCountValidateKakfaTemplate(): KafkaTemplate<String, ShopReviewQuery.ShopReviewCountDto> {
+        return KafkaTemplate(reviewCountValidateEventProducerFactory())
     }
 
     // Shop에 대한 Kafka Template를 사용하기 위한 Producer Factory
@@ -57,7 +64,11 @@ class KafkaProducerConfig(
         DefaultKafkaProducerFactory(producerConfig())
 
     // review가 작성됐을 때의 Event Template를 사용하기 위한 Producer Factory
-    private fun reviewCountEventProducerFactory(): ProducerFactory<String, ShopCommand.ReviewCountEventDto> =
+    private fun reviewGeneratedEventProducerFactory(): ProducerFactory<String, ShopCommand.ReviewCountEventDto> =
+        DefaultKafkaProducerFactory(producerConfig())
+
+    // review 목록이 조회되었을 때 발행되는 이벤트를 처리하기 위한 Producer factory
+    private fun reviewCountValidateEventProducerFactory(): ProducerFactory<String, ShopReviewQuery.ShopReviewCountDto> =
         DefaultKafkaProducerFactory(producerConfig())
 
     // producer config를 반환해주는 메소드

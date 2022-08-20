@@ -34,12 +34,7 @@ class ShopReviewQueryServiceImpl(
     @Transactional(readOnly = true)
     override suspend fun getReviewListByShop(shopId: String, shopName: String): List<ShopReview> =
         withContext(Dispatchers.IO) {
-            val reviewFlow = shopReviewReader.getShopReviewListFlowByShopIdAndNameWithCaching(shopId, shopName)
-
-            // flow에 item이 하나도 전달이 안 되는 경우의 예외 처리
-            checkNotNull(reviewFlow.firstOrNull()) {
-                throw ShopReviewNotFoundException("Shop review is not found!!")
-            }
+            val reviewFlow = shopReviewReader.getReviewFlowByShopIdAndName(shopId, shopName)
 
             val reviewList = reviewFlow.toList()
 

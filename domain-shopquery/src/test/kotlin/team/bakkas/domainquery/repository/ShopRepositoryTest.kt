@@ -237,43 +237,5 @@ internal class ShopRepositoryTest @Autowired constructor(
         println("caching async: $cachingSpeed") // 1780 mills
     }
 
-    // Cache hit 방식으로 모든 shop을 가져오는 테스트
-    @Test
-    @DisplayName("Cache hit 방식을 이용해서 모든 shop을 가져오기")
-    fun getAllShopFlow(): Unit = runBlocking {
-        // given
-        val shopKeysFlow = shopDynamoRepository.getAllShopKeys()
-        val cachedShopFlow = shopKeysFlow.map {
-            shopRepository.findShopByIdAndNameWithCaching(it.first, it.second)
-        }
-
-        // when
-        val shopList = mutableListOf<Shop>()
-        cachedShopFlow.buffer()
-            .collect { shopMono ->
-                val shopDeferred = CoroutinesUtils.monoToDeferred(shopMono)
-                shopList.add(shopDeferred.await()!!)
-            }
-
-        // then
-        val redisShopList = mutableListOf<Shop>()
-        shopList.forEach {
-            val redisShopMono = shopReactiveRedisTemplate.opsForValue().get(generateKey(it.shopId, it.shopName))
-            redisShopList.add(CoroutinesUtils.monoToDeferred(redisShopMono).await())
-        }
-
-        assert(shopList.size != 0)
-        assert(redisShopList.size != 0)
-        assertEquals(shopList.size, redisShopList.size)
-        shopList.zip(redisShopList).forEach {
-            assertEquals(it.first.shopId, it.second.shopId)
-            assertEquals(it.first.shopName, it.second.shopName)
-        }
-
-        shopList.forEach {
-            println(it)
-        }
-    }
-
     private fun generateKey(shopId: String, shopName: String): String = "shop:${shopId}-${shopName}"
 }

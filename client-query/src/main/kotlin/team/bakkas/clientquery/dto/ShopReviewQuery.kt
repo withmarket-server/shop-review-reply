@@ -20,4 +20,11 @@ sealed class ShopReviewQuery {
         @JsonProperty("created_at") var createdAt: LocalDateTime,
         @JsonProperty("updated_at") var updatedAt: LocalDateTime?
     )
+
+    // ShopReview 목록을 조회 시 발행되는 event에 실을 count DTO
+    data class ShopReviewCountDto(
+        var count: Int,
+        var shopId: String,
+        var shopName: String
+    )
 }

@@ -53,7 +53,7 @@ class ShopReviewCommandHandler(
 
             // review가 생성되었음을 shop table로 전파
             reviewCountEventKafkaTemplate.send(
-                KafkaTopics.reviewCountEventTopic, ShopCommand.ReviewCountEventDto(
+                KafkaTopics.reviewGenerateEventTopic, ShopCommand.ReviewCountEventDto(
                     shopId, shopName, true, reviewScore
                 )
             )
@@ -79,7 +79,7 @@ class ShopReviewCommandHandler(
 
             // 2. dynamoDB의 shop의 review 정보를 갱신하기 위해 이벤트 발행
             reviewCountEventKafkaTemplate.send(
-                KafkaTopics.reviewCountEventTopic, ShopCommand.ReviewCountEventDto(
+                KafkaTopics.reviewGenerateEventTopic, ShopCommand.ReviewCountEventDto(
                     shopId, shopName, false, reviewScore
                 )
             )

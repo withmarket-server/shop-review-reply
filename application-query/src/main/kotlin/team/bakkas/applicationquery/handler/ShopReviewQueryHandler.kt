@@ -1,7 +1,9 @@
 package team.bakkas.applicationquery.handler
 
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.firstOrNull
 import org.springframework.http.MediaType
+import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.ServerResponse
@@ -11,12 +13,19 @@ import org.springframework.web.reactive.function.server.queryParamOrNull
 import team.bakkas.clientquery.dto.ShopReviewQuery
 import team.bakkas.common.ResultFactory
 import team.bakkas.common.exceptions.RequestParamLostException
+import team.bakkas.common.exceptions.shopReview.ShopReviewNotFoundException
 import team.bakkas.domaindynamo.entity.ShopReview
+import team.bakkas.domainkafka.kafka.KafkaTopics
 import team.bakkas.domainquery.service.ifs.ShopReviewQueryService
 
+/** ShopReview에 대한 query logic에 대한 handler class
+ * @param shopReviewService shopReview에 대한 Business logic을 담당하는 클래스
+ * @param shopReviewCountValidateKafkaTemplate shopReivew에 대한 count를 검증하는 template
+ */
 @Component
 class ShopReviewQueryHandler(
-    private val shopReviewService: ShopReviewQueryService
+    private val shopReviewService: ShopReviewQueryService,
+    private val shopReviewCountValidateKafkaTemplate: KafkaTemplate<String, ShopReviewQuery.ShopReviewCountDto>
 ) {
 
     /** reviewId와 reviewTitle을 기반으로 review 하나를 가져오는 메소드
@@ -49,6 +58,27 @@ class ShopReviewQueryHandler(
         val shopName = request.queryParamOrNull("shop-name") ?: throw RequestParamLostException("shopName is lost!!")
 
         val reviewList = shopReviewService.getReviewListByShop(shopId, shopName)
+
+        // flow에 item이 하나도 전달이 안 되는 경우의 예외 처리
+        check(reviewList.isNotEmpty()) {
+            // redis에 현재 review가 없음을 kafka로 이벤트 발행
+            shopReviewCountValidateKafkaTemplate.send(
+                KafkaTopics.reviewCountValidateTopic,
+                ShopReviewQuery.ShopReviewCountDto(0, shopId, shopName)
+            )
+            throw ShopReviewNotFoundException("Shop review is not found!!")
+        }
+
+        // 현재 redis에서 조회된 review의 개수에 관한 이벤트를 발행
+        shopReviewCountValidateKafkaTemplate.send(
+            KafkaTopics.reviewCountValidateTopic,
+            ShopReviewQuery.ShopReviewCountDto(
+                reviewList.count(),
+                shopId,
+                shopName
+            )
+        )
+
         val reviewDtoList = reviewList.map { toSimpleReadDto(it) }
 
         return@coroutineScope ok().contentType(MediaType.APPLICATION_JSON)

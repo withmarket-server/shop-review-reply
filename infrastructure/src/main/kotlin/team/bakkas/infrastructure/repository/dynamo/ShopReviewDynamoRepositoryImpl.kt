@@ -42,6 +42,17 @@ class ShopReviewDynamoRepositoryImpl(
         return Mono.fromFuture(reviewFuture)
     }
 
+    /** shop에 대한 review flow를 반환해주는 메소드
+     * @param shopId
+     * @param shopName
+     * @return Flow consisted with review of given shop
+     */
+    override fun getAllReviewFlowByShopIdAndName(shopId: String, shopName: String): Flow<ShopReview> {
+        return asyncTable.scan { it.filterExpression(generateShopExpression(shopId, shopName)) }
+            .items()
+            .asFlow()
+    }
+
     /** review들에 대한 Key의 flow를 반환해주는 메소드
      * @param shopId
      * @param shopName

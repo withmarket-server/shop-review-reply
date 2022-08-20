@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
+import team.bakkas.common.utils.RedisUtils
 import team.bakkas.domaindynamo.entity.Shop
 import team.bakkas.domaindynamo.repository.dynamo.ShopDynamoRepository
 import team.bakkas.domaindynamo.repository.redis.ShopRedisRepository
@@ -20,13 +21,6 @@ class ShopReaderImpl(
     private val shopDynamoRepository: ShopDynamoRepository,
     private val shopRedisRepository: ShopRedisRepository
 ) : ShopReader {
-    companion object {
-        // Cache를 보관할 기간을 정의
-        val DAYS_TO_LIVE = 1L
-
-        fun generateRedisKey(shopId: String, shopName: String) = "shop:${shopId}-${shopName}"
-    }
-
     /**
      * Cache hit 방식으로 DynamoDB로부터 가게를 찾아오는 메소드
      * @param shopId 가게의 Id
@@ -34,7 +28,7 @@ class ShopReaderImpl(
      * @return Mono<Shop?>
      */
     override fun findShopByIdAndNameWithCaching(shopId: String, shopName: String): Mono<Shop> {
-        val key = generateRedisKey(shopId, shopName)
+        val key = RedisUtils.generateShopRedisKey(shopId, shopName)
         val alternativeShopMono: Mono<Shop?> = shopDynamoRepository.findShopByIdAndNameAsync(shopId, shopName)
             .single()
             .doOnSuccess { shopRedisRepository.cacheShop(it).subscribe() }

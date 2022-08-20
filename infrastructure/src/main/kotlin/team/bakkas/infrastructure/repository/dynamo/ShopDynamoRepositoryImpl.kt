@@ -41,13 +41,6 @@ class ShopDynamoRepositoryImpl(
         return Mono.fromFuture(asyncTable.getItem(shopKey))
     }
 
-    // 모든 Shop에 대한 key의 flow를 반환해주는 메소드
-    override fun getAllShopKeys(): Flow<Pair<String, String>> {
-        val shopPublisher = asyncTable.scan().items()
-        return shopPublisher.asFlow()
-            .map { Pair(it.shopId, it.shopName) }
-    }
-
     // 모든 Shop에 대한 flow를 반환해주는 메소드
     override fun getAllShops(): Flow<Shop> {
         val shopPublisher = asyncTable.scan().items()

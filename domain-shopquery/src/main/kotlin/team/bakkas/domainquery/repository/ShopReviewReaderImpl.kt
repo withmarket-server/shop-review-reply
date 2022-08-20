@@ -37,8 +37,6 @@ class ShopReviewReaderImpl(
             .switchIfEmpty(alternativeMono)
     }
 
-    // TODO 모든 review를 올리는 메소드는 따로 분리하고 cache-hit 시키고, 나머지는 모두 cache-hit으로는 하지말자.
-
     /** review list에 대한 flow를 반환해주는 메소드
      * @param shopId
      * @param shopName
@@ -51,4 +49,12 @@ class ShopReviewReaderImpl(
         val reviewKeysFlow = shopReviewDynamoRepository.getAllReviewKeyFlowByShopIdAndName(shopId, shopName)
         return reviewKeysFlow.map { findShopReviewByIdAndTitleWithCaching(it.first, it.second).awaitSingle() }
     }
+
+    /** review list에 대한 flow를 반환해주는 메소드
+     * @param shopId
+     * @param shopName
+     * @return flow consisted with review of given shop
+     */
+    override fun getReviewFlowByShopIdAndName(shopId: String, shopName: String): Flow<ShopReview> =
+        shopReviewRedisRepository.getShopReviewFlowByShopIdAndName(shopId, shopName)
 }
