@@ -12,6 +12,8 @@ interface ShopDynamoRepository {
     // 모든 Shop에 대한 key의 flow를 반환해주는 메소드
     fun getAllShopKeys(): Flow<Pair<String, String>>
 
+    fun getAllShops(): Flow<Shop>
+
     // shop을 하나 생성해주는 메소드
     fun createShopAsync(shop: Shop): Mono<Void>
 
