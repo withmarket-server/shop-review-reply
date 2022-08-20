@@ -35,7 +35,7 @@ class ShopEventListener(
      * @param shopCountDto redis로부터 count를 전달받는 파라미터
      */
     @KafkaListener(
-        topics = [KafkaTopics.shopCountTopic],
+        topics = [KafkaTopics.shopCountValidateTopic],
         groupId = KafkaConsumerGroups.checkShopCountGroup
     )
     fun checkShopCount(shopCountDto: ShopQuery.ShopCountDto) {
@@ -61,7 +61,7 @@ class ShopEventListener(
 
     // shop에 대해서 리뷰가 작성되면 카운트를 증가시켜주는 리스너 메소드
     @KafkaListener(
-        topics = [KafkaTopics.reviewCountEventTopic],
+        topics = [KafkaTopics.reviewGenerateEventTopic],
         groupId = KafkaConsumerGroups.updateShopReviewCountGroup
     )
     fun updateReviewCount(reviewCountEventDto: ShopCommand.ReviewCountEventDto) {
