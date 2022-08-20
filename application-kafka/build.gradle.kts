@@ -7,7 +7,6 @@ extra["springCloudVersion"] = "2021.0.2"
 
 dependencies {
     api(project(":domain-kafka"))
-    api(project(":domain-dynamo"))
 
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
