@@ -26,28 +26,15 @@ class ShopReviewReaderImpl(
      * @param reviewTitle
      * @return Mono<ShopReview?>
      */
-    override fun findShopReviewByIdAndTitleWithCaching(reviewId: String, reviewTitle: String): Mono<ShopReview> {
+    override fun findReviewByIdAndTitle(reviewId: String, reviewTitle: String): Mono<ShopReview> {
         val key = RedisUtils.generateReviewRedisKey(reviewId, reviewTitle)
-        val alternativeMono = shopReviewDynamoRepository.findReviewByIdAndTitleAsync(reviewId, reviewTitle)
+        val alternativeMono = shopReviewDynamoRepository.findReviewByIdAndTitle(reviewId, reviewTitle)
             .single()
             .doOnSuccess { shopReviewRedisRepository.cacheReview(it).subscribe() }
             .onErrorResume { Mono.empty() }
 
         return shopReviewRedisRepository.findReviewByKey(key)
             .switchIfEmpty(alternativeMono)
-    }
-
-    /** review list에 대한 flow를 반환해주는 메소드
-     * @param shopId
-     * @param shopName
-     * @return Flow<Mono<ShopReview>> flow consisted with monos of shopReview
-     */
-    override fun getShopReviewListFlowByShopIdAndNameWithCaching(
-        shopId: String,
-        shopName: String
-    ): Flow<ShopReview> {
-        val reviewKeysFlow = shopReviewDynamoRepository.getAllReviewKeyFlowByShopIdAndName(shopId, shopName)
-        return reviewKeysFlow.map { findShopReviewByIdAndTitleWithCaching(it.first, it.second).awaitSingle() }
     }
 
     /** review list에 대한 flow를 반환해주는 메소드

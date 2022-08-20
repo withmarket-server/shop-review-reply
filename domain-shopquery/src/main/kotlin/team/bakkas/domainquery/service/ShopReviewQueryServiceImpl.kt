@@ -25,7 +25,7 @@ class ShopReviewQueryServiceImpl(
     @Transactional(readOnly = true)
     override suspend fun findReviewByIdAndTitle(reviewId: String, reviewTitle: String): ShopReview =
         withContext(Dispatchers.IO) {
-            val reviewMono = shopReviewReader.findShopReviewByIdAndTitleWithCaching(reviewId, reviewTitle)
+            val reviewMono = shopReviewReader.findReviewByIdAndTitle(reviewId, reviewTitle)
             val reviewDeferred = CoroutinesUtils.monoToDeferred(reviewMono)
 
             return@withContext reviewDeferred.await() ?: throw ShopReviewNotFoundException("review is not found!!")

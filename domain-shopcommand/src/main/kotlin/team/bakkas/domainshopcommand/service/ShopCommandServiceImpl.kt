@@ -26,10 +26,10 @@ class ShopCommandServiceImpl(
      * @param shopCreateDto shop을 create 하는데 사용하는 dto parameter
      */
     @Transactional
-    override suspend fun createShop(shopCreateDto: ShopCommand.ShopCreateDto): Shop = withContext(Dispatchers.IO) {
+    override suspend fun createShop(shopCreateDto: ShopCommand.CreateRequest): Shop = withContext(Dispatchers.IO) {
         val generatedShop = shopCreateDto.toEntity()
         shopValidator.validateCreatable(generatedShop) // 생성 대상인 shop에 대해서 검증을 수행한다
-        val shopMono = shopDynamoRepository.createShopAsync(generatedShop)
+        val shopMono = shopDynamoRepository.createShop(generatedShop)
         val shopDeferred = CoroutinesUtils.monoToDeferred(shopMono)
 
         shopDeferred.await()

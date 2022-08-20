@@ -39,7 +39,7 @@ internal class ShopReviewDynamoRepositoryTest @Autowired constructor(
     @DisplayName("[Repository] reviewId가 틀려서 못 찾아오는 경우 테스트")
     fun findReviewByIdAndTitleFail1(reviewId: String, reviewTitle: String): Unit = runBlocking {
         // when
-        val reviewMono = shopReviewDynamoRepository.findReviewByIdAndTitleAsync(reviewId, reviewTitle)
+        val reviewMono = shopReviewDynamoRepository.findReviewByIdAndTitle(reviewId, reviewTitle)
         val reviewDeferred = CoroutinesUtils.monoToDeferred(reviewMono)
         val review = reviewDeferred.await()
 
@@ -54,7 +54,7 @@ internal class ShopReviewDynamoRepositoryTest @Autowired constructor(
     @DisplayName("[Repository] reviewName이 틀려서 못 찾아오는 경우 테스트")
     fun findReviewByIdAndTitleFail2(reviewId: String, reviewTitle: String): Unit = runBlocking {
         // when
-        val reviewMono = shopReviewDynamoRepository.findReviewByIdAndTitleAsync(reviewId, reviewTitle)
+        val reviewMono = shopReviewDynamoRepository.findReviewByIdAndTitle(reviewId, reviewTitle)
         val reviewDeferred = CoroutinesUtils.monoToDeferred(reviewMono)
         val review = reviewDeferred.await()
 
@@ -69,7 +69,7 @@ internal class ShopReviewDynamoRepositoryTest @Autowired constructor(
     @DisplayName("[Repository] 정상적으로 잘 찾아오는 경우 테스트")
     fun findReviewByIdAndTitleSuccess(reviewId: String, reviewTitle: String): Unit = runBlocking {
         // when
-        val reviewMono = shopReviewDynamoRepository.findReviewByIdAndTitleAsync(reviewId, reviewTitle)
+        val reviewMono = shopReviewDynamoRepository.findReviewByIdAndTitle(reviewId, reviewTitle)
         val reviewDeferred = CoroutinesUtils.monoToDeferred(reviewMono)
         val review = reviewDeferred.await()
 
@@ -119,18 +119,6 @@ internal class ShopReviewDynamoRepositoryTest @Autowired constructor(
             println(it)
         }
     }
-
-    @ParameterizedTest
-    @CsvSource(value = ["33daf043-7f36-4a52-b791-018f9d5eb218:역전할머니맥주 영남대점"], delimiter = ':')
-    @DisplayName("[repository] review key들을 완전히 잘 가져오는지 테스트")
-    fun testGetAllReviewKeyByShopIdAndName(shopId: String, shopName: String): Unit = runBlocking {
-        val reviewKeysFlow = shopReviewDynamoRepository.getAllReviewKeyFlowByShopIdAndName(shopId, shopName)
-        reviewKeysFlow.buffer()
-            .collect {
-                println("reviewId: ${it.first}, reviewTitle: ${it.second}")
-            }
-    }
-
     @ParameterizedTest
     @CsvSource(value = ["ecdc2-test005:저는 만족 못해요:33daf043-7f36-4a52-b791-018f9d5eb218:역전할머니맥주 영남대점"], delimiter = ':')
     @DisplayName("[Repository] Async 방식으로 review를 하나 생성한다")

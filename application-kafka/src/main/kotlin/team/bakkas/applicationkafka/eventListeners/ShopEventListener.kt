@@ -1,11 +1,9 @@
 package team.bakkas.applicationkafka.eventListeners
 
-import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.reactor.asFlux
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
-import reactor.core.publisher.Mono
 import team.bakkas.domainkafka.kafka.KafkaConsumerGroups
 import team.bakkas.domainkafka.kafka.KafkaTopics
 import team.bakkas.clientcommand.dto.ShopCommand
@@ -32,25 +30,25 @@ class ShopEventListener(
     }
 
     /** Shop의 개수가 정합을 이루고 있는지 검사하는 리스너 메소드
-     * @param shopCountDto redis로부터 count를 전달받는 파라미터
+     * @param shopCountEvent redis로부터 count를 전달받는 파라미터
      */
     @KafkaListener(
         topics = [KafkaTopics.shopCountValidateTopic],
         groupId = KafkaConsumerGroups.checkShopCountGroup
     )
-    fun checkShopCount(shopCountDto: ShopQuery.ShopCountDto) {
+    fun checkShopCount(shopCountEvent: ShopQuery.ShopCountEvent) {
         /*
         1. shop의 개수를 dynamo로부터 뽑아온다
         2. 둘을 비교한다 (shopCountDto와 dynamo에서의 개수) -> 개수가 안 맞으면 dynamo로부터 풀 스캔해서 가져온다
          */
-        when (shopCountDto.shopCount) {
+        when (shopCountEvent.shopCount) {
             // redis에 shop이 하나도 존재하지 않는 경우 dynamo로부터 모든 아이템을 가져와서 캐싱한다
             0 -> shopDynamoRepository.getAllShops().asFlux()
                 .flatMap { shopRedisRepository.cacheShop(it) }
                 .subscribe()
             else -> shopDynamoRepository.getAllShops().asFlux().count()
                 .flatMapMany {
-                    when (it == shopCountDto.shopCount.toLong()) {
+                    when (it == shopCountEvent.shopCount.toLong()) {
                         true -> Flux.empty() // 개수가 일치하면 아무 동작도 시행하지 않는다
                         false -> cacheAllShops() // 개수가 불일치하면 모든 shop을 dynamo로부터 가져와서 캐싱한다
                     }
@@ -64,27 +62,27 @@ class ShopEventListener(
         topics = [KafkaTopics.reviewGenerateEventTopic],
         groupId = KafkaConsumerGroups.updateShopReviewCountGroup
     )
-    fun updateReviewCount(reviewCountEventDto: ShopCommand.ReviewCountEventDto) {
+    fun updateReviewCount(reviewCreatedEvent: ShopCommand.ReviewCreatedEvent) {
         /*
         1. Shop을 DynamoDB로부터 가져온다
         2. DynamoDB로부터 가져온 Shop에 대해서 averageScore, reviewCount를 조작한다.
         3. 해당 Shop을 DynamoDB에 갱신하고, 동시에 Redis에도 갱신한다.
          */
-        val shopMono = with(reviewCountEventDto) {
-            shopDynamoRepository.findShopByIdAndNameAsync(shopId, shopName)
+        val shopMono = with(reviewCreatedEvent) {
+            shopDynamoRepository.findShopByIdAndName(shopId, shopName)
         }.map { it!! }
-            .map { changeShopInfo(it, reviewCountEventDto) }
+            .map { changeShopInfo(it, reviewCreatedEvent) }
 
         // 비동기적으로 dynamo, redis에 해당 정보 저장
-        shopMono.flatMap { shopDynamoRepository.createShopAsync(it) }.subscribe()
+        shopMono.flatMap { shopDynamoRepository.createShop(it) }.subscribe()
         shopMono.flatMap { shopRedisRepository.cacheShop(it) }.subscribe()
     }
 
     // shop의 변화를 반영해주는 메소드
-    private fun changeShopInfo(shop: Shop, reviewCountEventDto: ShopCommand.ReviewCountEventDto): Shop {
-        return when (reviewCountEventDto.isGenerated) {
-            true -> applyGenerateReview(shop, reviewCountEventDto.reviewScore)
-            false -> applyDeleteReview(shop, reviewCountEventDto.reviewScore)
+    private fun changeShopInfo(shop: Shop, reviewCreatedEvent: ShopCommand.ReviewCreatedEvent): Shop {
+        return when (reviewCreatedEvent.isGenerated) {
+            true -> applyGenerateReview(shop, reviewCreatedEvent.reviewScore)
+            false -> applyDeleteReview(shop, reviewCreatedEvent.reviewScore)
         }
     }
 

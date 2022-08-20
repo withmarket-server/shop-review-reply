@@ -11,7 +11,7 @@ sealed class ShopQuery {
      * @author Brian
      * @since 22/05/22
      */
-    data class ShopSimpleReadDto(
+    data class SimpleResponse(
         @JsonProperty("shop_id") var shopId: String,
         @JsonProperty("shop_name") var shopName: String,
         @JsonProperty("is_open") var isOpen: Boolean,
@@ -32,5 +32,5 @@ sealed class ShopQuery {
     /** Shop의 개수를 저장하는 dto
      * @param shopCount shop의 개수
      */
-    data class ShopCountDto(var shopCount: Int)
+    data class ShopCountEvent(var shopCount: Int)
 }

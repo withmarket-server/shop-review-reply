@@ -54,7 +54,7 @@ internal class ShopCommandServiceTest {
         }
         val mockShop = mockShopDto.toEntity()
 
-        every { shopDynamoRepository.createShopAsync(mockShop) } returns Mono.empty()
+        every { shopDynamoRepository.createShop(mockShop) } returns Mono.empty()
 
         // when
         val exception =
@@ -110,7 +110,7 @@ internal class ShopCommandServiceTest {
     }
 
     // create test용 dto를 생성해내는 메소드
-    private fun generateDto(): ShopCommand.ShopCreateDto = ShopCommand.ShopCreateDto(
+    private fun generateDto(): ShopCommand.CreateRequest = ShopCommand.CreateRequest(
         shopName = "카페 경사다",
         openTime = LocalTime.of(9, 0),
         closeTime = LocalTime.of(18, 0),

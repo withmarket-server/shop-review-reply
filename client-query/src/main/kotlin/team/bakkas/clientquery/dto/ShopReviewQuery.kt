@@ -9,7 +9,7 @@ sealed class ShopReviewQuery {
      * @author Brian
      * @since 22/06/03
      */
-    data class ShopReviewSimpleReadDto(
+    data class SimpleResponse(
         @JsonProperty("review_id") var reviewId: String,
         @JsonProperty("review_title") var reviewTitle: String,
         @JsonProperty("shop_id") var shopId: String,
@@ -22,7 +22,7 @@ sealed class ShopReviewQuery {
     )
 
     // ShopReview 목록을 조회 시 발행되는 event에 실을 count DTO
-    data class ShopReviewCountDto(
+    data class CountEvent(
         var count: Int,
         var shopId: String,
         var shopName: String

@@ -9,7 +9,7 @@ sealed class ShopCommand {
     /** Shop을 생성하는데 사용하는 dto class
      * @since 22.07.24
      */
-    data class ShopCreateDto(
+    data class CreateRequest(
         @JsonProperty("shop_name") var shopName: String,
         @JsonProperty("open_time") var openTime: LocalTime,
         @JsonProperty("close_time") var closeTime: LocalTime,
@@ -31,7 +31,7 @@ sealed class ShopCommand {
      * @param shopName shop의 name
      * @param isGenerated shop의 리뷰가 작성되었는지, 아니면 삭제되었는지 여부를 저장하는 변수
      */
-    data class ReviewCountEventDto(
+    data class ReviewCreatedEvent(
         var shopId: String,
         var shopName: String,
         var isGenerated: Boolean,

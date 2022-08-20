@@ -1,7 +1,6 @@
 package team.bakkas.applicationquery.handler
 
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.firstOrNull
 import org.springframework.http.MediaType
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Component
@@ -25,7 +24,7 @@ import team.bakkas.domainquery.service.ifs.ShopReviewQueryService
 @Component
 class ShopReviewQueryHandler(
     private val shopReviewService: ShopReviewQueryService,
-    private val shopReviewCountValidateKafkaTemplate: KafkaTemplate<String, ShopReviewQuery.ShopReviewCountDto>
+    private val shopReviewCountValidateKafkaTemplate: KafkaTemplate<String, ShopReviewQuery.CountEvent>
 ) {
 
     /** reviewId와 reviewTitle을 기반으로 review 하나를 가져오는 메소드
@@ -43,7 +42,7 @@ class ShopReviewQueryHandler(
 
         return@coroutineScope ok()
             .contentType(MediaType.APPLICATION_JSON)
-            .bodyValueAndAwait(ResultFactory.getSingleResult(toSimpleReadDto(review)))
+            .bodyValueAndAwait(ResultFactory.getSingleResult(toSimpleResponse(review)))
     }
 
     /** shopId와 shopName을 기반으로 review의 목록을 가져오는 메소드
@@ -64,7 +63,7 @@ class ShopReviewQueryHandler(
             // redis에 현재 review가 없음을 kafka로 이벤트 발행
             shopReviewCountValidateKafkaTemplate.send(
                 KafkaTopics.reviewCountValidateTopic,
-                ShopReviewQuery.ShopReviewCountDto(0, shopId, shopName)
+                ShopReviewQuery.CountEvent(0, shopId, shopName)
             )
             throw ShopReviewNotFoundException("Shop review is not found!!")
         }
@@ -72,20 +71,20 @@ class ShopReviewQueryHandler(
         // 현재 redis에서 조회된 review의 개수에 관한 이벤트를 발행
         shopReviewCountValidateKafkaTemplate.send(
             KafkaTopics.reviewCountValidateTopic,
-            ShopReviewQuery.ShopReviewCountDto(
+            ShopReviewQuery.CountEvent(
                 reviewList.count(),
                 shopId,
                 shopName
             )
         )
 
-        val reviewDtoList = reviewList.map { toSimpleReadDto(it) }
+        val reviewDtoList = reviewList.map { toSimpleResponse(it) }
 
         return@coroutineScope ok().contentType(MediaType.APPLICATION_JSON)
             .bodyValueAndAwait(ResultFactory.getMultipleResult(reviewDtoList))
     }
 
-    private fun toSimpleReadDto(shopReview: ShopReview) = ShopReviewQuery.ShopReviewSimpleReadDto(
+    private fun toSimpleResponse(shopReview: ShopReview) = ShopReviewQuery.SimpleResponse(
         reviewId = shopReview.reviewId,
         reviewTitle = shopReview.reviewTitle,
         shopId = shopReview.shopId,

@@ -1,8 +1,6 @@
 package team.bakkas.domainquery.repository
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
 import team.bakkas.common.utils.RedisUtils
@@ -27,9 +25,9 @@ class ShopReaderImpl(
      * @param shopName 가게의 이름
      * @return Mono<Shop?>
      */
-    override fun findShopByIdAndNameWithCaching(shopId: String, shopName: String): Mono<Shop> {
+    override fun findShopByIdAndName(shopId: String, shopName: String): Mono<Shop> {
         val key = RedisUtils.generateShopRedisKey(shopId, shopName)
-        val alternativeShopMono: Mono<Shop?> = shopDynamoRepository.findShopByIdAndNameAsync(shopId, shopName)
+        val alternativeShopMono: Mono<Shop?> = shopDynamoRepository.findShopByIdAndName(shopId, shopName)
             .single()
             .doOnSuccess { shopRedisRepository.cacheShop(it).subscribe() }
             .onErrorResume { Mono.empty() }

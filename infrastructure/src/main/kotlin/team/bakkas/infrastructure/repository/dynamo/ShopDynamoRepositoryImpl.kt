@@ -36,7 +36,7 @@ class ShopDynamoRepositoryImpl(
      * @param shopName shop의 이름
      * @return Mono<Shop?>
      */
-    override fun findShopByIdAndNameAsync(shopId: String, shopName: String): Mono<Shop> {
+    override fun findShopByIdAndName(shopId: String, shopName: String): Mono<Shop> {
         val shopKey = generateKey(shopId, shopName)
         return Mono.fromFuture(asyncTable.getItem(shopKey))
     }
@@ -48,13 +48,13 @@ class ShopDynamoRepositoryImpl(
     }
 
     // shop을 하나 생성해주는 메소드
-    override fun createShopAsync(shop: Shop): Mono<Void> {
+    override fun createShop(shop: Shop): Mono<Void> {
         val shopFuture = asyncTable.putItem(shop)
         return Mono.fromFuture(shopFuture)
     }
 
     // shop을 제거하는 메소드
-    override fun deleteShopAsync(shopId: String, shopName: String): Mono<Shop> {
+    override fun deleteShop(shopId: String, shopName: String): Mono<Shop> {
         val deleteShopFuture = asyncTable.deleteItem(generateKey(shopId, shopName))
         return Mono.fromFuture(deleteShopFuture)
     }

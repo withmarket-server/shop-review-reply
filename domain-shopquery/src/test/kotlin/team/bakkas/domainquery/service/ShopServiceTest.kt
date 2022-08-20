@@ -9,7 +9,6 @@ import io.mockk.junit5.MockKExtension
 import io.mockk.spyk
 import io.mockk.verify
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.reactor.mono
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
@@ -49,19 +48,19 @@ internal class ShopServiceTest {
         val shopId = "test-fake-key"
         val shopName = "fake shop"
 
-        every { shopRepository.findShopByIdAndNameWithCaching(shopId, shopName) } returns mono {
+        every { shopRepository.findShopByIdAndName(shopId, shopName) } returns mono {
             null
         }
 
         // when
-        val shopMono = shopRepository.findShopByIdAndNameWithCaching(shopId, shopName) // mono 가져오기
+        val shopMono = shopRepository.findShopByIdAndName(shopId, shopName) // mono 가져오기
         val shop = withContext(Dispatchers.IO) {
             CoroutinesUtils.monoToDeferred(shopMono).await()
         }
 
         // then
         verify(exactly = 1) {
-            shopRepository.findShopByIdAndNameWithCaching(
+            shopRepository.findShopByIdAndName(
                 shopId,
                 shopName
             )
@@ -79,16 +78,16 @@ internal class ShopServiceTest {
         val shopId = "correct-shop-id"
         val shopName = "correct-shop-name"
 
-        every { shopRepository.findShopByIdAndNameWithCaching(shopId, shopName) } returns mono {
+        every { shopRepository.findShopByIdAndName(shopId, shopName) } returns mono {
             getMockShop(shopId, shopName, true)
         }
 
         // when
-        val shopMono = shopRepository.findShopByIdAndNameWithCaching(shopId, shopName)
+        val shopMono = shopRepository.findShopByIdAndName(shopId, shopName)
         val shop: Shop? = CoroutinesUtils.monoToDeferred(shopMono).await()
 
         // then
-        verify(exactly = 1) { shopRepository.findShopByIdAndNameWithCaching(shopId, shopName) }
+        verify(exactly = 1) { shopRepository.findShopByIdAndName(shopId, shopName) }
         assertNotNull(shop)
         shop?.let {
             assertEquals(it.shopId, shopId)
@@ -107,7 +106,7 @@ internal class ShopServiceTest {
         val shopName = "fake-name"
 
         // 잘못된 key 값을 주는 경우 empty mono를 반환하게 설정
-        every { shopRepository.findShopByIdAndNameWithCaching(shopId, shopName) } returns mono {
+        every { shopRepository.findShopByIdAndName(shopId, shopName) } returns mono {
             null
         }
 
@@ -115,7 +114,7 @@ internal class ShopServiceTest {
         val exception = shouldThrow<ShopNotFoundException> { shopService.findShopByIdAndName(shopId, shopName) }
 
         // then
-        verify(exactly = 1) { shopRepository.findShopByIdAndNameWithCaching(shopId, shopName) }
+        verify(exactly = 1) { shopRepository.findShopByIdAndName(shopId, shopName) }
         coVerify(exactly = 1) { shopService.findShopByIdAndName(shopId, shopName) } // 코루틴의 경우 coVerify로 검증한다
         assert(exception is ShopNotFoundException) // 무조건 shopNotFoundException이 터져야한다
 
@@ -129,7 +128,7 @@ internal class ShopServiceTest {
         val shopId = "success-id"
         val shopName = "success-name"
 
-        every { shopRepository.findShopByIdAndNameWithCaching(shopId, shopName) } returns mono {
+        every { shopRepository.findShopByIdAndName(shopId, shopName) } returns mono {
             getMockShop(shopId, shopName, true)
         }
 
@@ -137,7 +136,7 @@ internal class ShopServiceTest {
         val shop = shopService.findShopByIdAndName(shopId, shopName)
 
         // then
-        verify(exactly = 1) { shopRepository.findShopByIdAndNameWithCaching(shopId, shopName) }
+        verify(exactly = 1) { shopRepository.findShopByIdAndName(shopId, shopName) }
         coVerify(exactly = 1) { shopService.findShopByIdAndName(shopId, shopName) }
         shouldNotThrow<ShopNotFoundException> { shopService.findShopByIdAndName(shopId, shopName) } // 예외가 안 터져야함!
         assertNotNull(shop)

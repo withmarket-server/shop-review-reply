@@ -5,7 +5,7 @@ import team.bakkas.domaindynamo.entity.Shop
 import java.time.LocalDateTime
 import java.util.*
 
-fun ShopCommand.ShopCreateDto.toEntity() = Shop(
+fun ShopCommand.CreateRequest.toEntity() = Shop(
     shopId = UUID.randomUUID().toString(),
     shopName = this.shopName,
     openTime = this.openTime,

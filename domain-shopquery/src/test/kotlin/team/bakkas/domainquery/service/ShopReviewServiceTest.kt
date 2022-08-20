@@ -8,7 +8,6 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.spyk
 import io.mockk.verify
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.reactor.mono
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -41,7 +40,7 @@ internal class ShopReviewServiceTest {
         val reviewId = "review-fake-id"
         val reviewTitle = "review-fake-title"
 
-        every { shopReviewRepository.findShopReviewByIdAndTitleWithCaching(reviewId, reviewTitle) } returns mono {
+        every { shopReviewRepository.findReviewByIdAndTitle(reviewId, reviewTitle) } returns mono {
             null
         }
 
@@ -50,7 +49,7 @@ internal class ShopReviewServiceTest {
             shouldThrow<ShopReviewNotFoundException> { shopReviewService.findReviewByIdAndTitle(reviewId, reviewTitle) }
 
         // then
-        verify(exactly = 1) { shopReviewRepository.findShopReviewByIdAndTitleWithCaching(reviewId, reviewTitle) }
+        verify(exactly = 1) { shopReviewRepository.findReviewByIdAndTitle(reviewId, reviewTitle) }
         coVerify(exactly = 1) { shopReviewService.findReviewByIdAndTitle(reviewId, reviewTitle) }
         assert(exception is ShopReviewNotFoundException)
 
@@ -66,14 +65,14 @@ internal class ShopReviewServiceTest {
         val shopId = "shop-id"
         val shopName = "shop-name"
 
-        every { shopReviewRepository.findShopReviewByIdAndTitleWithCaching(reviewId, reviewTitle) } returns
+        every { shopReviewRepository.findReviewByIdAndTitle(reviewId, reviewTitle) } returns
                 mono { getMockReview(reviewId, reviewTitle, shopId, shopName) }
 
         // when
         val shopReview = shopReviewService.findReviewByIdAndTitle(reviewId, reviewTitle)
 
         // then
-        verify(exactly = 1) { shopReviewRepository.findShopReviewByIdAndTitleWithCaching(reviewId, reviewTitle) }
+        verify(exactly = 1) { shopReviewRepository.findReviewByIdAndTitle(reviewId, reviewTitle) }
         coVerify(exactly = 1) { shopReviewService.findReviewByIdAndTitle(reviewId, reviewTitle) }
         assertNotNull(shopReview)
         shopReview.let {
@@ -84,26 +83,6 @@ internal class ShopReviewServiceTest {
         }
 
         println("[[service] review를 하나 성공적으로 가져오는 메소드] passed!!")
-    }
-
-    @Test
-    @DisplayName("[service] shop review를 하나도 못 가져오는 케이스 테스트")
-    fun failGetReviewList() = runBlocking {
-        // given
-        val shopId = "shop-fake-id"
-        val shopName = "shop-fake-name"
-        every { shopReviewRepository.getShopReviewListFlowByShopIdAndNameWithCaching(shopId, shopName) } returns
-                emptyFlow()
-
-        // when
-        val exception = shouldThrow<ShopReviewNotFoundException> { shopReviewService.getReviewListByShop(shopId, shopName)}
-
-        // then
-        verify(exactly = 1) { shopReviewRepository.getShopReviewListFlowByShopIdAndNameWithCaching(shopId, shopName) }
-        coVerify(exactly = 1) { shopReviewService.getReviewListByShop(shopId, shopName) }
-        assert(exception is ShopReviewNotFoundException)
-
-        println("[[service] shop review를 하나도 못 가져오는 케이스 테스트] passed!!")
     }
 
     private fun getMockReview(reviewId: String, reviewTitle: String, shopId: String, shopName: String) =

@@ -29,7 +29,7 @@ class KafkaProducerConfig(
 
     // Shop의 개수를 dynamo와 redis 간에 정합을 맞추는데 사용하는 template
     @Bean
-    fun shopCountKafkaTemplate(): KafkaTemplate<String, ShopQuery.ShopCountDto> {
+    fun shopCountKafkaTemplate(): KafkaTemplate<String, ShopQuery.ShopCountEvent> {
         return KafkaTemplate(shopCountProducerFactory())
     }
 
@@ -41,13 +41,13 @@ class KafkaProducerConfig(
 
     // Shop에 대해서 review 생성 이벤트를 처리하는데 사용하는 template
     @Bean
-    fun reviewGeneratedEventKafkaTemplate(): KafkaTemplate<String, ShopCommand.ReviewCountEventDto> {
+    fun reviewGeneratedEventKafkaTemplate(): KafkaTemplate<String, ShopCommand.ReviewCreatedEvent> {
         return KafkaTemplate(reviewGeneratedEventProducerFactory())
     }
 
     // shop에 대한 review의 목록이 조회되었을 때 이벤트를 발행하기 위한 template
     @Bean
-    fun reviewCountValidateKakfaTemplate(): KafkaTemplate<String, ShopReviewQuery.ShopReviewCountDto> {
+    fun reviewCountValidateKakfaTemplate(): KafkaTemplate<String, ShopReviewQuery.CountEvent> {
         return KafkaTemplate(reviewCountValidateEventProducerFactory())
     }
 
@@ -56,7 +56,7 @@ class KafkaProducerConfig(
         DefaultKafkaProducerFactory(producerConfig())
 
     // Shop의 개수를 정합 맞추는데 사용하는 producer factory
-    private fun shopCountProducerFactory(): ProducerFactory<String, ShopQuery.ShopCountDto> =
+    private fun shopCountProducerFactory(): ProducerFactory<String, ShopQuery.ShopCountEvent> =
         DefaultKafkaProducerFactory(producerConfig())
 
     // ShopReview에 대한 Template를 사용하기 위한 Producer Factory
@@ -64,11 +64,11 @@ class KafkaProducerConfig(
         DefaultKafkaProducerFactory(producerConfig())
 
     // review가 작성됐을 때의 Event Template를 사용하기 위한 Producer Factory
-    private fun reviewGeneratedEventProducerFactory(): ProducerFactory<String, ShopCommand.ReviewCountEventDto> =
+    private fun reviewGeneratedEventProducerFactory(): ProducerFactory<String, ShopCommand.ReviewCreatedEvent> =
         DefaultKafkaProducerFactory(producerConfig())
 
     // review 목록이 조회되었을 때 발행되는 이벤트를 처리하기 위한 Producer factory
-    private fun reviewCountValidateEventProducerFactory(): ProducerFactory<String, ShopReviewQuery.ShopReviewCountDto> =
+    private fun reviewCountValidateEventProducerFactory(): ProducerFactory<String, ShopReviewQuery.CountEvent> =
         DefaultKafkaProducerFactory(producerConfig())
 
     // producer config를 반환해주는 메소드

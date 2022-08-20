@@ -70,7 +70,7 @@ internal class ShopDynamoRepositoryTest @Autowired constructor(
     @CsvSource(value = ["33daf043-7f36-4a52-b791-018f9d5eb218:역전할머니맥주 영남대점"], delimiter = ':')
     @DisplayName("작성된 findShopByIdAndNameAsync 메소드의 성공 테스트")
     fun findShopByIdAndNameAsyncSuccess(shopId: String, shopName: String): Unit = runBlocking {
-        val shopMono = shopDynamoRepository.findShopByIdAndNameAsync(shopId, shopName)
+        val shopMono = shopDynamoRepository.findShopByIdAndName(shopId, shopName)
         val foundShop: Shop? = shopMono.awaitSingleOrNull()
 
         assertNotNull(foundShop)
@@ -86,7 +86,7 @@ internal class ShopDynamoRepositoryTest @Autowired constructor(
     @CsvSource(value = ["33daf043-7f36-4a52-b791-018f9d5eb218:가짜할머니맥주 영남대점"], delimiter = ':')
     @DisplayName("작성된 findShopByIdAndNameAsync 메소드의 실패 테스트 (잘못된 가게 이름)")
     fun findShopByIdAndNameAsyncFail1(shopId: String, shopName: String): Unit = runBlocking {
-        val shopMono = shopDynamoRepository.findShopByIdAndNameAsync(shopId, shopName)
+        val shopMono = shopDynamoRepository.findShopByIdAndName(shopId, shopName)
         val foundShop: Shop? = shopMono.awaitSingleOrNull()
 
         assertNull(foundShop)
@@ -98,7 +98,7 @@ internal class ShopDynamoRepositoryTest @Autowired constructor(
     @CsvSource(value = ["xxxxxx-7f36-4a52-b791-018f9d5eb218:역전할머니맥주 영남대점"], delimiter = ':')
     @DisplayName("작성된 findShopByIdAndNameAsync 메소드의 실패 테스트(잘못된 shopId)")
     fun findShopByIdAndNameAsyncFail2(shopId: String, shopName: String): Unit = runBlocking {
-        val shopMono = shopDynamoRepository.findShopByIdAndNameAsync(shopId, shopName)
+        val shopMono = shopDynamoRepository.findShopByIdAndName(shopId, shopName)
         val foundShop: Shop? = shopMono.awaitSingleOrNull()
 
         assertNull(foundShop)
@@ -155,7 +155,7 @@ internal class ShopDynamoRepositoryTest @Autowired constructor(
     fun createShopAsync(shopId: String, shopName: String, isOpen: Boolean): Unit = runBlocking {
         val mockShop = getMockShop(UUID.randomUUID().toString(), shopName, isOpen)
 
-        val createdShopMono = shopDynamoRepository.createShopAsync(mockShop)
+        val createdShopMono = shopDynamoRepository.createShop(mockShop)
 
         CoroutinesUtils.monoToDeferred(createdShopMono).await()
     }
@@ -165,7 +165,7 @@ internal class ShopDynamoRepositoryTest @Autowired constructor(
     @DisplayName("Shop 하나를 제거하는데 실패한다")
     @Rollback(value = false)
     fun deleteShopAsyncFail(shopId: String, shopName: String): Unit = runBlocking {
-        val deleteShopMono = shopDynamoRepository.deleteShopAsync(shopId, shopName)
+        val deleteShopMono = shopDynamoRepository.deleteShop(shopId, shopName)
         val deletedShop = CoroutinesUtils.monoToDeferred(deleteShopMono).await()
 
         assertNull(deletedShop)
@@ -177,7 +177,7 @@ internal class ShopDynamoRepositoryTest @Autowired constructor(
     @CsvSource(value = ["93e2b356-ffa9-4ae3-ab84-f64307802c66:포스마트"], delimiter = ':')
     @DisplayName("Shop 하나를 제거하는데 성공한다")
     fun deleteShopAsyncSuccess(shopId: String, shopName: String): Unit = runBlocking {
-        val deleteShopMono = shopDynamoRepository.deleteShopAsync(shopId, shopName)
+        val deleteShopMono = shopDynamoRepository.deleteShop(shopId, shopName)
         val deletedShop = CoroutinesUtils.monoToDeferred(deleteShopMono).await()
 
         // then

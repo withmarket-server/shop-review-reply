@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Primary
 import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory
 
-// TODO 모듈 하나 추가해서 dynamo와의 통합 repository를 생성해보자
 @Configuration
 class RedisConfig(
     @Value("\${spring.redis.host}")

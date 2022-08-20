@@ -19,7 +19,7 @@ class ShopReviewCommandServiceImpl(
 ) : ShopReviewCommandService {
 
     @Transactional
-    override suspend fun createReview(reviewCreateDto: ShopReviewCommand.CreateDto): ShopReview = withContext(Dispatchers.IO) {
+    override suspend fun createReview(reviewCreateDto: ShopReviewCommand.CreateRequest): ShopReview = withContext(Dispatchers.IO) {
         val review = reviewCreateDto.toEntity()
         // 검증
         shopReviewValidator.validateCreatable(review)

@@ -1,12 +1,9 @@
 package team.bakkas.domainquery.repository
 
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.beans.factory.annotation.Autowired
@@ -32,7 +29,7 @@ internal class ShopRepositoryTest @Autowired constructor(
     fun findOneShopCachingSuccess1(shopId: String, shopName: String): Unit = runBlocking {
         // given
         val key = generateKey(shopId, shopName)
-        val alternativeShopMono: Mono<Shop?> = shopDynamoRepository.findShopByIdAndNameAsync(shopId, shopName)
+        val alternativeShopMono: Mono<Shop?> = shopDynamoRepository.findShopByIdAndName(shopId, shopName)
             .doOnSuccess {
                 it?.let {
                     shopReactiveRedisTemplate.opsForValue().set(key, it, Duration.ofDays(1L))
@@ -74,7 +71,7 @@ internal class ShopRepositoryTest @Autowired constructor(
     fun findOneShopCachingFail1(shopId: String, shopName: String): Unit = runBlocking {
         // given
         val key = generateKey(shopId, shopName)
-        val alternativeShopMono: Mono<Shop?> = shopDynamoRepository.findShopByIdAndNameAsync(shopId, shopName)
+        val alternativeShopMono: Mono<Shop?> = shopDynamoRepository.findShopByIdAndName(shopId, shopName)
             .doOnSuccess {
                 it?.let {
                     shopReactiveRedisTemplate.opsForValue().set(key, it, Duration.ofDays(1L))
@@ -104,7 +101,7 @@ internal class ShopRepositoryTest @Autowired constructor(
     fun findOneShopCachingFail2(shopId: String, shopName: String): Unit = runBlocking {
         // given
         val key = generateKey(shopId, shopName)
-        val alternativeShopMono: Mono<Shop?> = shopDynamoRepository.findShopByIdAndNameAsync(shopId, shopName)
+        val alternativeShopMono: Mono<Shop?> = shopDynamoRepository.findShopByIdAndName(shopId, shopName)
             .doOnSuccess {
                 it?.let {
                     shopReactiveRedisTemplate.opsForValue().set(key, it, Duration.ofDays(1L))
@@ -137,7 +134,7 @@ internal class ShopRepositoryTest @Autowired constructor(
     fun testFindOneShopFail1(shopId: String, shopName: String): Unit = runBlocking {
         // given
         val key = generateKey(shopId, shopName)
-        val shopMono: Mono<Shop> = shopRepository.findShopByIdAndNameWithCaching(shopId, shopName)
+        val shopMono: Mono<Shop> = shopRepository.findShopByIdAndName(shopId, shopName)
 
         // when
         val result = shopMono.awaitSingleOrNull()
@@ -156,7 +153,7 @@ internal class ShopRepositoryTest @Autowired constructor(
     fun testFindOneShopFail2(shopId: String, shopName: String): Unit = runBlocking {
         // given
         val key = generateKey(shopId, shopName)
-        val shopMono: Mono<Shop> = shopRepository.findShopByIdAndNameWithCaching(shopId, shopName)
+        val shopMono: Mono<Shop> = shopRepository.findShopByIdAndName(shopId, shopName)
 
         // when
         val result = shopMono.awaitSingleOrNull()
@@ -175,7 +172,7 @@ internal class ShopRepositoryTest @Autowired constructor(
     fun testFindOneShopSuccess1(shopId: String, shopName: String): Unit = runBlocking {
         // given
         val key = generateKey(shopId, shopName)
-        val shopMono: Mono<Shop> = shopRepository.findShopByIdAndNameWithCaching(shopId, shopName)
+        val shopMono: Mono<Shop> = shopRepository.findShopByIdAndName(shopId, shopName)
 
         // when
         val result = CoroutinesUtils.monoToDeferred(shopMono).await()
@@ -207,7 +204,7 @@ internal class ShopRepositoryTest @Autowired constructor(
         stopWatch.start()
         val normalJob = launch {
             repeat(100) {
-                val shopMono: Mono<Shop> = shopDynamoRepository.findShopByIdAndNameAsync(shopId, shopName)
+                val shopMono: Mono<Shop> = shopDynamoRepository.findShopByIdAndName(shopId, shopName)
                 val shopDeferred = CoroutinesUtils.monoToDeferred(shopMono)
                 normalAsyncResult.add(shopDeferred.await())
             }
@@ -223,7 +220,7 @@ internal class ShopRepositoryTest @Autowired constructor(
         stopWatch.start()
         val cachingJob = launch {
             repeat(100) {
-                val shopMono: Mono<Shop> = shopRepository.findShopByIdAndNameWithCaching(shopId, shopName)
+                val shopMono: Mono<Shop> = shopRepository.findShopByIdAndName(shopId, shopName)
                 val shopDeferred = CoroutinesUtils.monoToDeferred(shopMono)
                 cachingAsyncResult.add(shopDeferred.await())
             }

@@ -29,22 +29,22 @@ import team.bakkas.domainshopcommand.service.ifs.ShopReviewCommandService
 class ShopReviewCommandHandler(
     private val shopReviewCommandService: ShopReviewCommandService,
     private val shopReviewKafkaTemplate: KafkaTemplate<String, ShopReview>,
-    private val reviewCountEventKafkaTemplate: KafkaTemplate<String, ShopCommand.ReviewCountEventDto>
+    private val reviewCountEventKafkaTemplate: KafkaTemplate<String, ShopCommand.ReviewCreatedEvent>
 ) {
 
     // shopReview를 하나 생성하는 메소드
     suspend fun createReview(request: ServerRequest): ServerResponse = coroutineScope {
         // 비동기적으로 reviewDto를 body로부터 뽑아온다
-        val reviewCreateDto = request.bodyToMono(ShopReviewCommand.CreateDto::class.java)
+        val reviewCreateRequest = request.bodyToMono(ShopReviewCommand.CreateRequest::class.java)
             .awaitSingleOrNull()
 
         // body가 유실되어있는지 검증
-        checkNotNull(reviewCreateDto) {
+        checkNotNull(reviewCreateRequest) {
             throw RequestBodyLostException("Body is lost!!")
         }
 
         // service의 createReview 로직 호출
-        val createdReview = shopReviewCommandService.createReview(reviewCreateDto)
+        val createdReview = shopReviewCommandService.createReview(reviewCreateRequest)
 
         // Kafka에 이벤트를 전파하는 로직
         with(createdReview) {
@@ -53,7 +53,7 @@ class ShopReviewCommandHandler(
 
             // review가 생성되었음을 shop table로 전파
             reviewCountEventKafkaTemplate.send(
-                KafkaTopics.reviewGenerateEventTopic, ShopCommand.ReviewCountEventDto(
+                KafkaTopics.reviewGenerateEventTopic, ShopCommand.ReviewCreatedEvent(
                     shopId, shopName, true, reviewScore
                 )
             )
@@ -79,7 +79,7 @@ class ShopReviewCommandHandler(
 
             // 2. dynamoDB의 shop의 review 정보를 갱신하기 위해 이벤트 발행
             reviewCountEventKafkaTemplate.send(
-                KafkaTopics.reviewGenerateEventTopic, ShopCommand.ReviewCountEventDto(
+                KafkaTopics.reviewGenerateEventTopic, ShopCommand.ReviewCreatedEvent(
                     shopId, shopName, false, reviewScore
                 )
             )

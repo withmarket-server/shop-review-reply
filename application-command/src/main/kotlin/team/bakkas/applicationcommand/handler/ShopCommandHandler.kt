@@ -29,16 +29,16 @@ class ShopCommandHandler(
      * @return ServerResponse
      */
     suspend fun createShop(request: ServerRequest): ServerResponse = coroutineScope {
-        val shopCreateDto = request.bodyToMono(ShopCommand.ShopCreateDto::class.java)
+        val shopCreateRequest = request.bodyToMono(ShopCommand.CreateRequest::class.java)
             .awaitSingleOrNull()
 
         // body가 비어서 날아오는 경우에 대한 예외 처리
-        checkNotNull(shopCreateDto) {
+        checkNotNull(shopCreateRequest) {
             throw RequestBodyLostException("Body is lost!!")
         }
 
         // shop을 생성
-        val createdShop = shopCommandService.createShop(shopCreateDto)
+        val createdShop = shopCommandService.createShop(shopCreateRequest)
 
         // Kafka에다가 생성된 shop을 메시지로 전송하여 consume하는 쪽에서 redis에 캐싱하도록 구현한다
         shopKafkaTemplate.send(KafkaTopics.shopCreateTopic, createdShop)
