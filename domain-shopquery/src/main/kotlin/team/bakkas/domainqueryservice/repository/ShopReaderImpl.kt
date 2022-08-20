@@ -55,4 +55,7 @@ class ShopReaderImpl(
 
         return shopKeysFlow.map { findShopByIdAndNameWithCaching(it.first, it.second).awaitSingle() }
     }
+
+    // Redis로부터 모든 Shop을 가져오는 메소드
+    override fun getAllShops(): Flow<Shop> = shopRedisRepository.getAllShops()
 }
