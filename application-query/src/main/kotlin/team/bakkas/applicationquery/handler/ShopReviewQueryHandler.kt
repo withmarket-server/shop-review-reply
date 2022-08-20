@@ -8,11 +8,11 @@ import org.springframework.web.reactive.function.server.ServerResponse
 import org.springframework.web.reactive.function.server.ServerResponse.ok
 import org.springframework.web.reactive.function.server.bodyValueAndAwait
 import org.springframework.web.reactive.function.server.queryParamOrNull
-import team.bakkas.clientmobilequery.dto.ShopReviewQuery
+import team.bakkas.clientquery.dto.ShopReviewQuery
 import team.bakkas.common.ResultFactory
 import team.bakkas.common.exceptions.RequestParamLostException
 import team.bakkas.domaindynamo.entity.ShopReview
-import team.bakkas.domainqueryservice.service.ifs.ShopReviewQueryService
+import team.bakkas.domainquery.service.ifs.ShopReviewQueryService
 
 @Component
 class ShopReviewQueryHandler(

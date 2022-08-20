@@ -1,17 +1,15 @@
-package team.bakkas.domainqueryservice.service
+package team.bakkas.domainquery.service
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.withContext
-import org.springframework.core.CoroutinesUtils
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import team.bakkas.common.exceptions.shop.ShopNotFoundException
 import team.bakkas.domaindynamo.entity.Shop
-import team.bakkas.domainqueryservice.repository.ifs.ShopReader
-import team.bakkas.domainqueryservice.service.ifs.ShopQueryService
+import team.bakkas.domainquery.repository.ifs.ShopReader
+import team.bakkas.domainquery.service.ifs.ShopQueryService
 
 /** Shop에 대한 비지니스 로직을 구현하는 service layer class
  * @param shopReader shop에 대한 cache hit이 구현된 repository

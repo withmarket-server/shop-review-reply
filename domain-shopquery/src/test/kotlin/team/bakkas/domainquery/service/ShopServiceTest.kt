@@ -1,4 +1,4 @@
-package team.bakkas.domainqueryservice.service
+package team.bakkas.domainquery.service
 
 import io.kotest.assertions.throwables.shouldNotThrow
 import io.kotest.assertions.throwables.shouldThrow
@@ -10,7 +10,6 @@ import io.mockk.spyk
 import io.mockk.verify
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.reactor.mono
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
@@ -18,12 +17,11 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.core.CoroutinesUtils
-import reactor.core.publisher.Mono
 import team.bakkas.common.category.Category
 import team.bakkas.common.category.DetailCategory
 import team.bakkas.common.exceptions.shop.ShopNotFoundException
 import team.bakkas.domaindynamo.entity.Shop
-import team.bakkas.domainqueryservice.repository.ifs.ShopReader
+import team.bakkas.domainquery.repository.ifs.ShopReader
 import java.time.LocalDateTime
 import java.time.LocalTime
 

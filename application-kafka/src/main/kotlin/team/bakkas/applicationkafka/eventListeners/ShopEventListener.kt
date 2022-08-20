@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component
 import team.bakkas.domainkafka.kafka.KafkaConsumerGroups
 import team.bakkas.domainkafka.kafka.KafkaTopics
 import team.bakkas.clientcommand.dto.ShopCommand
-import team.bakkas.clientmobilequery.dto.ShopQuery
+import team.bakkas.clientquery.dto.ShopQuery
 import team.bakkas.domaindynamo.entity.Shop
 import team.bakkas.domaindynamo.repository.dynamo.ShopDynamoRepository
 import team.bakkas.domaindynamo.repository.redis.ShopRedisRepository

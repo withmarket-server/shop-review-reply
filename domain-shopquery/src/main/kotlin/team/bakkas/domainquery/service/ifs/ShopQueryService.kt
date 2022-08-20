@@ -1,4 +1,4 @@
-package team.bakkas.domainqueryservice.service.ifs
+package team.bakkas.domainquery.service.ifs
 
 import team.bakkas.domaindynamo.entity.Shop
 

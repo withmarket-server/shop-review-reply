@@ -1,4 +1,4 @@
-package team.bakkas.clientmobilequery.dto
+package team.bakkas.clientquery.dto
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import team.bakkas.common.category.Category

@@ -1,4 +1,4 @@
-package team.bakkas.domainqueryservice.service
+package team.bakkas.domainquery.service
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import team.bakkas.common.exceptions.shopReview.ShopReviewNotFoundException
 import team.bakkas.domaindynamo.entity.ShopReview
-import team.bakkas.domainqueryservice.repository.ifs.ShopReviewReader
-import team.bakkas.domainqueryservice.service.ifs.ShopReviewQueryService
+import team.bakkas.domainquery.repository.ifs.ShopReviewReader
+import team.bakkas.domainquery.service.ifs.ShopReviewQueryService
 
 @Service
 class ShopReviewQueryServiceImpl(

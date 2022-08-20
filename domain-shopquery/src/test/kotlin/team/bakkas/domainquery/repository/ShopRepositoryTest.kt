@@ -1,4 +1,4 @@
-package team.bakkas.domainqueryservice.repository
+package team.bakkas.domainquery.repository
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*

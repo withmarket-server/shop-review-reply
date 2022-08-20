@@ -1,8 +1,6 @@
-package team.bakkas.domainqueryservice.repository
+package team.bakkas.domainquery.repository
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flatMapConcat
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.stereotype.Repository
@@ -10,7 +8,7 @@ import reactor.core.publisher.Mono
 import team.bakkas.domaindynamo.entity.Shop
 import team.bakkas.domaindynamo.repository.dynamo.ShopDynamoRepository
 import team.bakkas.domaindynamo.repository.redis.ShopRedisRepository
-import team.bakkas.domainqueryservice.repository.ifs.ShopReader
+import team.bakkas.domainquery.repository.ifs.ShopReader
 
 // TODO CQRS 패턴이 완전 정착되면 삭제할 예정임
 /** Cache hit 방식으로 데이터에 access하는 repository 구현

@@ -6,13 +6,13 @@ import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.*
 import org.springframework.web.reactive.function.server.ServerResponse.ok
-import team.bakkas.clientmobilequery.dto.ShopQuery
+import team.bakkas.clientquery.dto.ShopQuery
 import team.bakkas.common.ResultFactory
 import team.bakkas.common.exceptions.RequestParamLostException
 import team.bakkas.common.exceptions.shop.ShopNotFoundException
 import team.bakkas.domaindynamo.entity.Shop
 import team.bakkas.domainkafka.kafka.KafkaTopics
-import team.bakkas.domainqueryservice.service.ifs.ShopQueryService
+import team.bakkas.domainquery.service.ifs.ShopQueryService
 
 /** Shop에 대한 Query logic을 처리하는 Handler class
  * @param shopService shop에 대한 Service 로직들을 저장한 컨포넌트

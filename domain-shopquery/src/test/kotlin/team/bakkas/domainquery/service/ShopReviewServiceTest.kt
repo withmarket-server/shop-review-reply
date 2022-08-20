@@ -1,4 +1,4 @@
-package team.bakkas.domainqueryservice.service
+package team.bakkas.domainquery.service
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.common.runBlocking
@@ -8,9 +8,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.spyk
 import io.mockk.verify
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.reactor.mono
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -18,10 +16,9 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import reactor.core.publisher.Mono
 import team.bakkas.common.exceptions.shopReview.ShopReviewNotFoundException
 import team.bakkas.domaindynamo.entity.ShopReview
-import team.bakkas.domainqueryservice.repository.ifs.ShopReviewReader
+import team.bakkas.domainquery.repository.ifs.ShopReviewReader
 import java.time.LocalDateTime
 
 @ExtendWith(MockKExtension::class)
