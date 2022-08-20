@@ -3,6 +3,7 @@ rootProject.name = "yumarket"
 include(
     ":application-query",
     ":application-command",
+    ":application-kafka",
     ":domain-dynamo",
     ":domain-shopquery",
     ":domain-shopcommand",

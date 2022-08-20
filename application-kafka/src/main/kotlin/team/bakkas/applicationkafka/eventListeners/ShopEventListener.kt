@@ -1,4 +1,4 @@
-package team.bakkas.applicationcommand.eventListeners
+package team.bakkas.applicationkafka.eventListeners
 
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.stereotype.Component

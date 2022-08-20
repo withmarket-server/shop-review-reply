@@ -1,4 +1,4 @@
-package team.bakkas.applicationcommand.eventListeners
+package team.bakkas.applicationkafka.eventListeners
 
 import org.slf4j.LoggerFactory
 import org.springframework.kafka.annotation.KafkaListener
