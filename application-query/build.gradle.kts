@@ -8,12 +8,16 @@ extra["springCloudVersion"] = "2021.0.2"
 dependencies {
     // 모듈 간 의존관계 주입
     api(project(":domain-shopquery"))
+    api(project(":domain-kafka"))
     api(project(":common"))
 
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
     implementation("org.springframework.cloud:spring-cloud-starter-config")
+
+    // spring-kafka
+    implementation("org.springframework.kafka:spring-kafka")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.6.3")

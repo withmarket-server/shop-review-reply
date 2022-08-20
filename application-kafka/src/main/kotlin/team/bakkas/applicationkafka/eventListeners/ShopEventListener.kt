@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component
 import team.bakkas.domainkafka.kafka.KafkaConsumerGroups
 import team.bakkas.domainkafka.kafka.KafkaTopics
 import team.bakkas.clientcommand.dto.ShopCommand
+import team.bakkas.clientmobilequery.dto.ShopQuery
 import team.bakkas.domaindynamo.entity.Shop
 import team.bakkas.domaindynamo.repository.dynamo.ShopDynamoRepository
 import team.bakkas.domaindynamo.repository.redis.ShopRedisRepository
@@ -18,9 +19,26 @@ class ShopEventListener(
 ) {
 
     // withmarket.shop.create 토픽에 있는 메시지를 읽어내서 redis에 캐싱하는 메소드
-    @KafkaListener(topics = [KafkaTopics.shopCreateTopic], groupId = KafkaConsumerGroups.createShopGroup)
+    @KafkaListener(
+        topics = [KafkaTopics.shopCreateTopic],
+        groupId = KafkaConsumerGroups.createShopGroup
+    )
     fun cacheCreatedShop(shop: Shop) {
         shopRedisRepository.cacheShop(shop).subscribe()
+    }
+
+    // Shop의 개수가 정합을 이루고 있는지 검사하는 리스너 메소드
+    @KafkaListener(
+        topics = [KafkaTopics.shopCountTopic],
+        groupId = KafkaConsumerGroups.checkShopCountGroup
+    )
+    fun checkShopCount(shopCountDto: ShopQuery.ShopCountDto) {
+        /*
+        1. shop의 개수를 dynamo로부터 뽑아온다
+        2. shop의 개수를 redis로부터도 뽑아온다
+        3. 둘을 비교한다 -> 개수가 안 맞으면 dynamo로부터 풀 스캔해서 가져온다
+         */
+        // TODO 로직 작성
     }
 
     // shop에 대해서 리뷰가 작성되면 카운트를 증가시켜주는 리스너 메소드
@@ -57,7 +75,7 @@ class ShopEventListener(
         val newTotalScore = averageScore * reviewNumber - reviewScore // 새로 반영될 총점 계산
 
         // averageScore을 수정한다.
-        averageScore = when(reviewNumber) {
+        averageScore = when (reviewNumber) {
             1 -> 0.0
             else -> newTotalScore / (reviewNumber - 1)
         }

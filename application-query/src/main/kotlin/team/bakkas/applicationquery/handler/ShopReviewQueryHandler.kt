@@ -8,7 +8,7 @@ import org.springframework.web.reactive.function.server.ServerResponse
 import org.springframework.web.reactive.function.server.ServerResponse.ok
 import org.springframework.web.reactive.function.server.bodyValueAndAwait
 import org.springframework.web.reactive.function.server.queryParamOrNull
-import team.bakkas.clientmobilequery.dto.ShopReviewSimpleReadDto
+import team.bakkas.clientmobilequery.dto.ShopReviewQuery
 import team.bakkas.common.ResultFactory
 import team.bakkas.common.exceptions.RequestParamLostException
 import team.bakkas.domaindynamo.entity.ShopReview
@@ -55,7 +55,7 @@ class ShopReviewQueryHandler(
             .bodyValueAndAwait(ResultFactory.getMultipleResult(reviewDtoList))
     }
 
-    private fun toSimpleReadDto(shopReview: ShopReview) = ShopReviewSimpleReadDto(
+    private fun toSimpleReadDto(shopReview: ShopReview) = ShopReviewQuery.ShopReviewSimpleReadDto(
         reviewId = shopReview.reviewId,
         reviewTitle = shopReview.reviewTitle,
         shopId = shopReview.shopId,

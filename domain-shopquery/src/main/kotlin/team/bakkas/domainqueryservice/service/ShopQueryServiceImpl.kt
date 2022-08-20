@@ -40,11 +40,7 @@ class ShopQueryServiceImpl(
      */
     @Transactional(readOnly = true)
     override suspend fun getAllShopList(): List<Shop> = withContext(Dispatchers.IO) {
-        val shopFlow = shopReader.getAllShopsWithCaching()
-
-        checkNotNull(shopFlow.firstOrNull()) {
-            throw ShopNotFoundException("Shop is not found!!")
-        }
+        val shopFlow = shopReader.getAllShops()
 
         val shopList = shopFlow.toList()
 
