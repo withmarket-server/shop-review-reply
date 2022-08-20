@@ -275,32 +275,5 @@ internal class ShopRepositoryTest @Autowired constructor(
         }
     }
 
-    @Test
-    @DisplayName("[repository] 작성한 getAllShopWithCaching 검증")
-    fun getAllShopWithCaching(): Unit = runBlocking {
-        // given
-        val shopFlow = shopRepository.getAllShopsWithCaching()
-        val shopList = shopFlow.toList()
-
-        // then
-        val redisShopList = shopDynamoRepository.getAllShopKeys().map { generateKey(it.first, it.second) }
-            .map { shopReactiveRedisTemplate.opsForValue().get(it).awaitSingle() }
-            .buffer()
-            .toList()
-
-        assert(shopList.size != 0)
-        assert(redisShopList.size != 0)
-        assertEquals(shopList.size, redisShopList.size)
-        shopList.zip(redisShopList).forEach {
-            assertEquals(it.first.shopId, it.second.shopId)
-            assertEquals(it.first.shopName, it.second.shopName)
-        }
-
-        println("Test passed!!")
-        shopList.forEach {
-            println(it)
-        }
-    }
-
     private fun generateKey(shopId: String, shopName: String): String = "shop:${shopId}-${shopName}"
 }

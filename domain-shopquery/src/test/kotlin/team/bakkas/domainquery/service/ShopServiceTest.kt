@@ -149,23 +149,6 @@ internal class ShopServiceTest {
         println("[[service] findShopByIdAndName 성공 테스트] passed!!")
     }
 
-    @Test
-    @DisplayName("[service] shop에서 list를 가져오는데 실패하는 메소드")
-    fun failGetShopList() = runBlocking {
-        // given
-        every { shopRepository.getAllShopsWithCaching() } returns emptyFlow() // 비어있는 플로우를 반환시킨다
-
-        // when
-        val exception = shouldThrow<ShopNotFoundException> { shopService.getAllShopList() }
-
-        // then
-        verify(exactly = 1) { shopRepository.getAllShopsWithCaching() }
-        coVerify(exactly = 1) { shopService.getAllShopList() }
-        assert(exception is ShopNotFoundException)
-
-        println("[[service] shop에서 list를 가져오는데 실패하는 메소드] passed!!")
-    }
-
     // mock shop을 생성해내는 메소드
     private fun getMockShop(shopId: String, shopName: String, isOpen: Boolean) = Shop(
         shopId = shopId,

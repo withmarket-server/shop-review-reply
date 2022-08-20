@@ -46,14 +46,6 @@ class ShopReaderImpl(
             .switchIfEmpty(alternativeShopMono)
     }
 
-
-    // 모든 Shop을 가져오는 flow를 반환해주는 메소드
-    override fun getAllShopsWithCaching(): Flow<Shop> {
-        val shopKeysFlow = shopDynamoRepository.getAllShopKeys() // shop Key Pair들의 flow를 가져온다
-
-        return shopKeysFlow.map { findShopByIdAndNameWithCaching(it.first, it.second).awaitSingle() }
-    }
-
     // Redis로부터 모든 Shop을 가져오는 메소드
     override fun getAllShops(): Flow<Shop> = shopRedisRepository.getAllShops()
 }

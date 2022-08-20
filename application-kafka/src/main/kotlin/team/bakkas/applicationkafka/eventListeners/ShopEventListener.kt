@@ -1,7 +1,11 @@
 package team.bakkas.applicationkafka.eventListeners
 
+import kotlinx.coroutines.flow.count
+import kotlinx.coroutines.reactor.asFlux
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.stereotype.Component
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import team.bakkas.domainkafka.kafka.KafkaConsumerGroups
 import team.bakkas.domainkafka.kafka.KafkaTopics
 import team.bakkas.clientcommand.dto.ShopCommand
@@ -27,7 +31,9 @@ class ShopEventListener(
         shopRedisRepository.cacheShop(shop).subscribe()
     }
 
-    // Shop의 개수가 정합을 이루고 있는지 검사하는 리스너 메소드
+    /** Shop의 개수가 정합을 이루고 있는지 검사하는 리스너 메소드
+     * @param shopCountDto redis로부터 count를 전달받는 파라미터
+     */
     @KafkaListener(
         topics = [KafkaTopics.shopCountTopic],
         groupId = KafkaConsumerGroups.checkShopCountGroup
@@ -35,10 +41,22 @@ class ShopEventListener(
     fun checkShopCount(shopCountDto: ShopQuery.ShopCountDto) {
         /*
         1. shop의 개수를 dynamo로부터 뽑아온다
-        2. shop의 개수를 redis로부터도 뽑아온다
-        3. 둘을 비교한다 -> 개수가 안 맞으면 dynamo로부터 풀 스캔해서 가져온다
+        2. 둘을 비교한다 (shopCountDto와 dynamo에서의 개수) -> 개수가 안 맞으면 dynamo로부터 풀 스캔해서 가져온다
          */
-        // TODO 로직 작성
+        when (shopCountDto.shopCount) {
+            // redis에 shop이 하나도 존재하지 않는 경우 dynamo로부터 모든 아이템을 가져와서 캐싱한다
+            0 -> shopDynamoRepository.getAllShops().asFlux()
+                .flatMap { shopRedisRepository.cacheShop(it) }
+                .subscribe()
+            else -> shopDynamoRepository.getAllShops().asFlux().count()
+                .flatMapMany {
+                    when (it == shopCountDto.shopCount.toLong()) {
+                        true -> Flux.empty() // 개수가 일치하면 아무 동작도 시행하지 않는다
+                        false -> cacheAllShops() // 개수가 불일치하면 모든 shop을 dynamo로부터 가져와서 캐싱한다
+                    }
+                }
+                .subscribe()
+        }
     }
 
     // shop에 대해서 리뷰가 작성되면 카운트를 증가시켜주는 리스너 메소드
@@ -92,5 +110,11 @@ class ShopEventListener(
         reviewNumber += 1
 
         return@with this
+    }
+
+    // redis의 count와 dynamo의 count를 비교한 후에 캐싱하는 메소드
+    private fun cacheAllShops(): Flux<Boolean> {
+        return shopDynamoRepository.getAllShops().asFlux()
+            .flatMap { shopRedisRepository.cacheShop(it) }
     }
 }
