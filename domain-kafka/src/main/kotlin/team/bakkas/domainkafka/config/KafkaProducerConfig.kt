@@ -1,4 +1,4 @@
-package team.bakkas.applicationcommand.config
+package team.bakkas.domainkafka.config
 
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.StringSerializer

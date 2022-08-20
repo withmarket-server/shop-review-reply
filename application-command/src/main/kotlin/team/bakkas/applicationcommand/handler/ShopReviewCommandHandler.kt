@@ -10,7 +10,7 @@ import org.springframework.web.reactive.function.server.ServerResponse
 import org.springframework.web.reactive.function.server.ServerResponse.ok
 import org.springframework.web.reactive.function.server.bodyValueAndAwait
 import org.springframework.web.reactive.function.server.queryParamOrNull
-import team.bakkas.applicationcommand.kafka.KafkaTopics
+import team.bakkas.domainkafka.kafka.KafkaTopics
 import team.bakkas.clientcommand.dto.ShopCommand
 import team.bakkas.clientcommand.dto.ShopReviewCommand
 import team.bakkas.common.ResultFactory

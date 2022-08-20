@@ -3,8 +3,8 @@ package team.bakkas.applicationcommand.eventListeners
 import org.slf4j.LoggerFactory
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.stereotype.Component
-import team.bakkas.applicationcommand.kafka.KafkaConsumerGroups
-import team.bakkas.applicationcommand.kafka.KafkaTopics
+import team.bakkas.domainkafka.kafka.KafkaConsumerGroups
+import team.bakkas.domainkafka.kafka.KafkaTopics
 import team.bakkas.domaindynamo.entity.ShopReview
 import team.bakkas.domaindynamo.repository.redis.ShopReviewRedisRepository
 

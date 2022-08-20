@@ -7,7 +7,7 @@ import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.*
 import org.springframework.web.reactive.function.server.ServerResponse.ok
-import team.bakkas.applicationcommand.kafka.KafkaTopics
+import team.bakkas.domainkafka.kafka.KafkaTopics
 import team.bakkas.clientcommand.dto.ShopCommand
 import team.bakkas.common.ResultFactory
 import team.bakkas.common.exceptions.RequestBodyLostException

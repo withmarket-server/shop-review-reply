@@ -1,4 +1,4 @@
-package team.bakkas.applicationcommand.kafka
+package team.bakkas.domainkafka.kafka
 
 object KafkaConsumerGroups {
 
