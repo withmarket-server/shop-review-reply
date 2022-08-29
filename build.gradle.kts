@@ -16,7 +16,6 @@ plugins {
     id("org.jetbrains.kotlin.plugin.noarg") version "1.5.10" apply false
     kotlin("jvm") version "1.5.10" apply false
     kotlin("plugin.spring") version "1.5.10" apply false
-    kotlin("plugin.jpa") version "1.6.10" apply false
 }
 
 allprojects {

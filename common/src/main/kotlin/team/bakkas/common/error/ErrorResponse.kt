@@ -38,8 +38,7 @@ sealed class ErrorResponse {
 
         companion object {
             // 에러를 일으키는 필드가 하나만 존재하는 경우
-            fun of(field: String, value: String, reason: String): List<FieldError> =
-                listOf(FieldError(field, value, reason))
+            fun of(field: String, value: String, reason: String): FieldError = FieldError(field, value, reason)
 
             // bindingResult를 가진 exception에 대해서 bindingResult에 담긴 모든 에러를 반환해주는 메소드
             fun of(bindingResult: BindingResult): List<FieldError> {

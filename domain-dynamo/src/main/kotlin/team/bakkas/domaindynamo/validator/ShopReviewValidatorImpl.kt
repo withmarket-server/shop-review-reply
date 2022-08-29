@@ -4,11 +4,13 @@ import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.stereotype.Component
 import org.springframework.validation.BeanPropertyBindingResult
 import org.springframework.validation.Errors
+import org.springframework.validation.ObjectError
 import org.springframework.validation.ValidationUtils
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.util.UriComponentsBuilder
 import reactor.core.publisher.Mono
 import team.bakkas.common.Results
+import team.bakkas.common.error.ErrorResponse
 import team.bakkas.common.utils.WebClientHelper
 import team.bakkas.common.exceptions.RequestFieldException
 import team.bakkas.common.exceptions.shop.ShopNotFoundException
@@ -72,12 +74,22 @@ class ShopReviewValidatorImpl(
 
         // reviewContent의 길이를 200으로 제한한다
         if (review.reviewContent.length > 200) {
-            errors.rejectValue("reviewContent", "field.max.length", "review의 내용은 200을 넘어서는 안됩니다.")
+            errors.rejectValue(
+                "reviewContent",
+                "field.max.length",
+                arrayOf(review.reviewContent.length),
+                "review의 내용은 200을 넘어서는 안됩니다."
+            )
         }
 
         // reivewScore가 0점인 경우 제한한다
         if (review.reviewScore <= 0 || review.reviewScore > 10) {
-            errors.rejectValue("reviewScore", "field.value.range", "review score은 무조건 0 초과 10 이하입니다.")
+            errors.rejectValue(
+                "reviewScore",
+                "field.value.range",
+                arrayOf(review.reviewScore),
+                "review score은 무조건 0 초과 10 이하입니다."
+            )
         }
     }
 
@@ -88,7 +100,14 @@ class ShopReviewValidatorImpl(
 
         // 기본 조건들을 만족하지 못하면 exception을 터뜨린다
         check(errors.allErrors.isEmpty()) {
-            throw RequestFieldException(errors.allErrors.toString())
+            val errorList = errors.allErrors.map { it ->
+                ErrorResponse.FieldError.of(
+                    it.objectName,
+                    it.arguments.contentToString(),
+                    it.defaultMessage!!
+                )
+            }
+            throw RequestFieldException(errorList)
         }
     }
 

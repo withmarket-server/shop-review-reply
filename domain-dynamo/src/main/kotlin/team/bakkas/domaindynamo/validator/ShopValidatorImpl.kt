@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component
 import org.springframework.validation.BeanPropertyBindingResult
 import org.springframework.validation.Errors
 import org.springframework.validation.ValidationUtils
+import team.bakkas.common.error.ErrorResponse
 import team.bakkas.common.exceptions.RegionNotKoreaException
 import team.bakkas.common.exceptions.RequestFieldException
 import team.bakkas.common.exceptions.shop.ShopBranchInfoInvalidException
@@ -20,11 +21,9 @@ class ShopValidatorImpl : ShopValidator {
 
     override fun validate(target: Any, errors: Errors) {
         // shopName, lotNumberAddress, roadNameAddress에 대한 필드 유효성 검증
-        ValidationUtils.rejectIfEmpty(errors, "shopName", "field.required", "shopName이 비어있습니다.")
-        ValidationUtils.rejectIfEmpty(errors, "lotNumberAddress", "field.required", "지번주소가 제공되지 않았습니다.")
-        ValidationUtils.rejectIfEmpty(errors, "roadNameAddress", "field.required", "도로명 주소가 제공되지 않았습니다.")
-
-        // TODO 패턴을 분석하길 원하면 Pattern.compile을 이용해 정규표현식으로 패턴을 구현하고, errors.rejectValue를 이용해 에러 때린다
+        ValidationUtils.rejectIfEmpty(errors, "shopName", "field.required", arrayOf(), "shopName이 비어있습니다.")
+        ValidationUtils.rejectIfEmpty(errors, "lotNumberAddress", "field.required", arrayOf(), "지번주소가 제공되지 않았습니다.")
+        ValidationUtils.rejectIfEmpty(errors, "roadNameAddress", "field.required", arrayOf(), "도로명 주소가 제공되지 않았습니다.")
     }
 
     // 해당 가게가 생성 가능한지 검증하는 메소드
@@ -46,7 +45,10 @@ class ShopValidatorImpl : ShopValidator {
         validate(this, errors)
 
         check(errors.allErrors.isEmpty()) {
-            throw RequestFieldException(errors.allErrors.toString())
+            val errorList = errors.allErrors.map {
+                ErrorResponse.FieldError.of(it.objectName, it.arguments.contentToString(), it.defaultMessage!!)
+            }
+            throw RequestFieldException(errorList)
         }
     }
 
