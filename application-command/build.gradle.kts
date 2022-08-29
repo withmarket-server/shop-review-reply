@@ -7,6 +7,7 @@ extra["springCloudVersion"] = "2021.0.2"
 
 dependencies {
 
+    api(project(":application-common"))
     api(project(":domain-shopcommand"))
     api(project(":domain-kafka"))
 

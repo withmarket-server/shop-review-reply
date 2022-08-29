@@ -7,6 +7,7 @@ extra["springCloudVersion"] = "2021.0.2"
 
 dependencies {
     // 모듈 간 의존관계 주입
+    api(project(":application-common"))
     api(project(":domain-shopquery"))
     api(project(":domain-kafka"))
     api(project(":common"))

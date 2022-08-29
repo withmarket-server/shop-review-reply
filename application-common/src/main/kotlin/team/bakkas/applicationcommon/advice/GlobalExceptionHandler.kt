@@ -1,4 +1,4 @@
-package team.bakkas.applicationcommand.advice
+package team.bakkas.applicationcommon.advice
 
 import org.springframework.boot.autoconfigure.web.WebProperties
 import org.springframework.boot.autoconfigure.web.reactive.error.AbstractErrorWebExceptionHandler
@@ -12,7 +12,9 @@ import org.springframework.http.codec.ServerCodecConfigurer
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.server.*
+import org.springframework.web.reactive.function.server.ServerResponse.badRequest
 import reactor.core.publisher.Mono
+import team.bakkas.common.ResultFactory
 
 @Component
 @Order(-2) // 기본적인 예외 핸들링 우선순위는 -1이기 때문에 우선순위를 당겨서 적용한다
@@ -37,7 +39,7 @@ class GlobalExceptionHandler(
     private fun renderErrorResponse(request: ServerRequest): Mono<ServerResponse> {
         val errorPropertiesMap = getErrorAttributes(request, ErrorAttributeOptions.defaults())
 
-        return ServerResponse.status(HttpStatus.BAD_REQUEST)
+        return badRequest()
             .contentType(MediaType.APPLICATION_JSON)
             .body(BodyInserters.fromValue(errorPropertiesMap))
     }

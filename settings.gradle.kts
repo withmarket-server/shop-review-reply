@@ -1,6 +1,7 @@
 rootProject.name = "yumarket"
 
 include(
+    ":application-common",
     ":application-query",
     ":application-command",
     ":application-kafka",
