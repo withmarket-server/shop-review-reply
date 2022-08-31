@@ -15,17 +15,18 @@ sealed class ErrorResponse {
      * @param errorCode 에러코드
      * @param fieldErrorList 필드 에러 목록
      */
-    data class Response(val errorCode: ErrorCode, val fieldErrorList: List<FieldError>?) {
+    data class Response(val errorCode: ErrorCode, val defaultMessage: String, val fieldErrorList: List<FieldError>?) {
         companion object {
             // field에서 에러가 터지지 않았을 경우
-            fun of(errorCode: ErrorCode): Response = Response(errorCode, null)
+            fun of(errorCode: ErrorCode, defaultMessage: String): Response = Response(errorCode, defaultMessage, null)
 
             // field에서 에러가 터져나간경우 (bindingResult가 없는 exception에 대해서 사용)
-            fun of(errorCode: ErrorCode, fieldErrorList: List<FieldError>) = Response(errorCode, fieldErrorList)
+            fun of(errorCode: ErrorCode, defaultMessage: String, fieldErrorList: List<FieldError>) =
+                Response(errorCode, defaultMessage, fieldErrorList)
 
             // field에서 에러가 터져나갔으며, exception에 bindingResult를 포함하는 경우 사용
-            fun of(errorCode: ErrorCode, bindingResult: BindingResult) =
-                Response(errorCode, FieldError.of(bindingResult))
+            fun of(errorCode: ErrorCode, defaultMessage: String, bindingResult: BindingResult) =
+                Response(errorCode, defaultMessage, FieldError.of(bindingResult))
         }
     }
 

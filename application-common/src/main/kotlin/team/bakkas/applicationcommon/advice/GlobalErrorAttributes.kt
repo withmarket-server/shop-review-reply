@@ -32,29 +32,37 @@ class GlobalErrorAttributes : DefaultErrorAttributes() {
 
         when (throwable) {
             is ShopNotFoundException -> {
+                map["error"] = ErrorCode.ENTITY_NOT_FOUND
                 map["error_code"] = ErrorCode.ENTITY_NOT_FOUND.errorCode
             }
             is ShopBranchInfoInvalidException -> {
+                map["error"] = ErrorCode.INVALID_INFO
                 map["error_code"] = ErrorCode.INVALID_INFO.errorCode
             }
             is ShopReviewNotFoundException -> {
+                map["error"] = ErrorCode.ENTITY_NOT_FOUND
                 map["error_code"] = ErrorCode.ENTITY_NOT_FOUND.errorCode
             }
             is ShopReviewListInvalidException -> {
+                map["error"] = ErrorCode.INVALID_SHOP_REVIEW_LIST
                 map["error_code"] = ErrorCode.INVALID_SHOP_REVIEW_LIST.errorCode
             }
             is RegionNotKoreaException -> {
+                map["error"] = ErrorCode.INVALID_INFO
                 map["error_code"] = ErrorCode.INVALID_INFO.errorCode
             }
             is RequestBodyLostException -> {
+                map["error"] = ErrorCode.REQUEST_BODY_LOST
                 map["error_code"] = ErrorCode.REQUEST_BODY_LOST.errorCode
             }
             is RequestParamLostException -> {
+                map["error"] = ErrorCode.REQUEST_PARAM_LOST
                 map["error_code"] = ErrorCode.REQUEST_PARAM_LOST.errorCode
             }
             is RequestFieldException -> {
+                map["error"] = ErrorCode.REQUEST_BODY_LOST
                 map["error_code"] = ErrorCode.REQUEST_BODY_LOST.errorCode
-                map["fields"] = throwable.errors
+                map["field_error_list"] = throwable.errors
             }
         }
 

@@ -27,10 +27,14 @@ object ResultFactory {
     )
 
     // field에서 에러가 터지지 않은 경우 에러코드만 포함시켜서 에러를 반환해주는 메소드
-    fun getSimpleErrorResult(errorCode: ErrorCode): ErrorResponse.Response =
-        ErrorResponse.Response.of(errorCode)
+    fun getSimpleErrorResult(errorCode: ErrorCode, defaultMessage: String): ErrorResponse.Response =
+        ErrorResponse.Response.of(errorCode, defaultMessage)
 
     // field에서 에러가 발생하였으나 bindingResult가 존재하지 않는 오류에 대해서 에러를 반환해주는 메소드
-    fun getErrorResultWithFieldError(errorCode: ErrorCode, fieldErrorList: List<ErrorResponse.FieldError>) =
-        ErrorResponse.Response.of(errorCode, fieldErrorList)
+    fun getErrorResultWithFieldError(
+        errorCode: ErrorCode,
+        defaultMessage: String,
+        fieldErrorList: List<ErrorResponse.FieldError>
+    ) =
+        ErrorResponse.Response.of(errorCode, defaultMessage, fieldErrorList)
 }
