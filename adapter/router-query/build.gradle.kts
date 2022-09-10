@@ -1,4 +1,4 @@
 dependencies {
-    // Spring Kafka
+    // spring-kafka
     implementation("org.springframework.kafka:spring-kafka")
 }
