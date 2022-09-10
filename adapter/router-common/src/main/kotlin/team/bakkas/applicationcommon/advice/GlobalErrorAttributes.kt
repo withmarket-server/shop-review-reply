@@ -33,35 +33,35 @@ class GlobalErrorAttributes : DefaultErrorAttributes() {
         when (throwable) {
             is ShopNotFoundException -> {
                 map["error"] = ErrorCode.ENTITY_NOT_FOUND
-                map["error_code"] = ErrorCode.ENTITY_NOT_FOUND.errorCode
+                map["error_code"] = ErrorCode.ENTITY_NOT_FOUND
             }
             is ShopBranchInfoInvalidException -> {
                 map["error"] = ErrorCode.INVALID_INFO
-                map["error_code"] = ErrorCode.INVALID_INFO.errorCode
+                map["error_code"] = ErrorCode.INVALID_INFO
             }
             is ShopReviewNotFoundException -> {
                 map["error"] = ErrorCode.ENTITY_NOT_FOUND
-                map["error_code"] = ErrorCode.ENTITY_NOT_FOUND.errorCode
+                map["error_code"] = ErrorCode.ENTITY_NOT_FOUND
             }
             is ShopReviewListInvalidException -> {
                 map["error"] = ErrorCode.INVALID_SHOP_REVIEW_LIST
-                map["error_code"] = ErrorCode.INVALID_SHOP_REVIEW_LIST.errorCode
+                map["error_code"] = ErrorCode.INVALID_SHOP_REVIEW_LIST
             }
             is RegionNotKoreaException -> {
                 map["error"] = ErrorCode.INVALID_INFO
-                map["error_code"] = ErrorCode.INVALID_INFO.errorCode
+                map["error_code"] = ErrorCode.INVALID_INFO
             }
             is RequestBodyLostException -> {
                 map["error"] = ErrorCode.REQUEST_BODY_LOST
-                map["error_code"] = ErrorCode.REQUEST_BODY_LOST.errorCode
+                map["error_code"] = ErrorCode.REQUEST_BODY_LOST
             }
             is RequestParamLostException -> {
                 map["error"] = ErrorCode.REQUEST_PARAM_LOST
-                map["error_code"] = ErrorCode.REQUEST_PARAM_LOST.errorCode
+                map["error_code"] = ErrorCode.REQUEST_PARAM_LOST
             }
             is RequestFieldException -> {
                 map["error"] = ErrorCode.REQUEST_BODY_LOST
-                map["error_code"] = ErrorCode.REQUEST_BODY_LOST.errorCode
+                map["error_code"] = ErrorCode.REQUEST_BODY_LOST
                 map["field_error_list"] = throwable.errors
             }
         }
