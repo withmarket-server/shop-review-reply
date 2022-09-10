@@ -1,0 +1,23 @@
+syntax = "proto3";
+package team.bakkas.grpc.ifs.v1.user;
+
+option java_multiple_files = true;
+
+service UserService {
+  rpc RegisterUser (RegisterUserRequest) returns (RegisterUserResponse);
+}
+
+message RegisterUserRequest {
+  string login_id = 1;
+  string password = 2;
+}
+
+message RegisterUserResponse {
+  string login_id = 1;
+  bool enabled = 2;
+  repeated RegisterRoleResponse role_list = 3;
+}
+
+message RegisterRoleResponse {
+  string role = 1;
+}

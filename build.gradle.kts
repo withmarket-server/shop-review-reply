@@ -12,6 +12,8 @@ plugins {
     id("org.jetbrains.kotlin.plugin.noarg")
     kotlin("jvm")
     kotlin("plugin.spring")
+
+    id("com.google.protobuf")
 }
 
 allprojects {
