@@ -45,3 +45,8 @@ include(
     "port:service-command",
     "port:event-interface"
 )
+
+include(
+    "independent",
+    "independent:grpc-interface"
+)
