@@ -1,4 +1,7 @@
 dependencies {
+    // Connect dependency among the modules
+    api(project(":commons:common"))
+
     implementation("software.amazon.awssdk:dynamodb-enhanced:2.17.191")
 }
 

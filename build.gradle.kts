@@ -30,7 +30,7 @@ allprojects {
     }
 }
 
-val nonDependencyProjects = listOf("common")
+val nonDependencyProjects = listOf("commons", "commons:common")
 
 configure(subprojects.filter { it.name !in nonDependencyProjects }) {
     apply(plugin = "org.springframework.boot")

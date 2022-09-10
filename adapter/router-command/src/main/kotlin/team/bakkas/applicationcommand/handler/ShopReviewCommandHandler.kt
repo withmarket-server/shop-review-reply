@@ -10,7 +10,6 @@ import org.springframework.web.reactive.function.server.ServerResponse
 import org.springframework.web.reactive.function.server.ServerResponse.ok
 import org.springframework.web.reactive.function.server.bodyValueAndAwait
 import org.springframework.web.reactive.function.server.queryParamOrNull
-import team.bakkas.domainkafka.kafka.KafkaTopics
 import team.bakkas.clientcommand.dto.ShopCommand
 import team.bakkas.clientcommand.dto.ShopReviewCommand
 import team.bakkas.common.ResultFactory
@@ -18,6 +17,7 @@ import team.bakkas.common.exceptions.RequestBodyLostException
 import team.bakkas.common.exceptions.RequestParamLostException
 import team.bakkas.domaindynamo.entity.ShopReview
 import team.bakkas.domainshopcommand.service.ifs.ShopReviewCommandService
+import team.bakkas.eventinterface.kafka.KafkaTopics
 
 /** ShopReview에 대한 command handler class
  * @param shopReviewCommandService

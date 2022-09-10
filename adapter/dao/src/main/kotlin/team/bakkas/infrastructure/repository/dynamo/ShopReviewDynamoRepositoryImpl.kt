@@ -1,8 +1,6 @@
 package team.bakkas.infrastructure.repository.dynamo
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.count
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.reactive.asFlow
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
@@ -13,7 +11,7 @@ import software.amazon.awssdk.enhanced.dynamodb.Key
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 import team.bakkas.domaindynamo.entity.ShopReview
-import team.bakkas.domaindynamo.repository.dynamo.ShopReviewDynamoRepository
+import team.bakkas.repository.ifs.dynamo.ShopReviewDynamoRepository
 
 /** shop_review 테이블에 대한 repository class
  * @param dynamoDbEnhancedClient

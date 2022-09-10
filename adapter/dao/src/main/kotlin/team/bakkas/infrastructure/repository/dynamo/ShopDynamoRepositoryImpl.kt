@@ -1,10 +1,7 @@
 package team.bakkas.infrastructure.repository.dynamo
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.reactive.asFlow
-import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbAsyncTable
@@ -12,7 +9,7 @@ import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedAsyncClient
 import software.amazon.awssdk.enhanced.dynamodb.Key
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema
 import team.bakkas.domaindynamo.entity.Shop
-import team.bakkas.domaindynamo.repository.dynamo.ShopDynamoRepository
+import team.bakkas.repository.ifs.dynamo.ShopDynamoRepository
 
 /**
  * Before running this code example, create an Amazon DynamoDB table named shop

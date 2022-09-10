@@ -7,12 +7,12 @@ import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.*
 import org.springframework.web.reactive.function.server.ServerResponse.ok
-import team.bakkas.domainkafka.kafka.KafkaTopics
 import team.bakkas.clientcommand.dto.ShopCommand
 import team.bakkas.common.ResultFactory
 import team.bakkas.common.exceptions.RequestBodyLostException
 import team.bakkas.domaindynamo.entity.Shop
 import team.bakkas.domainshopcommand.service.ifs.ShopCommandService
+import team.bakkas.eventinterface.kafka.KafkaTopics
 
 /** shop에 대한 command 로직을 담당하는 handler 클래스
  * @param shopCommandService shop에 대한 command service logic을 담당하는 클래스

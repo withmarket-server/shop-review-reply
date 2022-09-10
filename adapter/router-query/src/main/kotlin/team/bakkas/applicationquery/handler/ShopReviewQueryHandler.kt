@@ -14,8 +14,8 @@ import team.bakkas.common.ResultFactory
 import team.bakkas.common.exceptions.RequestParamLostException
 import team.bakkas.common.exceptions.shopReview.ShopReviewNotFoundException
 import team.bakkas.domaindynamo.entity.ShopReview
-import team.bakkas.domainkafka.kafka.KafkaTopics
 import team.bakkas.domainquery.service.ifs.ShopReviewQueryService
+import team.bakkas.eventinterface.kafka.KafkaTopics
 
 /** ShopReview에 대한 query logic에 대한 handler class
  * @param shopReviewService shopReview에 대한 Business logic을 담당하는 클래스

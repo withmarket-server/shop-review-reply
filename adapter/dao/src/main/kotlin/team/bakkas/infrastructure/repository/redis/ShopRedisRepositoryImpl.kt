@@ -3,7 +3,6 @@ package team.bakkas.infrastructure.repository.redis
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactive.awaitSingle
 import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.data.redis.core.scanAsFlow
@@ -11,7 +10,7 @@ import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
 import team.bakkas.common.utils.RedisUtils
 import team.bakkas.domaindynamo.entity.Shop
-import team.bakkas.domaindynamo.repository.redis.ShopRedisRepository
+import team.bakkas.repository.ifs.redis.ShopRedisRepository
 import java.time.Duration
 import java.util.StringTokenizer
 

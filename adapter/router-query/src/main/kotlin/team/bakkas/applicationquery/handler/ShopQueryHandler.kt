@@ -11,8 +11,8 @@ import team.bakkas.common.ResultFactory
 import team.bakkas.common.exceptions.RequestParamLostException
 import team.bakkas.common.exceptions.shop.ShopNotFoundException
 import team.bakkas.domaindynamo.entity.Shop
-import team.bakkas.domainkafka.kafka.KafkaTopics
 import team.bakkas.domainquery.service.ifs.ShopQueryService
+import team.bakkas.eventinterface.kafka.KafkaTopics
 
 /** Shop에 대한 Query logic을 처리하는 Handler class
  * @param shopService shop에 대한 Service 로직들을 저장한 컨포넌트

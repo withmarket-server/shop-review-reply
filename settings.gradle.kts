@@ -14,3 +14,34 @@ pluginManagement {
         kotlin("plugin.spring") version kotlinVersion
     }
 }
+
+// include projects
+include(
+    "adapter",
+    "adapter:dao",
+    "adapter:kafka-config",
+    "adapter:kafka-listener",
+    "adapter:router-command",
+    "adapter:router-query",
+    "adapter:router-common"
+)
+
+include(
+    "commons",
+    "commons:common"
+)
+
+include(
+    "domain",
+    "domain:dynamo"
+)
+
+include(
+    "port",
+    "port:repository",
+    "port:client-command",
+    "port:client-query",
+    "port:service-query",
+    "port:service-command",
+    "port:event-interface"
+)
