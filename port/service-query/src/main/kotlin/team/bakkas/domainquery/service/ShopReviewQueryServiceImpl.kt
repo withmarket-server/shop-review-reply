@@ -2,6 +2,7 @@ package team.bakkas.domainquery.service
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.withContext
 import org.springframework.core.CoroutinesUtils
 import org.springframework.stereotype.Service
@@ -23,12 +24,11 @@ class ShopReviewQueryServiceImpl(
      * @return ShopReview
      */
     @Transactional(readOnly = true)
-    override suspend fun findReviewByIdAndTitle(reviewId: String, reviewTitle: String): ShopReview =
+    override suspend fun findReviewByIdAndTitle(reviewId: String, reviewTitle: String): ShopReview? =
         withContext(Dispatchers.IO) {
             val reviewMono = shopReviewReader.findReviewByIdAndTitle(reviewId, reviewTitle)
-            val reviewDeferred = CoroutinesUtils.monoToDeferred(reviewMono)
 
-            return@withContext reviewDeferred.await() ?: throw ShopReviewNotFoundException("review is not found!!")
+            return@withContext reviewMono.awaitSingleOrNull()
         }
 
     @Transactional(readOnly = true)

@@ -16,6 +16,7 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.core.CoroutinesUtils
+import reactor.core.publisher.Mono
 import team.bakkas.common.category.Category
 import team.bakkas.common.category.DetailCategory
 import team.bakkas.common.exceptions.shop.ShopNotFoundException
@@ -105,18 +106,15 @@ internal class ShopServiceTest {
         val shopId = "fake-id"
         val shopName = "fake-name"
 
-        // 잘못된 key 값을 주는 경우 empty mono를 반환하게 설정
-        every { shopRepository.findShopByIdAndName(shopId, shopName) } returns mono {
-            null
-        }
-
         // when
-        val exception = shouldThrow<ShopNotFoundException> { shopService.findShopByIdAndName(shopId, shopName) }
+        // 잘못된 key 값을 주는 경우 empty mono를 반환하게 설정
+        every { shopRepository.findShopByIdAndName(shopId, shopName) } returns Mono.empty()
+        val result = shopService.findShopByIdAndName(shopId, shopName)
 
         // then
         verify(exactly = 1) { shopRepository.findShopByIdAndName(shopId, shopName) }
         coVerify(exactly = 1) { shopService.findShopByIdAndName(shopId, shopName) } // 코루틴의 경우 coVerify로 검증한다
-        assert(exception is ShopNotFoundException) // 무조건 shopNotFoundException이 터져야한다
+        assertNull(result)
 
         println("[[service] findShopByIdAndName 실패 테스트] passed!!")
     }
@@ -140,7 +138,7 @@ internal class ShopServiceTest {
         coVerify(exactly = 1) { shopService.findShopByIdAndName(shopId, shopName) }
         shouldNotThrow<ShopNotFoundException> { shopService.findShopByIdAndName(shopId, shopName) } // 예외가 안 터져야함!
         assertNotNull(shop)
-        shop.let {
+        shop?.let {
             assertEquals(it.shopId, shopId)
             assertEquals(it.shopName, shopName)
         }

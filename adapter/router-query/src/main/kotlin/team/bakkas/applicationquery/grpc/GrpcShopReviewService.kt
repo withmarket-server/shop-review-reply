@@ -23,8 +23,13 @@ class GrpcShopReviewService(
         // 찾으면 예외 발생이 없음
         val foundReview = shopReviewQueryService.findReviewByIdAndTitle(reviewId, reviewTitle)
 
-        return CheckExistShopReviewResponse.newBuilder()
-            .setResult(true)
-            .build()
+        return when(foundReview) {
+            null -> CheckExistShopReviewResponse.newBuilder()
+                .setResult(false)
+                .build()
+            else -> CheckExistShopReviewResponse.newBuilder()
+                .setResult(true)
+                .build()
+        }
     }
 }

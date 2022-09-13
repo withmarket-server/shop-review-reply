@@ -30,7 +30,9 @@ class ShopQueryHandler(
         val shopId = request.queryParamOrNull("id") ?: throw RequestParamLostException("shopId is lost")
         val shopName = request.queryParamOrNull("name") ?: throw RequestParamLostException("shopName is lost")
 
+        // shop이 발견되지 않으면 ShopNotFoundException을 일으킨다
         val shop = shopService.findShopByIdAndName(shopId, shopName)
+            ?: throw ShopNotFoundException("Shop is not found!!")
 
         return@coroutineScope ok()
             .contentType(MediaType.APPLICATION_JSON)
@@ -52,7 +54,10 @@ class ShopQueryHandler(
         val shopResponseList = shopList.map { toSimpleResponse(it) }
 
         // 2. dynamo에 있는 shop의 개수와 redis에 있는 shop의 개수가 맞는지 검증하는 이벤트를 발행한다
-        shopCountKafkaTemplate.send(KafkaTopics.shopCountValidateTopic, ShopQuery.ShopCountEvent(shopResponseList.count()))
+        shopCountKafkaTemplate.send(
+            KafkaTopics.shopCountValidateTopic,
+            ShopQuery.ShopCountEvent(shopResponseList.count())
+        )
 
         ok().bodyValueAndAwait(ResultFactory.getMultipleResult(shopResponseList))
     }

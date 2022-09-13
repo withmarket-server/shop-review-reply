@@ -9,12 +9,12 @@ import io.mockk.junit5.MockKExtension
 import io.mockk.spyk
 import io.mockk.verify
 import kotlinx.coroutines.reactor.mono
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import reactor.core.publisher.Mono
 import team.bakkas.common.exceptions.shopReview.ShopReviewNotFoundException
 import team.bakkas.domaindynamo.entity.ShopReview
 import team.bakkas.domainquery.repository.ifs.ShopReviewReader
@@ -40,18 +40,15 @@ internal class ShopReviewServiceTest {
         val reviewId = "review-fake-id"
         val reviewTitle = "review-fake-title"
 
-        every { shopReviewRepository.findReviewByIdAndTitle(reviewId, reviewTitle) } returns mono {
-            null
-        }
+        every { shopReviewRepository.findReviewByIdAndTitle(reviewId, reviewTitle) } returns Mono.empty()
 
         // when
-        val exception =
-            shouldThrow<ShopReviewNotFoundException> { shopReviewService.findReviewByIdAndTitle(reviewId, reviewTitle) }
+        val result = shopReviewService.findReviewByIdAndTitle(reviewId, reviewTitle)
 
         // then
         verify(exactly = 1) { shopReviewRepository.findReviewByIdAndTitle(reviewId, reviewTitle) }
         coVerify(exactly = 1) { shopReviewService.findReviewByIdAndTitle(reviewId, reviewTitle) }
-        assert(exception is ShopReviewNotFoundException)
+        assertNull(result)
 
         println("[[service] 잘못된 review key 정보로 인해 review를 가져오지 못하는 테스트] passed!!")
     }
@@ -75,7 +72,7 @@ internal class ShopReviewServiceTest {
         verify(exactly = 1) { shopReviewRepository.findReviewByIdAndTitle(reviewId, reviewTitle) }
         coVerify(exactly = 1) { shopReviewService.findReviewByIdAndTitle(reviewId, reviewTitle) }
         assertNotNull(shopReview)
-        shopReview.let {
+        shopReview?.let {
             assertEquals(it.reviewId, reviewId)
             assertEquals(it.reviewTitle, reviewTitle)
             assertEquals(it.shopId, shopId)

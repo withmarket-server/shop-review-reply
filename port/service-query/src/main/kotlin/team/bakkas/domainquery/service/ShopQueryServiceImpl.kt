@@ -26,10 +26,9 @@ class ShopQueryServiceImpl(
      * @throws ShopNotFoundException
      */
     @Transactional(readOnly = true)
-    override suspend fun findShopByIdAndName(shopId: String, shopName: String): Shop = withContext(Dispatchers.IO) {
+    override suspend fun findShopByIdAndName(shopId: String, shopName: String): Shop? = withContext(Dispatchers.IO) {
         val shopMono = shopReader.findShopByIdAndName(shopId, shopName)
         return@withContext shopMono.awaitSingleOrNull()
-            ?: throw ShopNotFoundException("Shop is not found!!")
     }
 
     /** 모든 shop의 리스트를 가져오는 메소드

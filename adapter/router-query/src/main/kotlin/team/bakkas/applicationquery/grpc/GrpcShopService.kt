@@ -9,7 +9,7 @@ import team.bakkas.grpcIfs.v1.shop.ShopServiceGrpcKt
 @Service
 class GrpcShopService(
     private val shopQueryService: ShopQueryService
-): ShopServiceGrpcKt.ShopServiceCoroutineImplBase() {
+) : ShopServiceGrpcKt.ShopServiceCoroutineImplBase() {
 
     /** Shop이 존재하는지 검증해주는 메소드
      * @param request shopId, shopName을 포함한 grpc request 파라미터
@@ -22,8 +22,13 @@ class GrpcShopService(
 
         val foundShop = shopQueryService.findShopByIdAndName(shopId, shopName)
 
-        return CheckExistShopResponse.newBuilder()
-            .setResult(true)
-            .build()
+        return when (foundShop) {
+            null -> CheckExistShopResponse.newBuilder()
+                .setResult(false)
+                .build()
+            else -> CheckExistShopResponse.newBuilder()
+                .setResult(true)
+                .build()
+        }
     }
 }
