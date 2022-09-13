@@ -23,7 +23,7 @@ import team.bakkas.common.exceptions.RequestFieldException
 @Component
 @Order(-2) // 기본적인 예외 핸들링 우선순위는 -1이기 때문에 우선순위를 당겨서 적용한다
 class GlobalExceptionHandler(
-    errorAttributes: GlobalErrorAttributes,
+    private val errorAttributes: GlobalErrorAttributes,
     applicationContext: ApplicationContext,
     serverCodecConfigurer: ServerCodecConfigurer
 ) : AbstractErrorWebExceptionHandler(
@@ -46,7 +46,7 @@ class GlobalExceptionHandler(
     private fun renderErrorResponse(request: ServerRequest): Mono<ServerResponse> {
         // exception을 request로부터 가져온다
         val throwable = getError(request)
-        val errorPropertiesMap = getErrorAttributes(request, ErrorAttributeOptions.defaults())
+        val errorPropertiesMap = errorAttributes.getErrorAttributes(request, ErrorAttributeOptions.defaults())
 
         val responseBody = when (throwable) {
             is RequestFieldException -> getFieldErrorResponse(errorPropertiesMap)

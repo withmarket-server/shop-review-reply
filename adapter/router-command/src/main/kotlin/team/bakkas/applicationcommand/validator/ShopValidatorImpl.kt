@@ -48,7 +48,7 @@ class ShopValidatorImpl : ShopValidator {
             val errorList = errors.allErrors.map {
                 ErrorResponse.FieldError.of(it.objectName, it.arguments.contentToString(), it.defaultMessage!!)
             }
-            throw RequestFieldException(errorList)
+            throw RequestFieldException(errorList, "잘못된 요청입니다.")
         }
     }
 

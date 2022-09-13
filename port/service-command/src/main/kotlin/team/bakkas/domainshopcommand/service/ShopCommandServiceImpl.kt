@@ -2,6 +2,7 @@ package team.bakkas.domainshopcommand.service
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.reactor.awaitSingle
+import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.withContext
 import org.springframework.core.CoroutinesUtils
 import org.springframework.stereotype.Service
@@ -27,7 +28,7 @@ class ShopCommandServiceImpl(
     override suspend fun createShop(shop: Shop): Shop = withContext(Dispatchers.IO) {
         val shopMono = shopDynamoRepository.createShop(shop)
 
-        shopMono.awaitSingle()
+        shopMono.awaitSingleOrNull()
 
         shop
     }

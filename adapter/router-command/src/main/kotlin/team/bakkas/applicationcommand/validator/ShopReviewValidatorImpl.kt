@@ -106,7 +106,7 @@ class ShopReviewValidatorImpl(
                     it.defaultMessage!!
                 )
             }
-            throw RequestFieldException(errorList)
+            throw RequestFieldException(errorList, "잘못된 요청입니다.")
         }
     }
 
