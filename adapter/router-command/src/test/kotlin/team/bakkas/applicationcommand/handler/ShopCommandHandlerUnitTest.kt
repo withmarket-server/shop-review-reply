@@ -2,21 +2,15 @@ package team.bakkas.applicationcommand.handler
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.common.runBlocking
-import io.mockk.coEvery
-import io.mockk.every
+import io.mockk.*
 import io.mockk.junit5.MockKExtension
-import io.mockk.mockk
-import io.mockk.spyk
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.springframework.http.HttpStatus
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.mock.web.reactive.function.server.MockServerRequest
 import reactor.core.publisher.Mono
-import team.bakkas.applicationcommand.extensions.toEntity
 import team.bakkas.applicationcommand.validator.ShopValidatorImpl
 import team.bakkas.clientcommand.dto.ShopCommand
 import team.bakkas.common.category.Category
@@ -29,12 +23,11 @@ import team.bakkas.domaindynamo.entity.Shop
 import team.bakkas.domainshopcommand.service.ShopCommandServiceImpl
 import team.bakkas.domainshopcommand.service.ifs.ShopCommandService
 import team.bakkas.domainshopcommand.validator.ShopValidator
-import team.bakkas.eventinterface.kafka.KafkaTopics
 import team.bakkas.repository.ifs.dynamo.ShopDynamoRepository
 import java.time.LocalTime
 
 @ExtendWith(MockKExtension::class)
-internal class ShopCommandHandlerTest {
+internal class ShopCommandHandlerUnitTest {
     private lateinit var shopCommandHandler: ShopCommandHandler
 
     private lateinit var shopCommandService: ShopCommandService
@@ -47,7 +40,7 @@ internal class ShopCommandHandlerTest {
 
     @BeforeEach
     fun setUp() {
-        shopDynamoRepository = mockk()
+        shopDynamoRepository = mockk(relaxed = true)
         shopCommandService = spyk(ShopCommandServiceImpl(shopDynamoRepository))
         shopValidator = spyk(ShopValidatorImpl()) // 실제 validator를 사용하기 위해 spyk로 선언
         shopKafkaTemplate = mockk()
@@ -162,24 +155,6 @@ internal class ShopCommandHandlerTest {
 
         // then
         shouldThrow<RequestFieldException> { shopCommandHandler.createShop(request) }
-    }
-
-    @Test
-    @DisplayName("[createShop] 9. 성공하는 테스트")
-    fun createShopTest9(): Unit = runBlocking {
-        // given
-        val dto = generateDto()
-        val generatedShop = dto.toEntity()
-        val requestBody = Mono.just(dto)
-        val request = MockServerRequest.builder().body(requestBody)
-
-        // when
-        // TODO ShopDynamoRepository에서 Void 리턴에 대한 스터빙 구현
-        coEvery { shopCommandService.createShop(generatedShop) }.returns(generatedShop)
-
-        // then
-        val result = shopCommandHandler.createShop(request)
-        assertEquals(result.statusCode(), HttpStatus.OK)
     }
 
     private fun generateDto(): ShopCommand.CreateRequest = ShopCommand.CreateRequest(
