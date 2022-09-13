@@ -35,6 +35,7 @@
 
 2️⃣ **프로젝트 아키텍처**
 
+* Hexagonal Architecture
 * Multi-Module Architecture (멀티모듈 기반의 설계)
 * CQRS Architecture (Command-Query Responsibility Segregation)
 
@@ -50,9 +51,13 @@
 
 <img src="https://img.shields.io/badge/Spring Boot-6DB33F?style=for-the-badge&logo=Spring Boot&logoColor=black"> <img src="https://img.shields.io/badge/Spring Data Redis-6DB33F?style=for-the-badge&logo=Redis&logoColor=white"> <img src="https://img.shields.io/badge/Spring Webflux-6DB33F?style=for-the-badge&logo=Spring&logoColor=white">
 
+<img src="https://img.shields.io/badge/Armeria-F75690?style=for-the-badge&logo=armeria&logoColor=black">
+
 6️⃣ **사용된 라이브러리**
 
 <img src="https://img.shields.io/badge/AWS DynamoDB Sdk-4053D6?style=for-the-badge&logo=Amazon DynamoDB&logoColor=white"> <img src="https://img.shields.io/badge/Spring Kafka-231F20?style=for-the-badge&logo=Apache Kafka&logoColor=white"> <img src="https://img.shields.io/badge/Kotlin Coroutines-7F52FF?style=for-the-badge&logo=Kotlin&logoColor=black">
+
+<img src="https://img.shields.io/badge/GRPC-00ADD8?style=for-the-badge&logo=&logoColor=black">
 
 7️⃣ **빌드 툴**
 
