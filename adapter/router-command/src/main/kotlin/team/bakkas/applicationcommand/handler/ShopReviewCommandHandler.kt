@@ -71,6 +71,9 @@ class ShopReviewCommandHandler(
         val reviewId = request.queryParamOrNull("id") ?: throw RequestParamLostException("reviewId is lost")
         val reviewTitle = request.queryParamOrNull("title") ?: throw RequestParamLostException("reviewTitle is lost")
 
+        // 해당 review가 삭제 가능한지 검증
+        shopReviewValidator.validateDeletable(reviewId, reviewTitle)
+
         // service의 deleteReview 로직 호출
         val deletedReview = shopReviewCommandService.deleteReview(reviewId, reviewTitle)
 
