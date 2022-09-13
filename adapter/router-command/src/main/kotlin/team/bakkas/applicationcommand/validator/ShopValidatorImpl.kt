@@ -62,7 +62,9 @@ class ShopValidatorImpl : ShopValidator {
 
     // 해당 가게의 지점 정보가 올바른지 검증하는 메소드
     private fun validateBranchInfo(isBranch: Boolean, branchName: String?): Boolean {
+        // 1. 본점인데 branchName이 있는 경우
         val firstCondition = (isBranch && !branchName.isNullOrEmpty())
+        // 2. 분점인데 branchName이 없는 경우
         val secondCondition = (!isBranch && branchName.isNullOrEmpty())
 
         return firstCondition || secondCondition
