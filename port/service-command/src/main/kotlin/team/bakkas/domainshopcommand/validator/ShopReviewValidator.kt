@@ -1,4 +1,4 @@
-package team.bakkas.domaindynamo.validator.ifs
+package team.bakkas.domainshopcommand.validator
 
 import org.springframework.validation.Validator
 import team.bakkas.domaindynamo.entity.ShopReview

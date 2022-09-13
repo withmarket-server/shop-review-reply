@@ -1,4 +1,4 @@
-package team.bakkas.domainshopcommand.extensions
+package team.bakkas.applicationcommand.extensions
 
 import team.bakkas.clientcommand.dto.ShopCommand
 import team.bakkas.domaindynamo.entity.Shop

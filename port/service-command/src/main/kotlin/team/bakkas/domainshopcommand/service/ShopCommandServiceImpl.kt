@@ -1,14 +1,13 @@
 package team.bakkas.domainshopcommand.service
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.withContext
 import org.springframework.core.CoroutinesUtils
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import team.bakkas.clientcommand.dto.ShopCommand
 import team.bakkas.domaindynamo.entity.Shop
-import team.bakkas.domaindynamo.validator.ifs.ShopValidator
-import team.bakkas.domainshopcommand.extensions.toEntity
 import team.bakkas.domainshopcommand.service.ifs.ShopCommandService
 import team.bakkas.repository.ifs.dynamo.ShopDynamoRepository
 
@@ -18,23 +17,19 @@ import team.bakkas.repository.ifs.dynamo.ShopDynamoRepository
  */
 @Service
 class ShopCommandServiceImpl(
-    private val shopDynamoRepository: ShopDynamoRepository,
-    private val shopValidator: ShopValidator
+    private val shopDynamoRepository: ShopDynamoRepository
 ) : ShopCommandService {
 
     /** shop을 생성하는 비지니스 로직을 정의하는 메소드
-     * @param shopCreateDto shop을 create 하는데 사용하는 dto parameter
+     * @param shop 생성 가능성이 검증된 이후로 들어오는 shop entity 객체
      */
     @Transactional
-    override suspend fun createShop(shopCreateDto: ShopCommand.CreateRequest): Shop = withContext(Dispatchers.IO) {
-        val generatedShop = shopCreateDto.toEntity()
-        shopValidator.validateCreatable(generatedShop) // 생성 대상인 shop에 대해서 검증을 수행한다
-        val shopMono = shopDynamoRepository.createShop(generatedShop)
-        val shopDeferred = CoroutinesUtils.monoToDeferred(shopMono)
+    override suspend fun createShop(shop: Shop): Shop = withContext(Dispatchers.IO) {
+        val shopMono = shopDynamoRepository.createShop(shop)
 
-        shopDeferred.await()
+        shopMono.awaitSingle()
 
-        generatedShop
+        shop
     }
 
     // TODO shop을 수정하는 메소드

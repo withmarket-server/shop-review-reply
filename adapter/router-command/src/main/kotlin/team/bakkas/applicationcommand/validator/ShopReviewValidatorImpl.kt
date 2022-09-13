@@ -1,10 +1,9 @@
-package team.bakkas.domaindynamo.validator
+package team.bakkas.applicationcommand.validator
 
 import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.stereotype.Component
 import org.springframework.validation.BeanPropertyBindingResult
 import org.springframework.validation.Errors
-import org.springframework.validation.ObjectError
 import org.springframework.validation.ValidationUtils
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.util.UriComponentsBuilder
@@ -17,7 +16,7 @@ import team.bakkas.common.exceptions.shop.ShopNotFoundException
 import team.bakkas.common.exceptions.shopReview.ShopReviewNotFoundException
 import team.bakkas.common.urls.ServerUrlsInterface
 import team.bakkas.domaindynamo.entity.ShopReview
-import team.bakkas.domaindynamo.validator.ifs.ShopReviewValidator
+import team.bakkas.domainshopcommand.validator.ShopReviewValidator
 
 /** Shop Review에 대한 검증을 수행하는 Validator class
  * @param urlComponent 활성화된 환경에 따라 url을 변동적으로 관리해주는 bean class. local/server 환경을 분리해서 관리한다

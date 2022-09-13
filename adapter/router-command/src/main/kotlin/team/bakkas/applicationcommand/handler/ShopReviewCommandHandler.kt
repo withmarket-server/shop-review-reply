@@ -10,6 +10,7 @@ import org.springframework.web.reactive.function.server.ServerResponse
 import org.springframework.web.reactive.function.server.ServerResponse.ok
 import org.springframework.web.reactive.function.server.bodyValueAndAwait
 import org.springframework.web.reactive.function.server.queryParamOrNull
+import team.bakkas.applicationcommand.extensions.toEntity
 import team.bakkas.clientcommand.dto.ShopCommand
 import team.bakkas.clientcommand.dto.ShopReviewCommand
 import team.bakkas.common.ResultFactory
@@ -17,17 +18,19 @@ import team.bakkas.common.exceptions.RequestBodyLostException
 import team.bakkas.common.exceptions.RequestParamLostException
 import team.bakkas.domaindynamo.entity.ShopReview
 import team.bakkas.domainshopcommand.service.ifs.ShopReviewCommandService
+import team.bakkas.domainshopcommand.validator.ShopReviewValidator
 import team.bakkas.eventinterface.kafka.KafkaTopics
 
 /** ShopReview에 대한 command handler class
  * @param shopReviewCommandService
+ * @param shopReviewValidator shopReview에 대한 검증을 담당하는 bean
  * @param shopReviewKafkaTemplate
  * @param reviewCountEventKafkaTemplate
- * @param resultFactory
  */
 @Component
 class ShopReviewCommandHandler(
     private val shopReviewCommandService: ShopReviewCommandService,
+    private val shopReviewValidator: ShopReviewValidator,
     private val shopReviewKafkaTemplate: KafkaTemplate<String, ShopReview>,
     private val reviewCountEventKafkaTemplate: KafkaTemplate<String, ShopCommand.ReviewCreatedEvent>
 ) {
@@ -43,21 +46,15 @@ class ShopReviewCommandHandler(
             throw RequestBodyLostException("Body is lost!!")
         }
 
+        // dto -> entity 변환 및 검증
+        val generatedReview = reviewCreateRequest.toEntity()
+        shopReviewValidator.validateCreatable(generatedReview)
+
         // service의 createReview 로직 호출
-        val createdReview = shopReviewCommandService.createReview(reviewCreateRequest)
+        val createdReview = shopReviewCommandService.createReview(generatedReview)
 
-        // Kafka에 이벤트를 전파하는 로직
-        with(createdReview) {
-            // 생성된 review를 redis에서 처리하도록 이벤트 발행
-            shopReviewKafkaTemplate.send(KafkaTopics.shopReviewCreateTopic, this)
-
-            // review가 생성되었음을 shop table로 전파
-            reviewCountEventKafkaTemplate.send(
-                KafkaTopics.reviewGenerateEventTopic, ShopCommand.ReviewCreatedEvent(
-                    shopId, shopName, true, reviewScore
-                )
-            )
-        }
+        // Kafka에 리뷰 생성 이벤트를 전파한다
+        propagateCreatedEvent(createdReview)
 
         return@coroutineScope ok()
             .contentType(MediaType.APPLICATION_JSON)
@@ -73,20 +70,40 @@ class ShopReviewCommandHandler(
         val deletedReview = shopReviewCommandService.deleteReview(reviewId, reviewTitle)
 
         // Kafka에 이벤트 전파
-        with(deletedReview) {
-            // 1. redis에 있는 review cache를 삭제하기 위해 이벤트 발행
-            shopReviewKafkaTemplate.send(KafkaTopics.shopReviewDeleteTopic, this)
-
-            // 2. dynamoDB의 shop의 review 정보를 갱신하기 위해 이벤트 발행
-            reviewCountEventKafkaTemplate.send(
-                KafkaTopics.reviewGenerateEventTopic, ShopCommand.ReviewCreatedEvent(
-                    shopId, shopName, false, reviewScore
-                )
-            )
-        }
+        propagateDeletedEvent(deletedReview)
 
         return@coroutineScope ok()
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValueAndAwait(ResultFactory.getSuccessResult())
+    }
+
+    /** review 생성 관련 이벤트 전파를 담당하는 메소드
+     * @param createdReview 생성된 shopReview
+     */
+    private fun propagateCreatedEvent(createdReview: ShopReview): Unit = with(createdReview) {
+        // 생성된 review를 redis에서 처리하도록 이벤트 발행
+        shopReviewKafkaTemplate.send(KafkaTopics.shopReviewCreateTopic, this)
+
+        // review가 생성되었음을 shop table로 전파
+        reviewCountEventKafkaTemplate.send(
+            KafkaTopics.reviewGenerateEventTopic, ShopCommand.ReviewCreatedEvent(
+                shopId, shopName, true, reviewScore
+            )
+        )
+    }
+
+    /** review 삭제 관련 이벤트 전파를 담당하는 메소드
+     * @param deletedReview 삭제괸 리뷰를 파라미터로 전달
+     */
+    private fun propagateDeletedEvent(deletedReview: ShopReview): Unit = with(deletedReview) {
+        // 1. redis에 있는 review cache를 삭제하기 위해 이벤트 발행
+        shopReviewKafkaTemplate.send(KafkaTopics.shopReviewDeleteTopic, this)
+
+        // 2. dynamoDB의 shop의 review 정보를 갱신하기 위해 이벤트 발행
+        reviewCountEventKafkaTemplate.send(
+            KafkaTopics.reviewGenerateEventTopic, ShopCommand.ReviewCreatedEvent(
+                shopId, shopName, false, reviewScore
+            )
+        )
     }
 }

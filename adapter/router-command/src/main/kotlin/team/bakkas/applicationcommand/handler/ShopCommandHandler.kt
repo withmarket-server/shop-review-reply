@@ -7,11 +7,13 @@ import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.*
 import org.springframework.web.reactive.function.server.ServerResponse.ok
+import team.bakkas.applicationcommand.extensions.toEntity
 import team.bakkas.clientcommand.dto.ShopCommand
 import team.bakkas.common.ResultFactory
 import team.bakkas.common.exceptions.RequestBodyLostException
 import team.bakkas.domaindynamo.entity.Shop
 import team.bakkas.domainshopcommand.service.ifs.ShopCommandService
+import team.bakkas.domainshopcommand.validator.ShopValidator
 import team.bakkas.eventinterface.kafka.KafkaTopics
 
 /** shop에 대한 command 로직을 담당하는 handler 클래스
@@ -21,6 +23,7 @@ import team.bakkas.eventinterface.kafka.KafkaTopics
 @Component
 class ShopCommandHandler(
     private val shopCommandService: ShopCommandService,
+    private val shopValidator: ShopValidator,
     private val shopKafkaTemplate: KafkaTemplate<String, Shop>
 ) {
 
@@ -37,8 +40,14 @@ class ShopCommandHandler(
             throw RequestBodyLostException("Body is lost!!")
         }
 
+        // shopCreateRequest를 기반으로 entity 객체를 하나 생성한다
+        val generatedShop = shopCreateRequest.toEntity()
+
+        // 생성 가능한지 검증한다
+        shopValidator.validateCreatable(generatedShop)
+
         // shop을 생성
-        val createdShop = shopCommandService.createShop(shopCreateRequest)
+        val createdShop = shopCommandService.createShop(generatedShop)
 
         // Kafka에다가 생성된 shop을 메시지로 전송하여 consume하는 쪽에서 redis에 캐싱하도록 구현한다
         shopKafkaTemplate.send(KafkaTopics.shopCreateTopic, createdShop)

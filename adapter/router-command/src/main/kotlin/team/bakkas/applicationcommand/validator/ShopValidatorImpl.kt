@@ -1,4 +1,4 @@
-package team.bakkas.domaindynamo.validator
+package team.bakkas.applicationcommand.validator
 
 import org.springframework.stereotype.Component
 import org.springframework.validation.BeanPropertyBindingResult
@@ -9,7 +9,7 @@ import team.bakkas.common.exceptions.RegionNotKoreaException
 import team.bakkas.common.exceptions.RequestFieldException
 import team.bakkas.common.exceptions.shop.ShopBranchInfoInvalidException
 import team.bakkas.domaindynamo.entity.Shop
-import team.bakkas.domaindynamo.validator.ifs.ShopValidator
+import team.bakkas.domainshopcommand.validator.ShopValidator
 
 // Shop을 검증하는 로직을 정의하는 클래스
 @Component
