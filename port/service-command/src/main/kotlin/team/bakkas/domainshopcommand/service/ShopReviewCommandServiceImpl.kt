@@ -2,6 +2,7 @@ package team.bakkas.domainshopcommand.service
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.reactor.awaitSingle
+import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -17,7 +18,7 @@ class ShopReviewCommandServiceImpl(
     @Transactional
     override suspend fun createReview(shopReview: ShopReview): ShopReview = withContext(Dispatchers.IO) {
         // 검증이 끝나면 review 생성
-        shopReviewDynamoRepository.createReviewAsync(shopReview).awaitSingle()
+        shopReviewDynamoRepository.createReviewAsync(shopReview).awaitSingleOrNull()
 
         return@withContext shopReview
     }

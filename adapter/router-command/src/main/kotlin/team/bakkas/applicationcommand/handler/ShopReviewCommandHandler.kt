@@ -2,6 +2,7 @@ package team.bakkas.applicationcommand.handler
 
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.reactor.awaitSingleOrNull
+import org.slf4j.LoggerFactory
 import org.springframework.http.MediaType
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Component
@@ -34,6 +35,10 @@ class ShopReviewCommandHandler(
     private val shopReviewKafkaTemplate: KafkaTemplate<String, ShopReview>,
     private val reviewCountEventKafkaTemplate: KafkaTemplate<String, ShopCommand.ReviewCreatedEvent>
 ) {
+
+    companion object {
+        val logger = LoggerFactory.getLogger(this::class.java)
+    }
 
     // shopReview를 하나 생성하는 메소드
     suspend fun createReview(request: ServerRequest): ServerResponse = coroutineScope {
