@@ -1,0 +1,21 @@
+syntax = "proto3";
+package team.bakkas.grpcIfs.v1.shopReview;
+
+option java_multiple_files = true;
+
+service ShopReviewService {
+  /** 파라미터에 대응하는 shopReview가 존재하는지 여부를 반환하는 메소드
+   * @param CheckExistShopReviewRequest
+   * @returns CheckExistShopReviewResponse
+   */
+  rpc isExistShopReview (CheckExistShopReviewRequest) returns (CheckExistShopReviewResponse);
+}
+
+message CheckExistShopReviewRequest {
+  string reviewId = 1;
+  string reviewTitle = 2;
+}
+
+message CheckExistShopReviewResponse {
+  bool result = 1;
+}

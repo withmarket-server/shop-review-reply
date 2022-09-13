@@ -1,6 +1,5 @@
 package team.bakkas.common
 
-import org.springframework.stereotype.Component
 import team.bakkas.common.error.ErrorCode
 import team.bakkas.common.error.ErrorResponse
 

@@ -1,5 +1,5 @@
 syntax = "proto3";
-package team.bakkas.grpc.ifs.v1.user;
+package team.bakkas.grpcIfs.v1.user;
 
 option java_multiple_files = true;
 
