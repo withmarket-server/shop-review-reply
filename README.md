@@ -93,6 +93,10 @@
 
 이제부터 본격적으로 프로젝트의 아키텍처에 대해서 설명하겠습니다.
 
+<details>
+<summary>⭐️ 9월 이전의 아키텍처 구조(Layered Architecture)</summary>
+<div markdown="1">
+
 ![](./img/withmarket-architecture-code-level.png)
 
 1. **Application Layer**
@@ -126,6 +130,48 @@ domain layer에 존재하는 repository에 대해서 실제 구현체를 보관�
 System에는 관여하지 않지만, System을 구현함에 있어서 필요한 타입을 정의하는 모듈입니다.
 
 **System에 관여하지 않는 타입클래스 혹은 툴만 여기다 위치시켜서 common hell에 빠지지 않도록 항상 주의합니다.**
+
+</div>
+</details>
+
+9월 이후로 본 프로젝트의 아키텍처 구조를 **Layered Architecture**에서 **Hexagonal Architecture**로 전환하였습니다. 이에 따라서 새롭게 정의한 아키텍처를 설명드리겠습니다.
+
+그 이전에 저의 아키텍처를 바라보는 관점이 한가지 달라진 것이 있는데, 다음과 같습니다.
+
+> 👉 **Module 간의 의존성만 Dependency로 바라보는 것이 아닌, 외부 미들웨어, 혹은 데이터베이스와의 의존, 그리고 외부 Web 혹은 mobile환경에서의 접근 또한 하나의 Dependency로 바라본다.**
+
+따라서 외부 의존의 비대화에 따라서 Layered Architecture에서의 **Infrastructure** 모듈의 책임 분리를 위해 Hexagonal Architecture로의 전환을 고려하였다고 생각하면 되겠습니다.
+
+![](./img/withmarket-hexagonal-architecture.png)
+
+1. **Domain Layer**
+
+Domain Layer는 Layered Architecture에서 정의한 Domain Layer와 거의 일치합니다. 그러나 이후에 서술할 Port layer, Adapter layer의 책임 분리에 의해서 layered architecture에서 정의한 domain layer와는 일부
+차이가 있을 수 있습니다.
+
+어쨋거나 제일 핵심은, **Domain Layer는 어떠한 모듈과도 절대로 의존을 가져서는 안된다** 라는 원칙입니다.
+
+2. **Port Layer**
+
+Port Layer는 주로 Adapter에서 사용할 인터페이스, 혹은 추상계층을 정의하는 계층입니다. 저는 여기에 더해서 **외부 의존을 가지지 않으나, 순수 domain이 아닌 코드 계층을 Port Layer에 넣고 추상계층을 생성하는 것을 Port Layer로 보았습니다.**
+
+따라서 기존의 client-command, client-query, domain-query, domain-command를 모두 port layer에 놓았으며, 추가적으로 Kafka를 사용하는 adapter의 interface 정의를 위해 event-interface라는 것을 추가적으로 port layer에 구성하였습니다.
+
+그리고 Adapter layer의 DAO 모듈은 외부 DynamoDB, Redis와 의존을 가지기 때문에 이를 정의하기 위한 interface를 모아둔 **Repository 모듈**을 Port Layer에 두게 되었습니다.
+
+정석적인 Port Layer의 정의를 따르기 위해서는 Port Layer에 **Inbound layer, Outbound layer를 따로따로 정의를 해야하지만**, 제 판단에서는 이는 오버엔지니어링이라 생각하여 Inbound, Outbound로 구분을 하지는 않았습니다.
+
+3. **Adapter Layer**
+
+Adapter Layer는 기존의 Application Layer, Presentation Layer와 크게 차이를 보이지 않으나, 몇 가지 추가사항은 있습니다.
+
+1️⃣ 서버간의 통신을 WebClient가 아닌 gRPC 통신을 고려하였으며, 이는 router-command, router-query간의 통신이기 때문에 gRPC 통신 로직은 모두 adapter layer에서 정의하였다.
+
+2️⃣ Validator 실제 구현체를 모두 adapter layer로 옮겼으며, 이를 정의하기 위한 interface는 모두 port layer로 이동시켰다.
+
+3️⃣ Validator에서 webClient를 이용해서 검증을 하던 것을 gRPC 통신 로직을 사용하여 구현하기 시작하였다. 이를 이용해서 스레드풀의 스레드 사용량을 낮출 수 있을것으로 기대한다.
+
+그 외에는 기존 Layered Architecture에서의 응용계층과 차이점이 없기에 이하 설명은 생략하도록 하겠습니다.
 
 * * *
 
