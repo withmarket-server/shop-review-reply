@@ -8,7 +8,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.mock.web.reactive.function.server.MockServerRequest
 import reactor.core.publisher.Mono
 import team.bakkas.applicationcommand.validator.ShopValidatorImpl
@@ -19,10 +18,10 @@ import team.bakkas.common.exceptions.RegionNotKoreaException
 import team.bakkas.common.exceptions.RequestBodyLostException
 import team.bakkas.common.exceptions.RequestFieldException
 import team.bakkas.common.exceptions.shop.ShopBranchInfoInvalidException
-import team.bakkas.domaindynamo.entity.Shop
 import team.bakkas.domainshopcommand.service.ShopCommandServiceImpl
 import team.bakkas.domainshopcommand.service.ifs.ShopCommandService
 import team.bakkas.domainshopcommand.validator.ShopValidator
+import team.bakkas.eventinterface.eventProducer.ShopEventProducer
 import team.bakkas.repository.ifs.dynamo.ShopDynamoRepository
 import java.time.LocalTime
 
@@ -36,15 +35,15 @@ internal class ShopCommandHandlerUnitTest {
 
     private lateinit var shopValidator: ShopValidator
 
-    private lateinit var shopKafkaTemplate: KafkaTemplate<String, Shop>
+    private lateinit var shopEventProducer: ShopEventProducer
 
     @BeforeEach
     fun setUp() {
         shopDynamoRepository = mockk(relaxed = true)
         shopCommandService = spyk(ShopCommandServiceImpl(shopDynamoRepository))
         shopValidator = spyk(ShopValidatorImpl()) // 실제 validator를 사용하기 위해 spyk로 선언
-        shopKafkaTemplate = mockk()
-        shopCommandHandler = spyk(ShopCommandHandler(shopCommandService, shopValidator, shopKafkaTemplate))
+        shopEventProducer = mockk()
+        shopCommandHandler = spyk(ShopCommandHandler(shopCommandService, shopValidator, shopEventProducer))
     }
 
     @Test
