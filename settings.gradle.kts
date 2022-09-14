@@ -23,7 +23,7 @@ include(
     "adapter",
     "adapter:dao",
     "adapter:kafka-config",
-    "adapter:kafka-listener",
+    "adapter:kafka-consumer",
     "adapter:router-command",
     "adapter:router-query",
     "adapter:router-common"
