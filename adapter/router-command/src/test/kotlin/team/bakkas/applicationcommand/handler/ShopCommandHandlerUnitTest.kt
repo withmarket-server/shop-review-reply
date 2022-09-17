@@ -4,12 +4,18 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.common.runBlocking
 import io.mockk.*
 import io.mockk.junit5.MockKExtension
+import kotlinx.coroutines.reactor.awaitSingleOrNull
+import kotlinx.coroutines.reactor.mono
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.http.HttpStatus
 import org.springframework.mock.web.reactive.function.server.MockServerRequest
+import reactor.core.Disposables
 import reactor.core.publisher.Mono
+import team.bakkas.applicationcommand.extensions.toEntity
 import team.bakkas.applicationcommand.validator.ShopValidatorImpl
 import team.bakkas.clientcommand.dto.ShopCommand
 import team.bakkas.common.category.Category
@@ -18,6 +24,7 @@ import team.bakkas.common.exceptions.RegionNotKoreaException
 import team.bakkas.common.exceptions.RequestBodyLostException
 import team.bakkas.common.exceptions.RequestFieldException
 import team.bakkas.common.exceptions.shop.ShopBranchInfoInvalidException
+import team.bakkas.domaindynamo.entity.Shop
 import team.bakkas.domainshopcommand.service.ShopCommandServiceImpl
 import team.bakkas.domainshopcommand.service.ifs.ShopCommandService
 import team.bakkas.domainshopcommand.validator.ShopValidator

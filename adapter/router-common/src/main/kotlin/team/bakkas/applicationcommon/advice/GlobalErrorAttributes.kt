@@ -31,37 +31,37 @@ class GlobalErrorAttributes : DefaultErrorAttributes() {
 
         when (throwable) {
             is ShopNotFoundException -> {
-                map["default_message"] = throwable.message!!
+                map["default_message"] = throwable.message
                 map["error"] = ErrorCode.ENTITY_NOT_FOUND
                 map["error_code"] = ErrorCode.ENTITY_NOT_FOUND
             }
             is ShopBranchInfoInvalidException -> {
-                map["default_message"] = throwable.message!!
+                map["default_message"] = throwable.message
                 map["error"] = ErrorCode.INVALID_INFO
                 map["error_code"] = ErrorCode.INVALID_INFO
             }
             is ShopReviewNotFoundException -> {
-                map["default_message"] = throwable.message!!
+                map["default_message"] = throwable.message
                 map["error"] = ErrorCode.ENTITY_NOT_FOUND
                 map["error_code"] = ErrorCode.ENTITY_NOT_FOUND
             }
             is ShopReviewListInvalidException -> {
-                map["default_message"] = throwable.message!!
+                map["default_message"] = throwable.message
                 map["error"] = ErrorCode.INVALID_SHOP_REVIEW_LIST
                 map["error_code"] = ErrorCode.INVALID_SHOP_REVIEW_LIST
             }
             is RegionNotKoreaException -> {
-                map["default_message"] = throwable.message!!
+                map["default_message"] = throwable.message
                 map["error"] = ErrorCode.INVALID_INFO
                 map["error_code"] = ErrorCode.INVALID_INFO
             }
             is RequestBodyLostException -> {
-                map["default_message"] = throwable.message!!
+                map["default_message"] = throwable.message
                 map["error"] = ErrorCode.REQUEST_BODY_LOST
                 map["error_code"] = ErrorCode.REQUEST_BODY_LOST
             }
             is RequestParamLostException -> {
-                map["default_message"] = throwable.message!!
+                map["default_message"] = throwable.message
                 map["error"] = ErrorCode.REQUEST_PARAM_LOST
                 map["error_code"] = ErrorCode.REQUEST_PARAM_LOST
             }

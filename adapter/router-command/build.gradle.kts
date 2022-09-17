@@ -16,4 +16,5 @@ dependencies {
     // gRPC
     api("io.grpc:grpc-kotlin-stub:1.3.0")
     api("io.grpc:grpc-protobuf:1.49.0")
+    api("io.grpc:grpc-netty-shaded:1.49.0")
 }

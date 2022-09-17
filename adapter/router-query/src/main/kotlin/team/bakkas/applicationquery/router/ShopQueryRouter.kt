@@ -9,12 +9,12 @@ import team.bakkas.common.urls.ServerUrlsInterface
 @Configuration
 class ShopQueryRouter(
     private val shopHandler: ShopQueryHandler,
-    private val uriCOmponent: ServerUrlsInterface
+    private val uriComponent: ServerUrlsInterface
 ) {
 
     @Bean
     fun shopRoutes() = coRouter {
-        uriCOmponent.SHOP_QUERY_URL.nest {
+        uriComponent.SHOP_QUERY_URL.nest {
             GET("", shopHandler::findByIdAndName)
             GET("/list", shopHandler::getAllShops)
         }
