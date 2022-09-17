@@ -19,7 +19,7 @@ import java.time.Duration
 @SpringBootTest
 internal class ShopReviewRepositoryTest @Autowired constructor(
     val shopReviewDynamoRepository: ShopReviewDynamoRepository,
-    val shopReviewRepository: ShopReviewReaderImpl,
+    val shopReviewReader: ShopReviewReaderImpl,
     val shopReviewReactiveRedisTemplate: ReactiveRedisTemplate<String, ShopReview>
 ) {
 
@@ -146,7 +146,7 @@ internal class ShopReviewRepositoryTest @Autowired constructor(
     fun findShopReviewByIdAndReviewWithCachingFail1(reviewId: String, reviewTitle: String): Unit = runBlocking {
         // when
         val redisKey = generateRedisKey(reviewId, reviewTitle)
-        val reviewMono = shopReviewRepository.findReviewByIdAndTitle(reviewId, reviewTitle)
+        val reviewMono = shopReviewReader.findReviewByIdAndTitle(reviewId, reviewTitle)
         val reviewDeferred = CoroutinesUtils.monoToDeferred(reviewMono)
         val review = reviewDeferred.await()
 
@@ -168,7 +168,7 @@ internal class ShopReviewRepositoryTest @Autowired constructor(
     fun findShopReviewByIdAndReviewWithCachingFail2(reviewId: String, reviewTitle: String): Unit = runBlocking {
         // when
         val redisKey = generateRedisKey(reviewId, reviewTitle)
-        val reviewMono = shopReviewRepository.findReviewByIdAndTitle(reviewId, reviewTitle)
+        val reviewMono = shopReviewReader.findReviewByIdAndTitle(reviewId, reviewTitle)
         val reviewDeferred = CoroutinesUtils.monoToDeferred(reviewMono)
         val review = reviewDeferred.await()
 
@@ -190,7 +190,7 @@ internal class ShopReviewRepositoryTest @Autowired constructor(
     fun findShopReviewByIdAndReviewWithCachingSuccess1(reviewId: String, reviewTitle: String): Unit = runBlocking {
         // when
         val redisKey = generateRedisKey(reviewId, reviewTitle)
-        val reviewMono = shopReviewRepository.findReviewByIdAndTitle(reviewId, reviewTitle)
+        val reviewMono = shopReviewReader.findReviewByIdAndTitle(reviewId, reviewTitle)
         val reviewDeferred = CoroutinesUtils.monoToDeferred(reviewMono)
         val review = reviewDeferred.await()
 
@@ -252,7 +252,7 @@ internal class ShopReviewRepositoryTest @Autowired constructor(
         stopWatch.start()
         val afterJob = launch {
             repeat(100) {
-                val shopReviewMono = shopReviewRepository.findReviewByIdAndTitle(reviewId, reviewTitle)
+                val shopReviewMono = shopReviewReader.findReviewByIdAndTitle(reviewId, reviewTitle)
                 val shopReview = CoroutinesUtils.monoToDeferred(shopReviewMono).await()
                 afterList.add(shopReview!!)
             }
