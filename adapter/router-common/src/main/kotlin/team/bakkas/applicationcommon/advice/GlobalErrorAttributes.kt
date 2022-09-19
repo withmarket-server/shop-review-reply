@@ -20,13 +20,13 @@ class GlobalErrorAttributes : DefaultErrorAttributes() {
 
     override fun getErrorAttributes(request: ServerRequest?, options: ErrorAttributeOptions?): MutableMap<String, Any> {
         val throwable = getError(request)
-        val map = getErrorAttribtesMap(super.getErrorAttributes(request, options), throwable)
+        val map = getErrorAttributesMap(super.getErrorAttributes(request, options), throwable)
 
         return map
     }
 
     // errorMap에 내용물을 채워서 반환해주는 메소드
-    private fun getErrorAttribtesMap(map: MutableMap<String, Any>, throwable: Throwable): MutableMap<String, Any> {
+    private fun getErrorAttributesMap(map: MutableMap<String, Any>, throwable: Throwable): MutableMap<String, Any> {
         map["code"] = HttpStatus.BAD_REQUEST
 
         when (throwable) {
@@ -66,7 +66,7 @@ class GlobalErrorAttributes : DefaultErrorAttributes() {
                 map["error_code"] = ErrorCode.REQUEST_PARAM_LOST
             }
             is RequestFieldException -> {
-                map["default_message"] = throwable.message!!
+                map["default_message"] = throwable.message
                 map["error"] = ErrorCode.REQUEST_BODY_LOST
                 map["error_code"] = ErrorCode.REQUEST_BODY_LOST
                 map["field_error_list"] = throwable.errors
