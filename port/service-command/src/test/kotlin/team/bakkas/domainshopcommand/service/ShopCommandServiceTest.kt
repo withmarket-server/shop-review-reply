@@ -1,5 +1,6 @@
 package team.bakkas.domainshopcommand.service
 
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.common.runBlocking
 import io.mockk.coVerify
 import io.mockk.every

@@ -1,22 +1,15 @@
 package team.bakkas.applicationcommand.validator
 
-import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.stereotype.Component
 import org.springframework.validation.BeanPropertyBindingResult
 import org.springframework.validation.Errors
 import org.springframework.validation.ValidationUtils
-import org.springframework.web.reactive.function.client.WebClient
-import org.springframework.web.util.UriComponentsBuilder
-import reactor.core.publisher.Mono
 import team.bakkas.applicationcommand.grpc.ifs.ShopGrpcClient
 import team.bakkas.applicationcommand.grpc.ifs.ShopReviewGrpcClient
-import team.bakkas.common.Results
 import team.bakkas.common.error.ErrorResponse
-import team.bakkas.common.utils.WebClientHelper
 import team.bakkas.common.exceptions.RequestFieldException
 import team.bakkas.common.exceptions.shop.ShopNotFoundException
 import team.bakkas.common.exceptions.shopReview.ShopReviewNotFoundException
-import team.bakkas.common.urls.ServerUrlsInterface
 import team.bakkas.domaindynamo.entity.ShopReview
 import team.bakkas.domainshopcommand.validator.ShopReviewValidator
 

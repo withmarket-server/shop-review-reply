@@ -60,4 +60,10 @@ data class Shop(
     var shopCategory: Category,
     @get:DynamoDbAttribute("shop_detail_category")
     var shopDetailCategory: DetailCategory
-) : Serializable
+) : Serializable {
+    fun ad() {
+        TODO("사업자 등록번호, 휴무일 정보")
+        TODO("상세주소")
+        TODO("배달료 정보")
+    }
+}
