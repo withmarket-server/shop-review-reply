@@ -1,10 +1,7 @@
 dependencies {
-    // Connect the dependencies among the modules of this project
-    api(project(":adapter:kafka-config")) // dependency of adapter layer for connecting to kafka
     api(project(":adapter:router-common"))
     api(project(":port:client-query"))
     api(project(":port:service-query"))
-    api(project(":port:event-interface"))
 
     // 외부 라이브러리 import
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))

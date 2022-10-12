@@ -50,11 +50,8 @@ class ShopReviewCommandHandler(
         val generatedReview = reviewCreateRequest.toEntity()
         shopReviewValidator.validateCreatable(generatedReview)
 
-        // service의 createReview 로직 호출
-        val createdReview = shopReviewCommandService.createReview(generatedReview)
-
         // Kafka에 리뷰 생성 이벤트를 전파한다
-        shopReviewEventProducer.propagateCreatedEvent(createdReview)
+        shopReviewEventProducer.propagateCreatedEvent(generatedReview)
 
         return@coroutineScope ok()
             .contentType(MediaType.APPLICATION_JSON)

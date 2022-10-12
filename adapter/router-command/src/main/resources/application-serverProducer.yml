@@ -1,0 +1,5 @@
+spring:
+  kafka:
+    producer:
+      bootstrap-servers: 43.200.107.196:9092,43.200.107.196:9093,43.200.107.196:9094
+      acks: all

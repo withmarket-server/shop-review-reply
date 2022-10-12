@@ -12,16 +12,13 @@ import team.bakkas.common.exceptions.RequestParamLostException
 import team.bakkas.common.exceptions.shop.ShopNotFoundException
 import team.bakkas.domaindynamo.entity.Shop
 import team.bakkas.domainquery.service.ifs.ShopQueryService
-import team.bakkas.eventinterface.kafka.KafkaTopics
 
 /** Shop에 대한 Query logic을 처리하는 Handler class
  * @param shopQueryService shop에 대한 Service 로직들을 저장한 컨포넌트
- * @param shopCountKafkaTemplate shop에 대한 개수 정합이 안 맞을 때 이벤트를 발행해주는 kafkaTemplate
  */
 @Component
 class ShopQueryHandler(
-    private val shopQueryService: ShopQueryService,
-    private val shopCountKafkaTemplate: KafkaTemplate<String, ShopQuery.ShopCountEvent>
+    private val shopQueryService: ShopQueryService
 ) {
 
     // shopId와 shopName을 기반으로 shop에 대한 response를 반환해주는 메소드

@@ -22,7 +22,6 @@ pluginManagement {
 include(
     "adapter",
     "adapter:dao",
-    "adapter:kafka-config",
     "adapter:kafka-consumer",
     "adapter:router-command",
     "adapter:router-query",
