@@ -21,6 +21,7 @@ import team.bakkas.common.category.DetailCategory
 import team.bakkas.domaindynamo.entity.Shop
 import team.bakkas.domainshopcommand.service.ifs.ShopCommandService
 import team.bakkas.repository.ifs.dynamo.ShopDynamoRepository
+import team.bakkas.repository.ifs.redis.ShopRedisRepository
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.*
@@ -31,13 +32,17 @@ internal class ShopCommandServiceTest {
     // shopDynamoRepository에 대한 mock 객체
     private lateinit var shopDynamoRepository: ShopDynamoRepository
 
+    // shopRedisRepository에 대한 mock 객체
+    private lateinit var shopRedisRepository: ShopRedisRepository
+
     // 실제 객체들을 활용하기 위해 spyk로 선언할 객체들
     private lateinit var shopCommandService: ShopCommandService
 
     @BeforeEach
     fun setUp() {
         shopDynamoRepository = mockk()
-        shopCommandService = spyk(ShopCommandServiceImpl(shopDynamoRepository)) // shopCommandService를 spyK mock으로 선언
+        shopRedisRepository = mockk()
+        shopCommandService = spyk(ShopCommandServiceImpl(shopDynamoRepository, shopRedisRepository)) // shopCommandService를 spyK mock으로 선언
     }
 
     @Test

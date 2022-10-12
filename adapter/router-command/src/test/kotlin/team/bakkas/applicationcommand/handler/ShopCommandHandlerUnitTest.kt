@@ -36,21 +36,15 @@ import java.time.LocalTime
 internal class ShopCommandHandlerUnitTest {
     private lateinit var shopCommandHandler: ShopCommandHandler
 
-    private lateinit var shopCommandService: ShopCommandService
-
-    private lateinit var shopDynamoRepository: ShopDynamoRepository
-
     private lateinit var shopValidator: ShopValidator
 
     private lateinit var shopEventProducer: ShopEventProducer
 
     @BeforeEach
     fun setUp() {
-        shopDynamoRepository = mockk(relaxed = true)
-        shopCommandService = spyk(ShopCommandServiceImpl(shopDynamoRepository))
         shopValidator = spyk(ShopValidatorImpl()) // 실제 validator를 사용하기 위해 spyk로 선언
         shopEventProducer = mockk()
-        shopCommandHandler = spyk(ShopCommandHandler(shopCommandService, shopValidator, shopEventProducer))
+        shopCommandHandler = spyk(ShopCommandHandler(shopValidator, shopEventProducer))
     }
 
     @Test

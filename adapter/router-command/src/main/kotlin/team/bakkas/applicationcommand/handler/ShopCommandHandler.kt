@@ -20,7 +20,6 @@ import team.bakkas.eventinterface.eventProducer.ShopEventProducer
  */
 @Component
 class ShopCommandHandler(
-    private val shopCommandService: ShopCommandService,
     private val shopValidator: ShopValidator,
     private val shopEventProducer: ShopEventProducer
 ) {
@@ -44,11 +43,8 @@ class ShopCommandHandler(
         // 생성 가능한지 검증한다
         shopValidator.validateCreatable(generatedShop)
 
-        // shop을 생성
-        val createdShop = shopCommandService.createShop(generatedShop)
-
-        // Kafka에다가 생성된 shop을 메시지로 전송하여 consume하는 쪽에서 redis에 캐싱하도록 구현한다
-        shopEventProducer.propagateShopCreated(createdShop)
+        // Handler에서 Kafka로 이벤트를 전송하여 Kafka에 생성 책임을 위임한다
+        shopEventProducer.propagateShopCreated(generatedShop)
 
         return@coroutineScope ok().contentType(MediaType.APPLICATION_JSON)
             .bodyValueAndAwait(ResultFactory.getSuccessResult())
