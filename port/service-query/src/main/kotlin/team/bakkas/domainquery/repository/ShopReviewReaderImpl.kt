@@ -1,6 +1,8 @@
 package team.bakkas.domainquery.repository
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
 import team.bakkas.common.utils.RedisUtils
@@ -40,6 +42,16 @@ class ShopReviewReaderImpl(
      * @param shopName
      * @return flow consisted with review of given shop
      */
-    override fun getReviewFlowByShopIdAndName(shopId: String, shopName: String): Flow<ShopReview> =
+    override fun getReviewsByShopKey(shopId: String, shopName: String): Flow<ShopReview> =
         shopReviewRedisRepository.getShopReviewFlowByShopIdAndName(shopId, shopName)
+
+    /** review list에 대한 flow를 반환해주는 메소드
+     * @param shopId
+     * @param shopName
+     * @return flow consisted with review of given shop
+     */
+    override fun getReviewsOfShopWithCaching(shopId: String, shopName: String): Flow<ShopReview> {
+        return shopReviewDynamoRepository.getAllReviewFlowByShopIdAndName(shopId, shopName)
+            .map { findReviewByIdAndTitle(it.reviewId, it.reviewTitle).awaitSingle() }
+    }
 }

@@ -4,7 +4,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.withContext
-import org.springframework.core.CoroutinesUtils
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import team.bakkas.common.exceptions.shopReview.ShopReviewNotFoundException
@@ -34,7 +33,7 @@ class ShopReviewQueryServiceImpl(
     @Transactional(readOnly = true)
     override suspend fun getReviewListByShop(shopId: String, shopName: String): List<ShopReview> =
         withContext(Dispatchers.IO) {
-            val reviewFlow = shopReviewReader.getReviewFlowByShopIdAndName(shopId, shopName)
+            val reviewFlow = shopReviewReader.getReviewsByShopKey(shopId, shopName)
 
             val reviewList = reviewFlow.toList()
 

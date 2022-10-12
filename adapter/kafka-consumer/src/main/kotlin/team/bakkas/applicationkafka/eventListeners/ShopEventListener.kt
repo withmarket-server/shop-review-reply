@@ -28,34 +28,6 @@ class ShopEventListener(
         shopRedisRepository.cacheShop(shop).subscribe()
     }
 
-    /** Shop의 개수가 정합을 이루고 있는지 검사하는 리스너 메소드
-     * @param shopCountEvent redis로부터 count를 전달받는 파라미터
-     */
-    @KafkaListener(
-        topics = [KafkaTopics.shopCountValidateTopic],
-        groupId = KafkaConsumerGroups.checkShopCountGroup
-    )
-    fun checkShopCount(shopCountEvent: ShopQuery.ShopCountEvent) {
-        /*
-        1. shop의 개수를 dynamo로부터 뽑아온다
-        2. 둘을 비교한다 (shopCountDto와 dynamo에서의 개수) -> 개수가 안 맞으면 dynamo로부터 풀 스캔해서 가져온다
-         */
-        when (shopCountEvent.shopCount) {
-            // redis에 shop이 하나도 존재하지 않는 경우 dynamo로부터 모든 아이템을 가져와서 캐싱한다
-            0 -> shopDynamoRepository.getAllShops().asFlux()
-                .flatMap { shopRedisRepository.cacheShop(it) }
-                .subscribe()
-            else -> shopDynamoRepository.getAllShops().asFlux().count()
-                .flatMapMany {
-                    when (it == shopCountEvent.shopCount.toLong()) {
-                        true -> Flux.empty() // 개수가 일치하면 아무 동작도 시행하지 않는다
-                        false -> cacheAllShops() // 개수가 불일치하면 모든 shop을 dynamo로부터 가져와서 캐싱한다
-                    }
-                }
-                .subscribe()
-        }
-    }
-
     // shop에 대해서 리뷰가 작성되면 카운트를 증가시켜주는 리스너 메소드
     @KafkaListener(
         topics = [KafkaTopics.reviewGenerateEventTopic],
@@ -107,11 +79,5 @@ class ShopEventListener(
         reviewNumber += 1
 
         return@with this
-    }
-
-    // redis의 count와 dynamo의 count를 비교한 후에 캐싱하는 메소드
-    private fun cacheAllShops(): Flux<Boolean> {
-        return shopDynamoRepository.getAllShops().asFlux()
-            .flatMap { shopRedisRepository.cacheShop(it) }
     }
 }

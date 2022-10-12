@@ -10,5 +10,8 @@ interface ShopReviewReader {
     fun findReviewByIdAndTitle(reviewId: String, reviewTitle: String): Mono<ShopReview>
 
     // redis에 있는 review의 목록을 반환해주는 메소드
-    fun getReviewFlowByShopIdAndName(shopId: String, shopName: String): Flow<ShopReview>
+    fun getReviewsByShopKey(shopId: String, shopName: String): Flow<ShopReview>
+
+    // cache hit 방식으로 모든 review를 가져오는 메소드
+    fun getReviewsOfShopWithCaching(shopId: String, shopName: String): Flow<ShopReview>
 }

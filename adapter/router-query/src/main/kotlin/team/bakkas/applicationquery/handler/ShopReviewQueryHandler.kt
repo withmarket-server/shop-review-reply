@@ -62,23 +62,8 @@ class ShopReviewQueryHandler(
 
         // flow에 item이 하나도 전달이 안 되는 경우의 예외 처리
         check(reviewList.isNotEmpty()) {
-            // redis에 현재 review가 없음을 kafka로 이벤트 발행
-            shopReviewCountValidateKafkaTemplate.send(
-                KafkaTopics.reviewCountValidateTopic,
-                ShopReviewQuery.CountEvent(0, shopId, shopName)
-            )
             throw ShopReviewNotFoundException("Shop review is not found!!")
         }
-
-        // 현재 redis에서 조회된 review의 개수에 관한 이벤트를 발행
-        shopReviewCountValidateKafkaTemplate.send(
-            KafkaTopics.reviewCountValidateTopic,
-            ShopReviewQuery.CountEvent(
-                reviewList.count(),
-                shopId,
-                shopName
-            )
-        )
 
         val reviewDtoList = reviewList.map { toSimpleResponse(it) }
 

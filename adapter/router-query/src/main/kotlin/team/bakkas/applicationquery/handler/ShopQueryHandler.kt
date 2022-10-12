@@ -15,12 +15,12 @@ import team.bakkas.domainquery.service.ifs.ShopQueryService
 import team.bakkas.eventinterface.kafka.KafkaTopics
 
 /** Shop에 대한 Query logic을 처리하는 Handler class
- * @param shopService shop에 대한 Service 로직들을 저장한 컨포넌트
+ * @param shopQueryService shop에 대한 Service 로직들을 저장한 컨포넌트
  * @param shopCountKafkaTemplate shop에 대한 개수 정합이 안 맞을 때 이벤트를 발행해주는 kafkaTemplate
  */
 @Component
 class ShopQueryHandler(
-    private val shopService: ShopQueryService,
+    private val shopQueryService: ShopQueryService,
     private val shopCountKafkaTemplate: KafkaTemplate<String, ShopQuery.ShopCountEvent>
 ) {
 
@@ -31,7 +31,7 @@ class ShopQueryHandler(
         val shopName = request.queryParamOrNull("name") ?: throw RequestParamLostException("shopName is lost")
 
         // shop이 발견되지 않으면 ShopNotFoundException을 일으킨다
-        val shop = shopService.findShopByIdAndName(shopId, shopName)
+        val shop = shopQueryService.findShopByIdAndName(shopId, shopName)
             ?: throw ShopNotFoundException("Shop is not found!!")
 
         return@coroutineScope ok()
@@ -42,22 +42,14 @@ class ShopQueryHandler(
     // 모든 shop에 대한 list를 반환해주는 메소드
     // http://localhost:10100/v2/shop/simple/list
     suspend fun getAllShops(request: ServerRequest): ServerResponse = coroutineScope {
-        val shopList = shopService.getAllShopList()
+        val shopList = shopQueryService.getAllShopList()
 
         // shop이 redis에서 하나도 발견되지 않은 경우 예외 처리
         check(shopList.isNotEmpty()) {
-            // 1. shop이 하나도 발견되지 않았으므로 shop을 redis로 올리는 이벤트를 발행한다
-            shopCountKafkaTemplate.send(KafkaTopics.shopCountValidateTopic, ShopQuery.ShopCountEvent(0))
             throw ShopNotFoundException("Shop is not found!!")
         }
 
         val shopResponseList = shopList.map { toSimpleResponse(it) }
-
-        // 2. dynamo에 있는 shop의 개수와 redis에 있는 shop의 개수가 맞는지 검증하는 이벤트를 발행한다
-        shopCountKafkaTemplate.send(
-            KafkaTopics.shopCountValidateTopic,
-            ShopQuery.ShopCountEvent(shopResponseList.count())
-        )
 
         ok().bodyValueAndAwait(ResultFactory.getMultipleResult(shopResponseList))
     }

@@ -1,9 +1,12 @@
 package team.bakkas.domainquery.repository
 
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.buffer
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.beans.factory.annotation.Autowired
@@ -19,7 +22,7 @@ import java.time.Duration
 @SpringBootTest
 internal class ShopRepositoryTest @Autowired constructor(
     val shopDynamoRepository: ShopDynamoRepository,
-    val shopRepository: ShopReaderImpl,
+    val shopReader: ShopReaderImpl,
     val shopReactiveRedisTemplate: ReactiveRedisTemplate<String, Shop>
 ) {
 
@@ -134,7 +137,7 @@ internal class ShopRepositoryTest @Autowired constructor(
     fun testFindOneShopFail1(shopId: String, shopName: String): Unit = runBlocking {
         // given
         val key = generateKey(shopId, shopName)
-        val shopMono: Mono<Shop> = shopRepository.findShopByIdAndName(shopId, shopName)
+        val shopMono: Mono<Shop> = shopReader.findShopByIdAndName(shopId, shopName)
 
         // when
         val result = shopMono.awaitSingleOrNull()
@@ -153,7 +156,7 @@ internal class ShopRepositoryTest @Autowired constructor(
     fun testFindOneShopFail2(shopId: String, shopName: String): Unit = runBlocking {
         // given
         val key = generateKey(shopId, shopName)
-        val shopMono: Mono<Shop> = shopRepository.findShopByIdAndName(shopId, shopName)
+        val shopMono: Mono<Shop> = shopReader.findShopByIdAndName(shopId, shopName)
 
         // when
         val result = shopMono.awaitSingleOrNull()
@@ -172,7 +175,7 @@ internal class ShopRepositoryTest @Autowired constructor(
     fun testFindOneShopSuccess1(shopId: String, shopName: String): Unit = runBlocking {
         // given
         val key = generateKey(shopId, shopName)
-        val shopMono: Mono<Shop> = shopRepository.findShopByIdAndName(shopId, shopName)
+        val shopMono: Mono<Shop> = shopReader.findShopByIdAndName(shopId, shopName)
 
         // when
         val result = CoroutinesUtils.monoToDeferred(shopMono).await()
@@ -220,7 +223,7 @@ internal class ShopRepositoryTest @Autowired constructor(
         stopWatch.start()
         val cachingJob = launch {
             repeat(100) {
-                val shopMono: Mono<Shop> = shopRepository.findShopByIdAndName(shopId, shopName)
+                val shopMono: Mono<Shop> = shopReader.findShopByIdAndName(shopId, shopName)
                 val shopDeferred = CoroutinesUtils.monoToDeferred(shopMono)
                 cachingAsyncResult.add(shopDeferred.await())
             }
@@ -232,6 +235,17 @@ internal class ShopRepositoryTest @Autowired constructor(
         val cachingSpeed = stopWatch.totalTimeMillis - normalSpeed
 
         println("caching async: $cachingSpeed") // 1780 mills
+    }
+
+    @Test
+    @DisplayName("[getAllShopsWithCaching] 성공 테스트")
+    fun getAllShopsWithCaching(): Unit = runBlocking {
+        // when
+        val result = shopReader.getAllShopsWithCaching()
+            .buffer(10)
+            .toList()
+
+        result.forEach { println(it) }
     }
 
     private fun generateKey(shopId: String, shopName: String): String = "shop:${shopId}-${shopName}"

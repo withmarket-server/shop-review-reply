@@ -27,12 +27,6 @@ class KafkaProducerConfig(
         return KafkaTemplate(shopProducerFactory())
     }
 
-    // Shop의 개수를 dynamo와 redis 간에 정합을 맞추는데 사용하는 template
-    @Bean
-    fun shopCountKafkaTemplate(): KafkaTemplate<String, ShopQuery.ShopCountEvent> {
-        return KafkaTemplate(shopCountProducerFactory())
-    }
-
     // ShopRwview에 대한 Kafka Template
     @Bean
     fun shopReviewKafkaTemplate(): KafkaTemplate<String, ShopReview> {
@@ -45,18 +39,8 @@ class KafkaProducerConfig(
         return KafkaTemplate(reviewGeneratedEventProducerFactory())
     }
 
-    // shop에 대한 review의 목록이 조회되었을 때 이벤트를 발행하기 위한 template
-    @Bean
-    fun reviewCountValidateKakfaTemplate(): KafkaTemplate<String, ShopReviewQuery.CountEvent> {
-        return KafkaTemplate(reviewCountValidateEventProducerFactory())
-    }
-
     // Shop에 대한 Kafka Template를 사용하기 위한 Producer Factory
     private fun shopProducerFactory(): ProducerFactory<String, Shop> =
-        DefaultKafkaProducerFactory(producerConfig())
-
-    // Shop의 개수를 정합 맞추는데 사용하는 producer factory
-    private fun shopCountProducerFactory(): ProducerFactory<String, ShopQuery.ShopCountEvent> =
         DefaultKafkaProducerFactory(producerConfig())
 
     // ShopReview에 대한 Template를 사용하기 위한 Producer Factory
@@ -65,10 +49,6 @@ class KafkaProducerConfig(
 
     // review가 작성됐을 때의 Event Template를 사용하기 위한 Producer Factory
     private fun reviewGeneratedEventProducerFactory(): ProducerFactory<String, ShopCommand.ReviewCreatedEvent> =
-        DefaultKafkaProducerFactory(producerConfig())
-
-    // review 목록이 조회되었을 때 발행되는 이벤트를 처리하기 위한 Producer factory
-    private fun reviewCountValidateEventProducerFactory(): ProducerFactory<String, ShopReviewQuery.CountEvent> =
         DefaultKafkaProducerFactory(producerConfig())
 
     // producer config를 반환해주는 메소드
