@@ -3,4 +3,4 @@ server:
 
 spring:
   profiles:
-    active: localdynamo, localcache, serverkafka
+    active: localdynamo, localcache, localkafka
