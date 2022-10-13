@@ -1,4 +1,4 @@
-package team.bakkas.domaindynamo.entity
+package team.bakkas.dynamo.shopReview
 
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.*
 import java.io.Serializable
@@ -12,27 +12,27 @@ import java.util.*
  * @since 22/06/02
  */
 @DynamoDbBean
-data class ShopReview(
+class ShopReview(
     @get:DynamoDbPartitionKey
     @get:DynamoDbAttribute("review_id")
     var reviewId: String = UUID.randomUUID().toString(),
     @get:DynamoDbSortKey
     @get:DynamoDbAttribute("review_title")
-    var reviewTitle: String,
+    var reviewTitle: String = "",
     @get:DynamoDbSecondaryPartitionKey(indexNames = ["shop_id-shop_name-index"])
     @get:DynamoDbAttribute("shop_id")
-    var shopId: String,
+    var shopId: String = "",
     @get:DynamoDbSecondarySortKey(indexNames = ["shop_id-shop_name-index"])
     @get:DynamoDbAttribute("shop_name")
-    var shopName: String,
+    var shopName: String = "",
     @get:DynamoDbAttribute("review_content")
-    var reviewContent: String,
+    var reviewContent: String = "",
     @get:DynamoDbAttribute("review_score")
-    var reviewScore: Double,
+    var reviewScore: Double = 0.0,
     @get:DynamoDbAttribute("review_photo_list")
-    var reviewPhotoList: List<String>,
+    var reviewPhotoList: List<String> = listOf(),
     @get:DynamoDbAttribute("created_at")
     var createdAt: LocalDateTime = LocalDateTime.now(),
     @get:DynamoDbAttribute("updated_at")
-    var updatedAt: LocalDateTime?
+    var updatedAt: LocalDateTime? = null
 ) : Serializable

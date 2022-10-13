@@ -1,7 +1,6 @@
 package team.bakkas.domainquery.service
 
 import io.kotest.assertions.throwables.shouldNotThrow
-import io.kotest.assertions.throwables.shouldThrow
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -20,7 +19,7 @@ import reactor.core.publisher.Mono
 import team.bakkas.common.category.Category
 import team.bakkas.common.category.DetailCategory
 import team.bakkas.common.exceptions.shop.ShopNotFoundException
-import team.bakkas.domaindynamo.entity.Shop
+import team.bakkas.dynamo.shop.Shop
 import team.bakkas.domainquery.repository.ifs.ShopReader
 import java.time.LocalDateTime
 import java.time.LocalTime

@@ -1,7 +1,7 @@
 package team.bakkas.applicationcommand.extensions
 
 import team.bakkas.clientcommand.dto.ShopReviewCommand
-import team.bakkas.domaindynamo.entity.ShopReview
+import team.bakkas.dynamo.entity.ShopReview
 import java.time.LocalDateTime
 import java.util.UUID
 

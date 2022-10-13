@@ -22,7 +22,7 @@ import software.amazon.awssdk.enhanced.dynamodb.Key
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema
 import team.bakkas.common.category.Category
 import team.bakkas.common.category.DetailCategory
-import team.bakkas.domaindynamo.entity.Shop
+import team.bakkas.dynamo.shop.Shop
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.*

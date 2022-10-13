@@ -1,7 +1,7 @@
 package team.bakkas.applicationcommand.extensions
 
 import team.bakkas.clientcommand.dto.ShopCommand
-import team.bakkas.domaindynamo.entity.Shop
+import team.bakkas.dynamo.shop.Shop
 import java.time.LocalDateTime
 import java.util.*
 

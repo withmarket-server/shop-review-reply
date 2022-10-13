@@ -1,6 +1,6 @@
 package team.bakkas.domainquery.service.ifs
 
-import team.bakkas.domaindynamo.entity.Shop
+import team.bakkas.dynamo.shop.Shop
 
 interface ShopQueryService {
 

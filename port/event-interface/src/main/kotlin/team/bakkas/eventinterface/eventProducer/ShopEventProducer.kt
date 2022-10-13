@@ -1,6 +1,6 @@
 package team.bakkas.eventinterface.eventProducer
 
-import team.bakkas.domaindynamo.entity.Shop
+import team.bakkas.dynamo.shop.Shop
 
 interface ShopEventProducer {
 

@@ -1,6 +1,6 @@
 package team.bakkas.eventinterface.eventProducer
 
-import team.bakkas.domaindynamo.entity.ShopReview
+import team.bakkas.dynamo.entity.ShopReview
 
 interface ShopReviewEventProducer {
 

@@ -1,6 +1,5 @@
 package team.bakkas.domainquery.service
 
-import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.common.runBlocking
 import io.mockk.coVerify
 import io.mockk.every
@@ -15,8 +14,7 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import reactor.core.publisher.Mono
-import team.bakkas.common.exceptions.shopReview.ShopReviewNotFoundException
-import team.bakkas.domaindynamo.entity.ShopReview
+import team.bakkas.dynamo.entity.ShopReview
 import team.bakkas.domainquery.repository.ifs.ShopReviewReader
 import java.time.LocalDateTime
 

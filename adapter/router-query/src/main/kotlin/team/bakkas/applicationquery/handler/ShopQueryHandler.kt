@@ -2,7 +2,6 @@ package team.bakkas.applicationquery.handler
 
 import kotlinx.coroutines.*
 import org.springframework.http.MediaType
-import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.*
 import org.springframework.web.reactive.function.server.ServerResponse.ok
@@ -10,7 +9,7 @@ import team.bakkas.clientquery.dto.ShopQuery
 import team.bakkas.common.ResultFactory
 import team.bakkas.common.exceptions.RequestParamLostException
 import team.bakkas.common.exceptions.shop.ShopNotFoundException
-import team.bakkas.domaindynamo.entity.Shop
+import team.bakkas.dynamo.shop.Shop
 import team.bakkas.domainquery.service.ifs.ShopQueryService
 
 /** Shop에 대한 Query logic을 처리하는 Handler class

@@ -2,7 +2,7 @@ package team.bakkas.domainquery.repository.ifs
 
 import kotlinx.coroutines.flow.Flow
 import reactor.core.publisher.Mono
-import team.bakkas.domaindynamo.entity.ShopReview
+import team.bakkas.dynamo.entity.ShopReview
 
 interface ShopReviewReader {
 

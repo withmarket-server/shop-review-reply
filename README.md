@@ -208,7 +208,7 @@ Adapter Layer는 기존의 Application Layer, Presentation Layer와 크게 차�
 Spring Kafka로 Coroutines를 이용해 message를 프로듀싱하는데는 문제가 없으나,이 메시지를 KafkaListener를 이용해서 consume할 때 문제가 발생합니다.
 
 ~~~
-Cannot convert from [team.bakkas.domaindynamo.entity.ShopReview] to [kotlin.coroutines.Continuation] for GenericMessage 
+Cannot convert from [team.bakkas.dynamo.entity.ShopReview] to [kotlin.coroutines.Continuation] for GenericMessage 
 [payload=ShopReview(reviewId=2d2b89fa-0e47-4643-bdff-92a9c0d99f1d, reviewTitle=꾸덕꾸덕한게 맛있네요!, shopId=85485be6-f065-4305-a8c6-ff23997ae9f1, shopName=Hash, reviewContent=아주아주 추천해요!, reviewScore=10.0, reviewPhotoList=[], createdAt=2022-08-11T20:27:36.023015, updatedAt=null), 
 headers={kafka_offset=0, kafka_consumer=org.apache.kafka.clients.consumer.KafkaConsumer@43963b4d, kafka_timestampType=CREATE_TIME, kafka_receivedPartitionId=1, kafka_receivedTopic=withmarket.shopReview.create, kafka_receivedTimestamp=1660217256882, ...]
 ~~~

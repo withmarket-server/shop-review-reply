@@ -12,7 +12,7 @@ import org.springframework.core.CoroutinesUtils
 import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.util.StopWatch
 import reactor.core.publisher.Mono
-import team.bakkas.domaindynamo.entity.ShopReview
+import team.bakkas.dynamo.entity.ShopReview
 import team.bakkas.repository.ifs.dynamo.ShopReviewDynamoRepository
 import java.time.Duration
 

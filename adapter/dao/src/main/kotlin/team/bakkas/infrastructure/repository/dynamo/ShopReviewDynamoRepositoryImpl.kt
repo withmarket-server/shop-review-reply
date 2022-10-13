@@ -10,7 +10,7 @@ import software.amazon.awssdk.enhanced.dynamodb.Expression
 import software.amazon.awssdk.enhanced.dynamodb.Key
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
-import team.bakkas.domaindynamo.entity.ShopReview
+import team.bakkas.dynamo.entity.ShopReview
 import team.bakkas.repository.ifs.dynamo.ShopReviewDynamoRepository
 
 /** shop_review 테이블에 대한 repository class

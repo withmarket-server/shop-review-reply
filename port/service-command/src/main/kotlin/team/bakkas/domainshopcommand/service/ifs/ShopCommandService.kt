@@ -1,7 +1,6 @@
 package team.bakkas.domainshopcommand.service.ifs
 
-import team.bakkas.clientcommand.dto.ShopCommand
-import team.bakkas.domaindynamo.entity.Shop
+import team.bakkas.dynamo.shop.Shop
 
 interface ShopCommandService {
 

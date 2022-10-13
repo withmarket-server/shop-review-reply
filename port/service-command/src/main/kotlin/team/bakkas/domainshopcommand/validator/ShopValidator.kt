@@ -1,7 +1,7 @@
 package team.bakkas.domainshopcommand.validator
 
 import org.springframework.validation.Validator
-import team.bakkas.domaindynamo.entity.Shop
+import team.bakkas.dynamo.shop.Shop
 
 interface ShopValidator: Validator {
 

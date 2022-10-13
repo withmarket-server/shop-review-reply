@@ -2,7 +2,7 @@ package team.bakkas.applicationcommand.eventProducer
 
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Component
-import team.bakkas.domaindynamo.entity.Shop
+import team.bakkas.dynamo.shop.Shop
 import team.bakkas.eventinterface.eventProducer.ShopEventProducer
 import team.bakkas.eventinterface.kafka.KafkaTopics
 

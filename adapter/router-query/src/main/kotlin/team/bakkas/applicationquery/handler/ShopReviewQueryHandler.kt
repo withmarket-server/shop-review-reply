@@ -2,7 +2,6 @@ package team.bakkas.applicationquery.handler
 
 import kotlinx.coroutines.coroutineScope
 import org.springframework.http.MediaType
-import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.ServerResponse
@@ -13,7 +12,7 @@ import team.bakkas.clientquery.dto.ShopReviewQuery
 import team.bakkas.common.ResultFactory
 import team.bakkas.common.exceptions.RequestParamLostException
 import team.bakkas.common.exceptions.shopReview.ShopReviewNotFoundException
-import team.bakkas.domaindynamo.entity.ShopReview
+import team.bakkas.dynamo.entity.ShopReview
 import team.bakkas.domainquery.service.ifs.ShopReviewQueryService
 
 /** ShopReview에 대한 query logic에 대한 handler class

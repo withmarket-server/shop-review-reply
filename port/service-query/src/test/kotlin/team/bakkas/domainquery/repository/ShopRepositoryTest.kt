@@ -15,7 +15,7 @@ import org.springframework.core.CoroutinesUtils
 import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.util.StopWatch
 import reactor.core.publisher.Mono
-import team.bakkas.domaindynamo.entity.Shop
+import team.bakkas.dynamo.shop.Shop
 import team.bakkas.repository.ifs.dynamo.ShopDynamoRepository
 import java.time.Duration
 

@@ -9,7 +9,7 @@ import org.springframework.data.redis.core.scanAsFlow
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
 import team.bakkas.common.utils.RedisUtils
-import team.bakkas.domaindynamo.entity.ShopReview
+import team.bakkas.dynamo.entity.ShopReview
 import team.bakkas.repository.ifs.redis.ShopReviewRedisRepository
 import java.time.Duration
 import java.util.StringTokenizer

@@ -2,7 +2,7 @@ package team.bakkas.repository.ifs.dynamo
 
 import kotlinx.coroutines.flow.Flow
 import reactor.core.publisher.Mono
-import team.bakkas.domaindynamo.entity.Shop
+import team.bakkas.dynamo.shop.Shop
 
 interface ShopDynamoRepository {
 

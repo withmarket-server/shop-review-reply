@@ -1,10 +1,8 @@
 package team.bakkas.domainshopcommand.service
 
-import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.common.runBlocking
 import io.mockk.coVerify
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
 import io.mockk.spyk
@@ -13,12 +11,11 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.Mockito
 import reactor.core.publisher.Mono
 import team.bakkas.clientcommand.dto.ShopCommand
 import team.bakkas.common.category.Category
 import team.bakkas.common.category.DetailCategory
-import team.bakkas.domaindynamo.entity.Shop
+import team.bakkas.dynamo.shop.Shop
 import team.bakkas.domainshopcommand.service.ifs.ShopCommandService
 import team.bakkas.repository.ifs.dynamo.ShopDynamoRepository
 import team.bakkas.repository.ifs.redis.ShopRedisRepository

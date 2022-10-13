@@ -1,4 +1,4 @@
-package team.bakkas.common.category
+package team.bakkas.dynamo.shop.vo.category
 
 /** Shop의 대분류에 대한 enum class
  * @author Brian

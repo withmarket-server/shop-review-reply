@@ -1,12 +1,9 @@
 package team.bakkas.applicationkafka.eventListeners
 
-import kotlinx.coroutines.reactor.asFlux
 import org.slf4j.LoggerFactory
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.stereotype.Component
-import reactor.core.publisher.Flux
-import team.bakkas.clientquery.dto.ShopReviewQuery
-import team.bakkas.domaindynamo.entity.ShopReview
+import team.bakkas.dynamo.entity.ShopReview
 import team.bakkas.eventinterface.kafka.KafkaConsumerGroups
 import team.bakkas.eventinterface.kafka.KafkaTopics
 import team.bakkas.repository.ifs.dynamo.ShopReviewDynamoRepository

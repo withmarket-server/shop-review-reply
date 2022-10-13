@@ -1,15 +1,11 @@
 package team.bakkas.domainshopcommand.service
 
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.withContext
-import org.springframework.cglib.proxy.Dispatcher
-import org.springframework.core.CoroutinesUtils
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import team.bakkas.clientcommand.dto.ShopCommand
-import team.bakkas.domaindynamo.entity.Shop
+import team.bakkas.dynamo.shop.Shop
 import team.bakkas.domainshopcommand.service.ifs.ShopCommandService
 import team.bakkas.repository.ifs.dynamo.ShopDynamoRepository
 import team.bakkas.repository.ifs.redis.ShopRedisRepository
@@ -41,6 +37,7 @@ class ShopCommandServiceImpl(
     /** Shop을 redis에 캐싱하는 로직을 정의하는 메소드
      * @param shop
      */
+    @Transactional
     override suspend fun cacheShop(shop: Shop): Shop = withContext(Dispatchers.IO) {
         val shopMono = shopRedisRepository.cacheShop(shop)
 
