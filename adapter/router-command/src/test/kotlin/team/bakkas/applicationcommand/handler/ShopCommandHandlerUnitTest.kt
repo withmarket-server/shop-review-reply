@@ -12,13 +12,15 @@ import org.springframework.mock.web.reactive.function.server.MockServerRequest
 import reactor.core.publisher.Mono
 import team.bakkas.applicationcommand.validator.ShopValidatorImpl
 import team.bakkas.clientcommand.dto.ShopCommand
-import team.bakkas.common.category.Category
-import team.bakkas.common.category.DetailCategory
 import team.bakkas.common.exceptions.RegionNotKoreaException
 import team.bakkas.common.exceptions.RequestBodyLostException
 import team.bakkas.common.exceptions.RequestFieldException
 import team.bakkas.common.exceptions.shop.ShopBranchInfoInvalidException
 import team.bakkas.domainshopcommand.validator.ShopValidator
+import team.bakkas.dynamo.shop.vo.DeliveryTipPerDistance
+import team.bakkas.dynamo.shop.vo.category.Category
+import team.bakkas.dynamo.shop.vo.category.DetailCategory
+import team.bakkas.dynamo.shop.vo.sale.Days
 import team.bakkas.eventinterface.eventProducer.ShopEventProducer
 import java.time.LocalTime
 
@@ -151,8 +153,10 @@ internal class ShopCommandHandlerUnitTest {
         shopName = "카페 경사다",
         openTime = LocalTime.of(9, 0),
         closeTime = LocalTime.of(18, 0),
+        restDayList = listOf(Days.SAT),
         lotNumberAddress = "경산시 가짜동",
         roadNameAddress = "경산시 대학로",
+        detailAddress = null,
         latitude = 128.7,
         longitude = 35.8,
         isBranch = false,
@@ -160,6 +164,7 @@ internal class ShopCommandHandlerUnitTest {
         shopCategory = Category.FOOD_BEVERAGE,
         shopDetailCategory = DetailCategory.CAFE_BREAD,
         mainImageUrl = "fake-image",
-        representativeImageUrlList = listOf("fake-image-1", "fake-image-2")
+        representativeImageUrlList = listOf("fake-image-1", "fake-image-2"),
+        deliveryTipPerDistanceList = listOf(DeliveryTipPerDistance(3.0, 2000))
     )
 }

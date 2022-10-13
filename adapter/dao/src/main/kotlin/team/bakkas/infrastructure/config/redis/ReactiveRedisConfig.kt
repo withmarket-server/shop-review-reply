@@ -10,7 +10,7 @@ import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer
 import org.springframework.data.redis.serializer.RedisSerializationContext
 import org.springframework.data.redis.serializer.StringRedisSerializer
 import team.bakkas.dynamo.shop.Shop
-import team.bakkas.dynamo.entity.ShopReview
+import team.bakkas.dynamo.shopReview.ShopReview
 
 @Configuration
 class ReactiveRedisConfig {

@@ -17,7 +17,7 @@ data class CategoryInfo(
     var shopCategory: Category = Category.ETC,
     @get:DynamoDbAttribute("shop_detail_category")
     var shopDetailCategory: DetailCategory = DetailCategory.ETC_ALL
-) {
+): java.io.Serializable {
 
     companion object {
         val tableSchema = TableSchema.fromBean(CategoryInfo::class.java)

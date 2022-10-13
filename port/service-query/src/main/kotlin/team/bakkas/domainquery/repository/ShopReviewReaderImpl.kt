@@ -6,8 +6,8 @@ import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
 import team.bakkas.common.utils.RedisUtils
-import team.bakkas.dynamo.entity.ShopReview
 import team.bakkas.domainquery.repository.ifs.ShopReviewReader
+import team.bakkas.dynamo.shopReview.ShopReview
 import team.bakkas.repository.ifs.dynamo.ShopReviewDynamoRepository
 import team.bakkas.repository.ifs.redis.ShopReviewRedisRepository
 

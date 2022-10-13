@@ -3,7 +3,7 @@ package team.bakkas.applicationcommand.eventProducer
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Component
 import team.bakkas.clientcommand.dto.ShopCommand
-import team.bakkas.dynamo.entity.ShopReview
+import team.bakkas.dynamo.shopReview.ShopReview
 import team.bakkas.eventinterface.eventProducer.ShopReviewEventProducer
 import team.bakkas.eventinterface.kafka.KafkaTopics
 

@@ -12,12 +12,12 @@ import org.springframework.core.CoroutinesUtils
 import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.util.StopWatch
 import reactor.core.publisher.Mono
-import team.bakkas.dynamo.entity.ShopReview
+import team.bakkas.dynamo.shopReview.ShopReview
 import team.bakkas.repository.ifs.dynamo.ShopReviewDynamoRepository
 import java.time.Duration
 
 @SpringBootTest
-internal class ShopReviewRepositoryTest @Autowired constructor(
+internal class ShopReviewReaderTest @Autowired constructor(
     val shopReviewDynamoRepository: ShopReviewDynamoRepository,
     val shopReviewReader: ShopReviewReaderImpl,
     val shopReviewReactiveRedisTemplate: ReactiveRedisTemplate<String, ShopReview>

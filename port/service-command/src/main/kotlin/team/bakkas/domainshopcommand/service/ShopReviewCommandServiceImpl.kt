@@ -6,8 +6,8 @@ import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import team.bakkas.dynamo.entity.ShopReview
 import team.bakkas.domainshopcommand.service.ifs.ShopReviewCommandService
+import team.bakkas.dynamo.shopReview.ShopReview
 import team.bakkas.repository.ifs.dynamo.ShopReviewDynamoRepository
 
 @Service

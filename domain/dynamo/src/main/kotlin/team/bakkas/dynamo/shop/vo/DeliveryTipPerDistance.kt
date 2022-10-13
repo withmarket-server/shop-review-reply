@@ -15,7 +15,7 @@ data class DeliveryTipPerDistance(
     var distance: Double = 0.0,
     @get:DynamoDbAttribute("price")
     var price: Int = 0
-) {
+): java.io.Serializable {
     companion object {
         val tableSchema = TableSchema.fromBean(DeliveryTipPerDistance::class.java)
 

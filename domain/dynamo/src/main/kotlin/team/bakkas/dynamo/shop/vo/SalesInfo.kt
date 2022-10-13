@@ -21,7 +21,7 @@ data class SalesInfo(
     var closeTime: LocalTime = LocalTime.now(),
     @get:DynamoDbAttribute("rest_day_list")
     var restDayList: List<Days> = listOf()
-) {
+): java.io.Serializable {
 
     companion object {
         // table schema

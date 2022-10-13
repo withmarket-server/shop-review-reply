@@ -15,7 +15,7 @@ data class BranchInfo(
     var isBranch: Boolean = false,
     @get:DynamoDbAttribute("branch_name")
     var branchName: String? = null
-) {
+): java.io.Serializable {
 
     companion object {
         val tableSchema = TableSchema.fromBean(BranchInfo::class.java)

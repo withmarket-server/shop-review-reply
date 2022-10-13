@@ -20,7 +20,7 @@ import team.bakkas.repository.ifs.dynamo.ShopDynamoRepository
 import java.time.Duration
 
 @SpringBootTest
-internal class ShopRepositoryTest @Autowired constructor(
+internal class ShopReaderTest @Autowired constructor(
     val shopDynamoRepository: ShopDynamoRepository,
     val shopReader: ShopReaderImpl,
     val shopReactiveRedisTemplate: ReactiveRedisTemplate<String, Shop>

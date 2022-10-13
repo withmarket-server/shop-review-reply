@@ -14,8 +14,8 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import reactor.core.publisher.Mono
-import team.bakkas.dynamo.entity.ShopReview
 import team.bakkas.domainquery.repository.ifs.ShopReviewReader
+import team.bakkas.dynamo.shopReview.ShopReview
 import java.time.LocalDateTime
 
 @ExtendWith(MockKExtension::class)

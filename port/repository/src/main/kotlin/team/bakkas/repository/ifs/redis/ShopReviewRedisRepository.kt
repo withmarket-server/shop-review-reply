@@ -2,7 +2,7 @@ package team.bakkas.repository.ifs.redis
 
 import kotlinx.coroutines.flow.Flow
 import reactor.core.publisher.Mono
-import team.bakkas.dynamo.entity.ShopReview
+import team.bakkas.dynamo.shopReview.ShopReview
 
 interface ShopReviewRedisRepository {
 

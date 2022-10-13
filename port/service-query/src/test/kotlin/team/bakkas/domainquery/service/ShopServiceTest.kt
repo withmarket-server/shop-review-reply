@@ -16,12 +16,12 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.core.CoroutinesUtils
 import reactor.core.publisher.Mono
-import team.bakkas.common.category.Category
-import team.bakkas.common.category.DetailCategory
 import team.bakkas.common.exceptions.shop.ShopNotFoundException
 import team.bakkas.dynamo.shop.Shop
 import team.bakkas.domainquery.repository.ifs.ShopReader
-import java.time.LocalDateTime
+import team.bakkas.dynamo.shop.vo.*
+import team.bakkas.dynamo.shop.vo.category.Category
+import team.bakkas.dynamo.shop.vo.category.DetailCategory
 import java.time.LocalTime
 
 /**
@@ -149,23 +149,19 @@ internal class ShopServiceTest {
     private fun getMockShop(shopId: String, shopName: String, isOpen: Boolean) = Shop(
         shopId = shopId,
         shopName = shopName,
-        isOpen = isOpen,
-        openTime = LocalTime.now(),
-        closeTime = LocalTime.now(),
-        createdAt = LocalDateTime.now(),
-        averageScore = 0.0,
-        latitude = 35.838597,
-        longitude = 128.756576,
-        lotNumberAddress = "경상북도 경산시 조영동 307-1",
-        roadNameAddress = "경상북도 경산시 대학로 318",
+        salesInfo = SalesInfo(isOpen = isOpen, openTime = LocalTime.now(), closeTime = LocalTime.now()),
+        addressInfo = AddressInfo(
+            lotNumberAddress = "경상북도 경산시 조영동 307-1",
+            roadNameAddress = "경상북도 경산시 대학로 318",
+            detailAddress = null
+        ),
+        latLon = LatLon(latitude = 35.838597, longitude = 128.756576),
+        shopImageInfo = ShopImageInfo(mainImage = "https://withmarket-image-bucket.s3.ap-northeast-2.amazonaws.com/c247bc62-e17f-43c1-90e9-60d566faaa3e.jpeg",
+            representativeImageList = listOf("https://withmarket-image-bucket.s3.ap-northeast-2.amazonaws.com/c2570a85-1da7-4fec-9754-52a178e2abf5.jpeg")),
+        branchInfo = BranchInfo(isBranch = false, branchName = null),
+        categoryInfo = CategoryInfo(shopCategory = Category.ETC, shopDetailCategory = DetailCategory.ETC_ALL),
+        totalScore = 0.0,
         reviewNumber = 0,
-        updatedAt = null,
-        mainImage = "https://withmarket-image-bucket.s3.ap-northeast-2.amazonaws.com/c247bc62-e17f-43c1-90e9-60d566faaa3e.jpeg",
-        representativeImageList = listOf("https://withmarket-image-bucket.s3.ap-northeast-2.amazonaws.com/c2570a85-1da7-4fec-9754-52a178e2abf5.jpeg"),
-        isBranch = false,
-        branchName = null,
-        shopDescription = "포오오스 마트!",
-        shopCategory = Category.ETC,
-        shopDetailCategory = DetailCategory.ETC_ALL
+        shopDescription = "포오오스 마트!"
     )
 }

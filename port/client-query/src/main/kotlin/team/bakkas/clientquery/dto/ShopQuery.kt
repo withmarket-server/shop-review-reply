@@ -1,8 +1,9 @@
 package team.bakkas.clientquery.dto
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import team.bakkas.common.category.Category
-import team.bakkas.common.category.DetailCategory
+import team.bakkas.dynamo.shop.vo.category.Category
+import team.bakkas.dynamo.shop.vo.category.DetailCategory
+import team.bakkas.dynamo.shop.vo.sale.Days
 
 sealed class ShopQuery {
 
@@ -28,9 +29,4 @@ sealed class ShopQuery {
         @JsonProperty("is_branch") var isBranch: Boolean,
         @JsonProperty("branch_name") var branchName: String?
     )
-
-    /** Shop의 개수를 저장하는 dto
-     * @param shopCount shop의 개수
-     */
-    data class ShopCountEvent(var shopCount: Int)
 }

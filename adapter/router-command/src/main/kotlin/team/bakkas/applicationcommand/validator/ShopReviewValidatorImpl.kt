@@ -10,8 +10,8 @@ import team.bakkas.common.error.ErrorResponse
 import team.bakkas.common.exceptions.RequestFieldException
 import team.bakkas.common.exceptions.shop.ShopNotFoundException
 import team.bakkas.common.exceptions.shopReview.ShopReviewNotFoundException
-import team.bakkas.dynamo.entity.ShopReview
 import team.bakkas.domainshopcommand.validator.ShopReviewValidator
+import team.bakkas.dynamo.shopReview.ShopReview
 
 /** Shop Review에 대한 검증을 수행하는 Validator class
  * @param shopGrpcClient

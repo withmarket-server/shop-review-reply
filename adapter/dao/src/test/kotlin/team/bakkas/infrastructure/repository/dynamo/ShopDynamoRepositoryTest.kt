@@ -20,9 +20,10 @@ import reactor.core.publisher.Mono
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedAsyncClient
 import software.amazon.awssdk.enhanced.dynamodb.Key
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema
-import team.bakkas.common.category.Category
-import team.bakkas.common.category.DetailCategory
 import team.bakkas.dynamo.shop.Shop
+import team.bakkas.dynamo.shop.vo.*
+import team.bakkas.dynamo.shop.vo.category.Category
+import team.bakkas.dynamo.shop.vo.category.DetailCategory
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.*
@@ -196,26 +197,22 @@ internal class ShopDynamoRepositoryTest @Autowired constructor(
         .sortValue(shopName)
         .build()
 
-    fun getMockShop(shopId: String, shopName: String, isOpen: Boolean): Shop = Shop(
+    private fun getMockShop(shopId: String, shopName: String, isOpen: Boolean) = Shop(
         shopId = shopId,
         shopName = shopName,
-        isOpen = isOpen,
-        openTime = LocalTime.now(),
-        closeTime = LocalTime.now(),
-        createdAt = LocalDateTime.now(),
-        averageScore = 0.0,
-        latitude = 35.838954,
-        longitude = 128.755997,
-        lotNumberAddress = "경상북도 경산시 북부동 305-13",
-        roadNameAddress = "경상북도 경산시 대학로 321 1층",
+        salesInfo = SalesInfo(isOpen = isOpen, openTime = LocalTime.now(), closeTime = LocalTime.now()),
+        addressInfo = AddressInfo(
+            lotNumberAddress = "경상북도 경산시 조영동 307-1",
+            roadNameAddress = "경상북도 경산시 대학로 318",
+            detailAddress = null
+        ),
+        latLon = LatLon(latitude = 35.838597, longitude = 128.756576),
+        shopImageInfo = ShopImageInfo(mainImage = "https://withmarket-image-bucket.s3.ap-northeast-2.amazonaws.com/c247bc62-e17f-43c1-90e9-60d566faaa3e.jpeg",
+            representativeImageList = listOf("https://withmarket-image-bucket.s3.ap-northeast-2.amazonaws.com/c2570a85-1da7-4fec-9754-52a178e2abf5.jpeg")),
+        branchInfo = BranchInfo(isBranch = false, branchName = null),
+        categoryInfo = CategoryInfo(shopCategory = Category.ETC, shopDetailCategory = DetailCategory.ETC_ALL),
+        totalScore = 0.0,
         reviewNumber = 0,
-        updatedAt = null,
-        mainImage = "https://withmarket-image-bucket.s3.ap-northeast-2.amazonaws.com/c247bc62-e17f-43c1-90e9-60d566faaa3e.jpeg",
-        representativeImageList = listOf("https://withmarket-image-bucket.s3.ap-northeast-2.amazonaws.com/c2570a85-1da7-4fec-9754-52a178e2abf5.jpeg"),
-        isBranch = false,
-        branchName = null,
-        shopDescription = "삼겹살라면 존맛",
-        shopCategory = Category.MART,
-        shopDetailCategory = DetailCategory.SUPER_MARKET
+        shopDescription = "포오오스 마트!"
     )
 }

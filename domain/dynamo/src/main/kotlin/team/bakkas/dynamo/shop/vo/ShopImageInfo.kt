@@ -15,7 +15,7 @@ data class ShopImageInfo(
     var mainImage: String? = null,
     @get:DynamoDbAttribute("representative_image_list")
     var representativeImageList: List<String> = listOf()
-) {
+): java.io.Serializable {
 
     companion object {
         val tableSchema = TableSchema.fromBean(ShopImageInfo::class.java)

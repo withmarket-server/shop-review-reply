@@ -5,11 +5,10 @@ import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.*
 import org.springframework.web.reactive.function.server.ServerResponse.ok
-import team.bakkas.clientquery.dto.ShopQuery
+import team.bakkas.applicationquery.extensions.toSimpleResponse
 import team.bakkas.common.ResultFactory
 import team.bakkas.common.exceptions.RequestParamLostException
 import team.bakkas.common.exceptions.shop.ShopNotFoundException
-import team.bakkas.dynamo.shop.Shop
 import team.bakkas.domainquery.service.ifs.ShopQueryService
 
 /** Shop에 대한 Query logic을 처리하는 Handler class
@@ -32,7 +31,7 @@ class ShopQueryHandler(
 
         return@coroutineScope ok()
             .contentType(MediaType.APPLICATION_JSON)
-            .bodyValueAndAwait(ResultFactory.getSingleResult(toSimpleResponse(shop)))
+            .bodyValueAndAwait(ResultFactory.getSingleResult(shop.toSimpleResponse()))
     }
 
     // 모든 shop에 대한 list를 반환해주는 메소드
@@ -45,26 +44,8 @@ class ShopQueryHandler(
             throw ShopNotFoundException("Shop is not found!!")
         }
 
-        val shopResponseList = shopList.map { toSimpleResponse(it) }
+        val shopResponseList = shopList.map { it.toSimpleResponse() }
 
         ok().bodyValueAndAwait(ResultFactory.getMultipleResult(shopResponseList))
     }
-
-    private fun toSimpleResponse(shop: Shop) = ShopQuery.SimpleResponse(
-        shopId = shop.shopId,
-        shopName = shop.shopName,
-        isOpen = shop.isOpen,
-        lotNumberAddress = shop.lotNumberAddress,
-        roadNameAddress = shop.roadNameAddress,
-        latitude = shop.latitude,
-        longitude = shop.longitude,
-        averageScore = shop.averageScore,
-        reviewNumber = shop.reviewNumber,
-        mainImage = shop.mainImage,
-        shopDescription = shop.shopDescription,
-        shopCategory = shop.shopCategory,
-        shopDetailCategory = shop.shopDetailCategory,
-        isBranch = shop.isBranch,
-        branchName = shop.branchName
-    )
 }

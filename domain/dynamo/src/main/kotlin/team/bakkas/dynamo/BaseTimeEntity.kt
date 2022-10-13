@@ -8,8 +8,8 @@ import java.time.LocalDateTime
  * @since 2022/10/13
  */
 open class BaseTimeEntity(
-    var createdAt: LocalDateTime = LocalDateTime.now(),
-    var updatedAt: LocalDateTime? = null
+    open var createdAt: LocalDateTime = LocalDateTime.now(),
+    open var updatedAt: LocalDateTime? = null
 ): Serializable {
 
 }

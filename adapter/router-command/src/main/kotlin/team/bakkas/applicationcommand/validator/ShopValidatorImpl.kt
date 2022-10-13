@@ -22,19 +22,17 @@ class ShopValidatorImpl : ShopValidator {
     override fun validate(target: Any, errors: Errors) {
         // shopName, lotNumberAddress, roadNameAddress에 대한 필드 유효성 검증
         ValidationUtils.rejectIfEmpty(errors, "shopName", "field.required", arrayOf(), "shopName이 비어있습니다.")
-        ValidationUtils.rejectIfEmpty(errors, "lotNumberAddress", "field.required", arrayOf(), "지번주소가 제공되지 않았습니다.")
-        ValidationUtils.rejectIfEmpty(errors, "roadNameAddress", "field.required", arrayOf(), "도로명 주소가 제공되지 않았습니다.")
     }
 
     // 해당 가게가 생성 가능한지 검증하는 메소드
     override fun validateCreatable(shop: Shop) = with(shop) {
         validateFirst(this)
 
-        check(validateIsInSouthKorea(latitude, longitude)) {
+        check(validateIsInSouthKorea(latLon.latitude, latLon.longitude)) {
             throw RegionNotKoreaException("주어진 좌표가 한국(South Korea)내에 존재하지 않습니다.")
         }
 
-        check(validateBranchInfo(isBranch, branchName)) {
+        check(validateBranchInfo(branchInfo.isBranch, branchInfo.branchName)) {
             throw ShopBranchInfoInvalidException("본점/지점 정보가 잘못 주어졌습니다.")
         }
     }

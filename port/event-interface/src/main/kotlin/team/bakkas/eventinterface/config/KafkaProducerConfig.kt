@@ -11,7 +11,7 @@ import org.springframework.kafka.core.ProducerFactory
 import org.springframework.kafka.support.serializer.JsonSerializer
 import team.bakkas.clientcommand.dto.ShopCommand
 import team.bakkas.dynamo.shop.Shop
-import team.bakkas.dynamo.entity.ShopReview
+import team.bakkas.dynamo.shopReview.ShopReview
 
 @Configuration
 class KafkaProducerConfig(

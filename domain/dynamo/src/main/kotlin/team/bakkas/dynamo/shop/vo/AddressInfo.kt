@@ -17,7 +17,7 @@ data class AddressInfo(
     var roadNameAddress: String = "",
     @get:DynamoDbAttribute("detail_address")
     var detailAddress: String? = null
-) {
+): java.io.Serializable {
 
     companion object {
         private val tableSchema = TableSchema.fromBean(AddressInfo::class.java)

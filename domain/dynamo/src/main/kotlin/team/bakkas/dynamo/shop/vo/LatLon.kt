@@ -15,7 +15,7 @@ data class LatLon(
     var latitude: Double = 0.0,
     @get:DynamoDbAttribute("longitude")
     var longitude: Double = 0.0
-) {
+): java.io.Serializable {
 
     companion object {
         val tableSchema = TableSchema.fromBean(LatLon::class.java)

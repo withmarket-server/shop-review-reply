@@ -13,10 +13,12 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import reactor.core.publisher.Mono
 import team.bakkas.clientcommand.dto.ShopCommand
-import team.bakkas.common.category.Category
-import team.bakkas.common.category.DetailCategory
 import team.bakkas.dynamo.shop.Shop
 import team.bakkas.domainshopcommand.service.ifs.ShopCommandService
+import team.bakkas.dynamo.shop.vo.*
+import team.bakkas.dynamo.shop.vo.category.Category
+import team.bakkas.dynamo.shop.vo.category.DetailCategory
+import team.bakkas.dynamo.shop.vo.sale.Days
 import team.bakkas.repository.ifs.dynamo.ShopDynamoRepository
 import team.bakkas.repository.ifs.redis.ShopRedisRepository
 import java.time.LocalDateTime
@@ -66,8 +68,10 @@ internal class ShopCommandServiceTest {
         shopName = "카페 경사다",
         openTime = LocalTime.of(9, 0),
         closeTime = LocalTime.of(18, 0),
+        restDayList = listOf(Days.SAT),
         lotNumberAddress = "경산시 가짜동",
         roadNameAddress = "경산시 대학로",
+        detailAddress = null,
         latitude = 128.7,
         longitude = 35.8,
         isBranch = false,
@@ -75,29 +79,22 @@ internal class ShopCommandServiceTest {
         shopCategory = Category.FOOD_BEVERAGE,
         shopDetailCategory = DetailCategory.CAFE_BREAD,
         mainImageUrl = "fake-image",
-        representativeImageUrlList = listOf("fake-image-1", "fake-image-2")
+        representativeImageUrlList = listOf("fake-image-1", "fake-image-2"),
+        deliveryTipPerDistanceList = listOf(DeliveryTipPerDistance(3.0, 2000))
     )
 
     private fun ShopCommand.CreateRequest.toEntity() = Shop(
         shopId = UUID.randomUUID().toString(),
-        shopName = this.shopName,
-        openTime = this.openTime,
-        closeTime = this.closeTime,
-        lotNumberAddress = this.lotNumberAddress,
-        roadNameAddress = this.roadNameAddress,
-        latitude = this.latitude,
-        longitude = this.longitude,
-        shopDescription = this.shopDescription,
-        isBranch = this.isBranch,
-        branchName = this.branchName,
-        shopCategory = this.shopCategory,
-        shopDetailCategory = this.shopDetailCategory,
-        mainImage = this.mainImageUrl,
-        representativeImageList = this.representativeImageUrlList,
-        createdAt = LocalDateTime.now(),
-        averageScore = 0.0,
-        isOpen = false,
+        shopName = shopName,
+        salesInfo = SalesInfo(isOpen = false, openTime = openTime, closeTime = closeTime, restDayList = restDayList),
+        addressInfo = AddressInfo(lotNumberAddress, roadNameAddress),
+        latLon = LatLon(latitude, longitude),
+        shopImageInfo = ShopImageInfo(mainImageUrl, representativeImageUrlList),
+        branchInfo = BranchInfo(isBranch, branchName),
+        categoryInfo = CategoryInfo(shopCategory, shopDetailCategory),
+        deliveryTipPerDistanceList = deliveryTipPerDistanceList,
+        totalScore = 0.0,
         reviewNumber = 0,
-        updatedAt = null
+        shopDescription = shopDescription
     )
 }

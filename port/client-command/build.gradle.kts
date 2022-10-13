@@ -1,3 +1,3 @@
 dependencies {
-    api(project(":commons:common"))
+    api(project(":domain:dynamo"))
 }
