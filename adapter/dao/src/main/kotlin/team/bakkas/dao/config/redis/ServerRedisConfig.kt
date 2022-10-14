@@ -1,4 +1,4 @@
-package team.bakkas.infrastructure.config.redis
+package team.bakkas.dao.config.redis
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean

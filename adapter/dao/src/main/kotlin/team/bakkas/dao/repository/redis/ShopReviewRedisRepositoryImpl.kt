@@ -1,4 +1,4 @@
-package team.bakkas.infrastructure.repository.redis
+package team.bakkas.dao.repository.redis
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter

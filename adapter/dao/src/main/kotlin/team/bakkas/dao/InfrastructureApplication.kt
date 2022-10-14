@@ -1,4 +1,4 @@
-package team.bakkas.infrastructure
+package team.bakkas.dao
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication

@@ -91,5 +91,6 @@ class Shop(
                 it.name("updated_at").getter(Shop::updatedAt::get)
                     .setter(Shop::updatedAt::set)
             }
+            .build()
     }
 }

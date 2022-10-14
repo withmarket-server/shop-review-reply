@@ -1,4 +1,4 @@
-package team.bakkas.infrastructure.config.redis
+package team.bakkas.dao.config.redis
 
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper

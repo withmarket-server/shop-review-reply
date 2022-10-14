@@ -1,4 +1,4 @@
-package team.bakkas.infrastructure.repository.dynamo
+package team.bakkas.dao.repository.dynamo
 
 import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.collect

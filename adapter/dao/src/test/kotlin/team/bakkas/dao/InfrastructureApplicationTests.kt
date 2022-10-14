@@ -1,4 +1,4 @@
-package team.bakkas.infrastructure
+package team.bakkas.dao
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest

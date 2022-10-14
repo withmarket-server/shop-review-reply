@@ -1,4 +1,4 @@
-package team.bakkas.infrastructure.config
+package team.bakkas.dao.config
 
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
