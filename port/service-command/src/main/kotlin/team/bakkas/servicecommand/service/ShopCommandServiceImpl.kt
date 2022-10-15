@@ -1,6 +1,7 @@
 package team.bakkas.servicecommand.service
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Service
@@ -29,9 +30,7 @@ class ShopCommandServiceImpl(
     override suspend fun createShop(shop: Shop): Shop = withContext(Dispatchers.IO) {
         val shopMono = shopDynamoRepository.createShop(shop)
 
-        shopMono.awaitSingleOrNull()
-
-        shop
+        shopMono.awaitSingle()
     }
 
     /** Shop을 redis에 캐싱하는 로직을 정의하는 메소드

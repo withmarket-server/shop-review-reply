@@ -76,6 +76,7 @@ class GlobalExceptionHandler(
      * @param errorMap
      * @return Mono<ErrorResponse.Response>
      */
+    @Suppress("UNCHECKED_CAST") // 캐스팅 관련 컴파일 에러 무시
     private fun getFieldErrorResponse(errorMap: MutableMap<String, Any>): Mono<ErrorResponse.Response> {
         // errorCode, defaultErrorMessage, fieldErrorList를 map으로부터 가져온다
         val errorCode = errorMap["error_code"] as ErrorCode

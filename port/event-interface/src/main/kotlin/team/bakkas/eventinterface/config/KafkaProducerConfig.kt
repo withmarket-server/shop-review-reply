@@ -10,6 +10,7 @@ import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.kafka.core.ProducerFactory
 import org.springframework.kafka.support.serializer.JsonSerializer
 import team.bakkas.clientcommand.shop.ShopCommand
+import team.bakkas.clientcommand.shopReview.ShopReviewCommand
 import team.bakkas.dynamo.shop.Shop
 import team.bakkas.dynamo.shopReview.ShopReview
 
@@ -31,10 +32,9 @@ class KafkaProducerConfig(
         return KafkaTemplate(shopReviewProducerFactory())
     }
 
-    // Shop에 대해서 review 생성 이벤트를 처리하는데 사용하는 template
     @Bean
-    fun reviewGeneratedEventKafkaTemplate(): KafkaTemplate<String, ShopCommand.ReviewCreatedEvent> {
-        return KafkaTemplate(reviewGeneratedEventProducerFactory())
+    fun reviewDeletedEventKafkaTemplate(): KafkaTemplate<String, ShopReviewCommand.DeletedEvent> {
+        return KafkaTemplate(reviewDeletedEventProducerFactory())
     }
 
     // Shop에 대한 Kafka Template를 사용하기 위한 Producer Factory
@@ -45,8 +45,8 @@ class KafkaProducerConfig(
     private fun shopReviewProducerFactory(): ProducerFactory<String, ShopReview> =
         DefaultKafkaProducerFactory(producerConfig())
 
-    // review가 작성됐을 때의 Event Template를 사용하기 위한 Producer Factory
-    private fun reviewGeneratedEventProducerFactory(): ProducerFactory<String, ShopCommand.ReviewCreatedEvent> =
+    // review가 삭제 되었을 때의 Event Template를 사용하기 위한 Producer Factory
+    private fun reviewDeletedEventProducerFactory(): ProducerFactory<String, ShopReviewCommand.DeletedEvent> =
         DefaultKafkaProducerFactory(producerConfig())
 
     // producer config를 반환해주는 메소드

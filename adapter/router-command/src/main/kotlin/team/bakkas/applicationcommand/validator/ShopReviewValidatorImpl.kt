@@ -6,6 +6,8 @@ import org.springframework.validation.Errors
 import org.springframework.validation.ValidationUtils
 import team.bakkas.applicationcommand.grpc.ifs.ShopGrpcClient
 import team.bakkas.applicationcommand.grpc.ifs.ShopReviewGrpcClient
+import team.bakkas.clientcommand.shopReview.ShopReviewCommand
+import team.bakkas.clientcommand.shopReview.annotations.ReviewCreatable
 import team.bakkas.common.error.ErrorResponse
 import team.bakkas.common.exceptions.RequestFieldException
 import team.bakkas.common.exceptions.shop.ShopNotFoundException
@@ -23,9 +25,15 @@ class ShopReviewValidatorImpl(
     private val shopReviewGrpcClient: ShopReviewGrpcClient
 ) : ShopReviewValidator() {
 
+    override fun supports(clazz: Class<*>): Boolean {
+        return ShopReviewCommand.CreateRequest::class.java.isAssignableFrom(clazz)
+    }
+
     // 해당 리뷰가 생성 가능한지 검증하는 메소드
-    override suspend fun validateCreatable(shopReview: ShopReview) = with(shopReview) {
-        validateFirst(this) // 우선 필드를 모두 검증한다
+    override suspend fun validateCreatable(request: ShopReviewCommand.CreateRequest) = with(request) {
+        val errors = BeanPropertyBindingResult(this, ShopReviewCommand.CreateRequest::class.java.name)
+
+        validate(this, errors)
 
         // WebClient를 이용해서 해당 shop이 존재하는지 여부만 뽑아온다
         val isShopExists: Boolean = shopGrpcClient.isExistShop(shopId, shopName).result
@@ -46,19 +54,20 @@ class ShopReviewValidatorImpl(
         }
     }
 
-    override fun supports(clazz: Class<*>): Boolean {
-        return ShopReview::class.java.isAssignableFrom(clazz)
-    }
-
     // reviewId, reviewTitle, shopId, shopName, reviewContent : 비어있는지 검증
     // reviewContent는 200자 이상으로는 못 쓰도록 검증한다
     override fun validate(target: Any, errors: Errors) {
-        // reviewId, reviewTitle, shopId, shopName, reviewContent : 비어있는지 검증
-        listOf("reviewId", "reviewTitle", "shopId", "shopName", "reviewContent").forEach { fieldName ->
-            ValidationUtils.rejectIfEmpty(errors, fieldName, "field.required", "${fieldName}이 제공되지 않았습니다.")
+        target::class.java.annotations.map {
+            // annotation에 따라서 분기한다
+            when(it) {
+                is ReviewCreatable -> rejectEmptyByFieldList(
+                    errors,
+                    listOf("reviewId", "reviewTitle", "shopId", "shopName", "reviewContent")
+                )
+            }
         }
 
-        val review = target as ShopReview
+        val review = target as ShopReviewCommand.CreateRequest
 
         // reviewContent의 길이를 200으로 제한한다
         if (review.reviewContent.length > 200) {
@@ -79,23 +88,17 @@ class ShopReviewValidatorImpl(
                 "review score은 무조건 0 초과 10 이하입니다."
             )
         }
-    }
 
-    // 기본적으로 검증해야하는 메소드
-    private fun validateFirst(shopReview: ShopReview) = with(shopReview) {
-        val errors = BeanPropertyBindingResult(this, ShopReview::class.java.name)
-        validate(this, errors)
-
-        // 기본 조건들을 만족하지 못하면 exception을 터뜨린다
+        // Field에 error가 발생하여 errors에 content가 채워져서 보내진 경우 RequestFieldException을 일으킨다
         check(errors.allErrors.isEmpty()) {
-            val errorList = errors.allErrors.map { it ->
+            val errorList = errors.allErrors.map {
                 ErrorResponse.FieldError.of(
                     it.objectName,
                     it.arguments.contentToString(),
                     it.defaultMessage!!
                 )
             }
-            throw RequestFieldException(errorList, "잘못된 요청입니다.")
+            throw RequestFieldException(errorList, "잘못된 요청입니다")
         }
     }
 }

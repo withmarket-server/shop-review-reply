@@ -21,7 +21,7 @@ internal class ShopRedisRepositoryTest @Autowired constructor(
     @DisplayName("[cacheShop] shop cache 테스트")
     fun cacheShopTest(): Unit = runBlocking {
         // given
-        val shopId = "eddb27c4-ca3e-4aac-9b4d-a3c453842a3f"
+        val shopId = "c5b08252-3bf4-4de8-bba5-8625cf394937"
         val shopName = "포스마트"
         val targetShop = shopDynamoRepository.findShopByIdAndName(shopId, shopName).awaitSingle()
 

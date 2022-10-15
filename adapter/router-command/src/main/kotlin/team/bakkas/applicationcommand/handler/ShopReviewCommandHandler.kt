@@ -20,13 +20,11 @@ import team.bakkas.servicecommand.validator.ShopReviewValidator
 import team.bakkas.eventinterface.eventProducer.ShopReviewEventProducer
 
 /** ShopReview에 대한 command handler class
- * @param shopReviewCommandService
  * @param shopReviewValidator shopReview에 대한 검증을 담당하는 bean
  * @param shopReviewEventProducer
  */
 @Component
 class ShopReviewCommandHandler(
-    private val shopReviewCommandService: ShopReviewCommandService,
     private val shopReviewValidator: ShopReviewValidator,
     private val shopReviewEventProducer: ShopReviewEventProducer
 ) {
@@ -46,9 +44,10 @@ class ShopReviewCommandHandler(
             throw RequestBodyLostException("Body is lost!!")
         }
 
-        // dto -> entity 변환 및 검증
+        shopReviewValidator.validateCreatable(reviewCreateRequest)
+
+        // dto -> entity 변환
         val generatedReview = reviewCreateRequest.toEntity()
-        shopReviewValidator.validateCreatable(generatedReview)
 
         // Kafka에 리뷰 생성 이벤트를 전파한다
         shopReviewEventProducer.propagateCreatedEvent(generatedReview)
@@ -66,11 +65,10 @@ class ShopReviewCommandHandler(
         // 해당 review가 삭제 가능한지 검증
         shopReviewValidator.validateDeletable(reviewId, reviewTitle)
 
-        // service의 deleteReview 로직 호출
-        val deletedReview = shopReviewCommandService.deleteReview(reviewId, reviewTitle)
+        val deletedEvent = ShopReviewCommand.DeletedEvent.of(reviewId, reviewTitle)
 
-        // Kafka에 이벤트 전파
-        shopReviewEventProducer.propagateDeletedEvent(deletedReview)
+        // Kafka에 삭제 이벤트를 발행하여 Kafka 내부에서 삭제를 처리한다
+        shopReviewEventProducer.propagateDeletedEvent(deletedEvent)
 
         return@coroutineScope ok()
             .contentType(MediaType.APPLICATION_JSON)

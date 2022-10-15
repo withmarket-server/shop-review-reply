@@ -21,10 +21,11 @@ class ShopRedisRepositoryImpl(
 ) : ShopRedisRepository {
 
     // shop을 캐싱하는 메소드
-    override fun cacheShop(shop: Shop): Mono<Boolean> = with(shop) {
+    override fun cacheShop(shop: Shop): Mono<Shop> = with(shop) {
         val shopKey = RedisUtils.generateShopRedisKey(shopId, shopName)
 
         shopReactiveRedisTemplate.opsForValue().set(shopKey, this, Duration.ofDays(RedisUtils.DAYS_TO_LIVE))
+            .thenReturn(shop)
     }
 
     // redis에 저장된 shop을 가져오는 메소드
