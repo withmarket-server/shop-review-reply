@@ -25,6 +25,10 @@ class ShopQueryHandler(
         val shopId = request.queryParamOrNull("id") ?: throw RequestParamLostException("shopId is lost")
         val shopName = request.queryParamOrNull("name") ?: throw RequestParamLostException("shopName is lost")
 
+        check(shopId.isNotEmpty() && shopName.isNotEmpty()) {
+            throw RequestParamLostException("Empty query parameter")
+        }
+
         // shop이 발견되지 않으면 ShopNotFoundException을 일으킨다
         val shop = shopQueryService.findShopByIdAndName(shopId, shopName)
             ?: throw ShopNotFoundException("Shop is not found!!")

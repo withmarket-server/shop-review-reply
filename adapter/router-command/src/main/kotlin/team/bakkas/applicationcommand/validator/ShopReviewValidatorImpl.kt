@@ -10,6 +10,7 @@ import team.bakkas.clientcommand.shopReview.ShopReviewCommand
 import team.bakkas.clientcommand.shopReview.annotations.ReviewCreatable
 import team.bakkas.common.error.ErrorResponse
 import team.bakkas.common.exceptions.RequestFieldException
+import team.bakkas.common.exceptions.RequestParamLostException
 import team.bakkas.common.exceptions.shop.ShopNotFoundException
 import team.bakkas.common.exceptions.shopReview.ShopReviewNotFoundException
 import team.bakkas.servicecommand.validator.ShopReviewValidator
@@ -46,6 +47,16 @@ class ShopReviewValidatorImpl(
 
     // 해당 review가 삭제 가능한지 검증하는 메소드
     override suspend fun validateDeletable(reviewId: String, reviewTitle: String) {
+        // reviewId가 비어서 들어오는 경우 예외 처리
+        check(reviewId.isNotEmpty()) {
+            throw RequestParamLostException("reviewId is lost!!")
+        }
+
+        // reviewTitle이 비어서 들어오는 경우 예외 처리
+        check(reviewTitle.isNotEmpty()) {
+            throw RequestParamLostException("reviewTitle is lost!!")
+        }
+
         // 해당 리뷰가 실제 존재하는건지는 체크해본다
         val reviewResultMono = shopReviewGrpcClient.isExistShopReview(reviewId, reviewTitle).result
 

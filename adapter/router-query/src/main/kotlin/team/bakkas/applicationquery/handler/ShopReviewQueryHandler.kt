@@ -3,11 +3,13 @@ package team.bakkas.applicationquery.handler
 import kotlinx.coroutines.coroutineScope
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.ServerResponse
 import org.springframework.web.reactive.function.server.ServerResponse.ok
 import org.springframework.web.reactive.function.server.bodyValueAndAwait
 import org.springframework.web.reactive.function.server.queryParamOrNull
+import team.bakkas.applicationquery.extensions.toSimpleResponse
 import team.bakkas.clientquery.shopReview.ShopReviewQuery
 import team.bakkas.common.ResultFactory
 import team.bakkas.common.exceptions.RequestParamLostException
@@ -34,13 +36,17 @@ class ShopReviewQueryHandler(
         val reviewId = request.queryParamOrNull("id") ?: throw RequestParamLostException("reviewId is lost!!")
         val reviewTitle = request.queryParamOrNull("title") ?: throw RequestParamLostException("reviewTitle is lost!!")
 
+        check(reviewId.isNotEmpty() && reviewTitle.isNotEmpty()) {
+            throw RequestParamLostException("query parameter is lost!!")
+        }
+
         // review가 존재하지 않으면 exception을 일으킨다
         val review = shopReviewService.findReviewByIdAndTitle(reviewId, reviewTitle)
             ?: throw ShopReviewNotFoundException("review is not found!!")
 
         return@coroutineScope ok()
             .contentType(MediaType.APPLICATION_JSON)
-            .bodyValueAndAwait(ResultFactory.getSingleResult(toSimpleResponse(review)))
+            .bodyValueAndAwait(ResultFactory.getSingleResult(review.toSimpleResponse()))
     }
 
     /** shopId와 shopName을 기반으로 review의 목록을 가져오는 메소드
@@ -61,21 +67,9 @@ class ShopReviewQueryHandler(
             throw ShopReviewNotFoundException("Shop review is not found!!")
         }
 
-        val reviewDtoList = reviewList.map { toSimpleResponse(it) }
+        val reviewDtoList = reviewList.map { it.toSimpleResponse() }
 
         return@coroutineScope ok().contentType(MediaType.APPLICATION_JSON)
             .bodyValueAndAwait(ResultFactory.getMultipleResult(reviewDtoList))
     }
-
-    private fun toSimpleResponse(shopReview: ShopReview) = ShopReviewQuery.SimpleResponse(
-        reviewId = shopReview.reviewId,
-        reviewTitle = shopReview.reviewTitle,
-        shopId = shopReview.shopId,
-        shopName = shopReview.shopName,
-        reviewContent = shopReview.reviewContent,
-        reviewScore = shopReview.reviewScore,
-        reviewPhotoList = shopReview.reviewPhotoList,
-        createdAt = shopReview.createdAt,
-        updatedAt = shopReview.updatedAt
-    )
 }

@@ -17,9 +17,12 @@ import team.bakkas.applicationcommand.grpc.ifs.ShopReviewGrpcClient
 import team.bakkas.applicationcommand.validator.ShopReviewValidatorImpl
 import team.bakkas.clientcommand.shopReview.ShopReviewCommand
 import team.bakkas.common.exceptions.RequestFieldException
+import team.bakkas.common.exceptions.RequestParamLostException
 import team.bakkas.common.exceptions.shop.ShopNotFoundException
+import team.bakkas.common.exceptions.shopReview.ShopReviewNotFoundException
 import team.bakkas.eventinterface.eventProducer.ShopReviewEventProducer
 import team.bakkas.grpcIfs.v1.shop.CheckExistShopResponse
+import team.bakkas.grpcIfs.v1.shopReview.CheckExistShopReviewResponse
 import team.bakkas.servicecommand.validator.ShopReviewValidator
 
 @ExtendWith(MockKExtension::class)
@@ -132,7 +135,7 @@ internal class ShopReviewCommandHandlerUnitTest {
     }
 
     @Test
-    @DisplayName("[createReview] 7. shop이 존재하지 않아서 ShopNotFoundException을 일으키는 테스트")
+    @DisplayName("[createReview] 8. shop이 존재하지 않아서 ShopNotFoundException을 일으키는 테스트")
     fun createReviewTest8(): Unit = runBlocking {
         // given
         val requestBody = generateCreateRequest()
@@ -145,6 +148,72 @@ internal class ShopReviewCommandHandlerUnitTest {
 
         // then
         shouldThrow<ShopNotFoundException> { shopReviewCommandHandler.createReview(request) }
+    }
+
+    @Test
+    @DisplayName("[deleteReview] 1. reviewId가 비어서 들어오는 경우 RequestParamLostException을 일으키는 테스트")
+    fun deleteReviewTest1(): Unit = runBlocking {
+        // given
+        val id = ""
+        val title = "mock title"
+        val request = MockServerRequest.builder()
+            .queryParam("id", id)
+            .queryParam("title", title)
+            .build()
+
+        // then
+        shouldThrow<RequestParamLostException> { shopReviewCommandHandler.deleteReview(request) }
+    }
+
+    @Test
+    @DisplayName("[deleteReview] 2. reviewTitle이 비어서 들어오는 경우 RequestParamLostException을 일으키는 테스트")
+    fun deleteReviewTest2(): Unit = runBlocking {
+        // given
+        val id = "fake id"
+        val title = ""
+        val request = MockServerRequest.builder()
+            .queryParam("id", id)
+            .queryParam("title", title)
+            .build()
+
+        // then
+        shouldThrow<RequestParamLostException> { shopReviewCommandHandler.deleteReview(request) }
+    }
+
+    @Test
+    @DisplayName("[deleteReview] 3. reviewId, reviewTitle이 모두 비어서 들어오는 경우 RequestParamLostException을 일으키는 테스트")
+    fun deleteReviewTest3(): Unit = runBlocking {
+        // given
+        val id = ""
+        val title = ""
+        val request = MockServerRequest.builder()
+            .queryParam("id", id)
+            .queryParam("title", title)
+            .build()
+
+        // then
+        shouldThrow<RequestParamLostException> { shopReviewCommandHandler.deleteReview(request) }
+    }
+
+    @Test
+    @DisplayName("[deleteReview] 4. review가 존재하지 않는 경우 ShopReviewNotFoundException을 일으키는 테스트")
+    fun deleteReviewTest4(): Unit = runBlocking {
+        // given
+        val id = "fake id"
+        val title = "fake title"
+        val request = MockServerRequest.builder()
+            .queryParam("id", id)
+            .queryParam("title", title)
+            .build()
+
+        // id, title에 대응하는 shopReview는 없다고 가정한다
+        coEvery { shopReviewGrpcClient.isExistShopReview(id, title) } returns
+                CheckExistShopReviewResponse.newBuilder()
+                    .setResult(false)
+                    .build()
+
+        // then
+        shouldThrow<ShopReviewNotFoundException> { shopReviewCommandHandler.deleteReview(request) }
     }
 
     // Create Request를 생성하는 메소드
