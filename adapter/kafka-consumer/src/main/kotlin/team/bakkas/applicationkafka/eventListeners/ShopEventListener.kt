@@ -2,7 +2,7 @@ package team.bakkas.applicationkafka.eventListeners
 
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.stereotype.Component
-import team.bakkas.clientcommand.dto.ShopCommand
+import team.bakkas.clientcommand.shop.ShopCommand
 import team.bakkas.dynamo.shop.Shop
 import team.bakkas.eventinterface.kafka.KafkaConsumerGroups
 import team.bakkas.eventinterface.kafka.KafkaTopics

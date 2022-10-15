@@ -1,4 +1,4 @@
-package team.bakkas.domainshopcommand.service
+package team.bakkas.servicecommand.service
 
 import io.kotest.common.runBlocking
 import io.mockk.coVerify
@@ -12,16 +12,15 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import reactor.core.publisher.Mono
-import team.bakkas.clientcommand.dto.ShopCommand
+import team.bakkas.clientcommand.shop.ShopCommand
 import team.bakkas.dynamo.shop.Shop
-import team.bakkas.domainshopcommand.service.ifs.ShopCommandService
+import team.bakkas.servicecommand.service.ifs.ShopCommandService
 import team.bakkas.dynamo.shop.vo.*
 import team.bakkas.dynamo.shop.vo.category.Category
 import team.bakkas.dynamo.shop.vo.category.DetailCategory
 import team.bakkas.dynamo.shop.vo.sale.Days
 import team.bakkas.repository.ifs.dynamo.ShopDynamoRepository
 import team.bakkas.repository.ifs.redis.ShopRedisRepository
-import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.*
 

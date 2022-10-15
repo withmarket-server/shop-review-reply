@@ -45,9 +45,10 @@ class ShopDynamoRepositoryImpl(
     }
 
     // shop을 하나 생성해주는 메소드
-    override fun createShop(shop: Shop): Mono<Void> {
+    override fun createShop(shop: Shop): Mono<Shop> {
         val shopFuture = asyncTable.putItem(shop)
         return Mono.fromFuture(shopFuture)
+            .thenReturn(shop)
     }
 
     // shop을 제거하는 메소드

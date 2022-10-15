@@ -11,12 +11,12 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.mock.web.reactive.function.server.MockServerRequest
 import reactor.core.publisher.Mono
 import team.bakkas.applicationcommand.validator.ShopValidatorImpl
-import team.bakkas.clientcommand.dto.ShopCommand
+import team.bakkas.clientcommand.shop.ShopCommand
 import team.bakkas.common.exceptions.RegionNotKoreaException
 import team.bakkas.common.exceptions.RequestBodyLostException
 import team.bakkas.common.exceptions.RequestFieldException
 import team.bakkas.common.exceptions.shop.ShopBranchInfoInvalidException
-import team.bakkas.domainshopcommand.validator.ShopValidator
+import team.bakkas.servicecommand.validator.ShopValidator
 import team.bakkas.dynamo.shop.vo.DeliveryTipPerDistance
 import team.bakkas.dynamo.shop.vo.category.Category
 import team.bakkas.dynamo.shop.vo.category.DetailCategory

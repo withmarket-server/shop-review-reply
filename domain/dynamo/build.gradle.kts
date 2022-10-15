@@ -14,3 +14,8 @@ allOpen {
 noArg {
     annotation("software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean")
 }
+
+// 해당 module은 테스트 대상에서 제외한다
+tasks.withType<Test> {
+    exclude("**/dynamo/**")
+}

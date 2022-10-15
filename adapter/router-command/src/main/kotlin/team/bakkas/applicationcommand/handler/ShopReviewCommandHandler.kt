@@ -11,12 +11,12 @@ import org.springframework.web.reactive.function.server.ServerResponse.ok
 import org.springframework.web.reactive.function.server.bodyValueAndAwait
 import org.springframework.web.reactive.function.server.queryParamOrNull
 import team.bakkas.applicationcommand.extensions.toEntity
-import team.bakkas.clientcommand.dto.ShopReviewCommand
+import team.bakkas.clientcommand.shopReview.ShopReviewCommand
 import team.bakkas.common.ResultFactory
 import team.bakkas.common.exceptions.RequestBodyLostException
 import team.bakkas.common.exceptions.RequestParamLostException
-import team.bakkas.domainshopcommand.service.ifs.ShopReviewCommandService
-import team.bakkas.domainshopcommand.validator.ShopReviewValidator
+import team.bakkas.servicecommand.service.ifs.ShopReviewCommandService
+import team.bakkas.servicecommand.validator.ShopReviewValidator
 import team.bakkas.eventinterface.eventProducer.ShopReviewEventProducer
 
 /** ShopReview에 대한 command handler class

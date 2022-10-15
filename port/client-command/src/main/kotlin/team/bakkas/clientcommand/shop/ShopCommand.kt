@@ -1,6 +1,7 @@
-package team.bakkas.clientcommand.dto
+package team.bakkas.clientcommand.shop
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import team.bakkas.clientcommand.shop.annotations.ShopCreatable
 import team.bakkas.dynamo.shop.vo.DeliveryTipPerDistance
 import team.bakkas.dynamo.shop.vo.category.Category
 import team.bakkas.dynamo.shop.vo.category.DetailCategory
@@ -11,6 +12,7 @@ sealed class ShopCommand {
     /** Shop을 생성하는데 사용하는 dto class
      * @since 22.07.24
      */
+    @ShopCreatable
     data class CreateRequest(
         @JsonProperty("shop_name") var shopName: String,
         @JsonProperty("open_time") var openTime: LocalTime,
@@ -27,7 +29,7 @@ sealed class ShopCommand {
         @JsonProperty("shop_category") var shopCategory: Category,
         @JsonProperty("shop_detail_category") var shopDetailCategory: DetailCategory,
         @JsonProperty("main_image_url") var mainImageUrl: String?,
-        @JsonProperty("representative_image_url") var representativeImageUrlList: List<String>,
+        @JsonProperty("representative_image_url_list") var representativeImageUrlList: List<String>,
         @JsonProperty("delivery_tip_per_distance_list") var deliveryTipPerDistanceList: List<DeliveryTipPerDistance>
     )
 

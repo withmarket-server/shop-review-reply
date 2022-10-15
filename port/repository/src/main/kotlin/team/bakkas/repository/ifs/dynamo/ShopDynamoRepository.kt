@@ -12,7 +12,7 @@ interface ShopDynamoRepository {
     fun getAllShops(): Flow<Shop>
 
     // shop을 하나 생성해주는 메소드
-    fun createShop(shop: Shop): Mono<Void>
+    fun createShop(shop: Shop): Mono<Shop>
 
     // shop을 제거하는 메소드
     fun deleteShop(shopId: String, shopName: String): Mono<Shop>

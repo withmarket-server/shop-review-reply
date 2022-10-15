@@ -1,4 +1,4 @@
-package team.bakkas.domainshopcommand
+package team.bakkas.servicecommand
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication

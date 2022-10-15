@@ -7,11 +7,10 @@ import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.*
 import org.springframework.web.reactive.function.server.ServerResponse.ok
 import team.bakkas.applicationcommand.extensions.toEntity
-import team.bakkas.clientcommand.dto.ShopCommand
+import team.bakkas.clientcommand.shop.ShopCommand
 import team.bakkas.common.ResultFactory
 import team.bakkas.common.exceptions.RequestBodyLostException
-import team.bakkas.domainshopcommand.service.ifs.ShopCommandService
-import team.bakkas.domainshopcommand.validator.ShopValidator
+import team.bakkas.servicecommand.validator.ShopValidator
 import team.bakkas.eventinterface.eventProducer.ShopEventProducer
 
 /** shop에 대한 command 로직을 담당하는 handler 클래스
@@ -37,11 +36,11 @@ class ShopCommandHandler(
             throw RequestBodyLostException("Body is lost!!")
         }
 
+        // 생성 가능한지 검증한다
+        shopValidator.validateCreatable(shopCreateRequest)
+
         // shopCreateRequest를 기반으로 entity 객체를 하나 생성한다
         val generatedShop = shopCreateRequest.toEntity()
-
-        // 생성 가능한지 검증한다
-        shopValidator.validateCreatable(generatedShop)
 
         // Handler에서 Kafka로 이벤트를 전송하여 Kafka에 생성 책임을 위임한다
         shopEventProducer.propagateShopCreated(generatedShop)

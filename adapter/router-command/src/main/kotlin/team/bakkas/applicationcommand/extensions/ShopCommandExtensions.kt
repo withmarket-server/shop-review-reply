@@ -1,9 +1,8 @@
 package team.bakkas.applicationcommand.extensions
 
-import team.bakkas.clientcommand.dto.ShopCommand
+import team.bakkas.clientcommand.shop.ShopCommand
 import team.bakkas.dynamo.shop.Shop
 import team.bakkas.dynamo.shop.vo.*
-import java.time.LocalDateTime
 import java.util.*
 
 fun ShopCommand.CreateRequest.toEntity() = Shop(

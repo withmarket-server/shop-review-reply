@@ -1,7 +1,7 @@
 spring:
   config:
     activate:
-      on-profile: localdynamo
+      on-profile: localDynamo
     import: "optional:configserver:http://localhost:9500/"
   cloud:
     config:

@@ -1,4 +1,4 @@
-package team.bakkas.clientquery.dto
+package team.bakkas.clientquery.shopReview
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDateTime

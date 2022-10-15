@@ -1,6 +1,6 @@
 package team.bakkas.applicationquery.extensions
 
-import team.bakkas.clientquery.dto.ShopQuery
+import team.bakkas.clientquery.shop.ShopQuery
 import team.bakkas.dynamo.shop.Shop
 
 fun Shop.toSimpleResponse() = ShopQuery.SimpleResponse(

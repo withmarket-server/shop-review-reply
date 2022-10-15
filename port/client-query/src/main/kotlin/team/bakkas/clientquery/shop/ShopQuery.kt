@@ -1,4 +1,4 @@
-package team.bakkas.clientquery.dto
+package team.bakkas.clientquery.shop
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import team.bakkas.dynamo.shop.vo.category.Category

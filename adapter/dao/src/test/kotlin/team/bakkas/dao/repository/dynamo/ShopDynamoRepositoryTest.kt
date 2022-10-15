@@ -1,6 +1,7 @@
 package team.bakkas.dao.repository.dynamo
 
 import kotlinx.coroutines.*
+import kotlinx.coroutines.reactor.awaitSingle
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -31,9 +32,9 @@ internal class ShopDynamoRepositoryTest @Autowired constructor(
     fun createShopAsync(shopName: String, isOpen: Boolean): Unit = runBlocking {
         val mockShop = getMockShop(UUID.randomUUID().toString(), shopName, isOpen)
 
-        val createdShopMono = shopDynamoRepository.createShop(mockShop)
+        val createdShopMono = shopDynamoRepository.createShop(mockShop).awaitSingle()
 
-        CoroutinesUtils.monoToDeferred(createdShopMono).await()
+        println(createdShopMono.toString())
     }
 
     fun generateKey(shopId: String, shopName: String) = Key.builder()

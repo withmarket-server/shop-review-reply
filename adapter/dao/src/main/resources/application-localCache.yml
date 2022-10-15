@@ -1,7 +1,7 @@
 spring:
   config:
     activate:
-      on-profile: localcache
+      on-profile: localCache
   redis:
     host: localhost
     port: 6379

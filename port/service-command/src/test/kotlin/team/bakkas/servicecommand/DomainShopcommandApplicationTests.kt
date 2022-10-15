@@ -1,10 +1,10 @@
-package team.bakkas.dao
+package team.bakkas.servicecommand
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
-class InfrastructureApplicationTests {
+class DomainShopcommandApplicationTests {
 
     @Test
     fun contextLoads() {

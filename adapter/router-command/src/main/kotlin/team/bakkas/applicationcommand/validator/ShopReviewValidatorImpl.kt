@@ -10,7 +10,7 @@ import team.bakkas.common.error.ErrorResponse
 import team.bakkas.common.exceptions.RequestFieldException
 import team.bakkas.common.exceptions.shop.ShopNotFoundException
 import team.bakkas.common.exceptions.shopReview.ShopReviewNotFoundException
-import team.bakkas.domainshopcommand.validator.ShopReviewValidator
+import team.bakkas.servicecommand.validator.ShopReviewValidator
 import team.bakkas.dynamo.shopReview.ShopReview
 
 /** Shop Review에 대한 검증을 수행하는 Validator class
@@ -21,7 +21,7 @@ import team.bakkas.dynamo.shopReview.ShopReview
 class ShopReviewValidatorImpl(
     private val shopGrpcClient: ShopGrpcClient,
     private val shopReviewGrpcClient: ShopReviewGrpcClient
-) : ShopReviewValidator {
+) : ShopReviewValidator() {
 
     // 해당 리뷰가 생성 가능한지 검증하는 메소드
     override suspend fun validateCreatable(shopReview: ShopReview) = with(shopReview) {

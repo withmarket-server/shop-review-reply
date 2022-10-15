@@ -3,50 +3,60 @@ package team.bakkas.applicationcommand.validator
 import org.springframework.stereotype.Component
 import org.springframework.validation.BeanPropertyBindingResult
 import org.springframework.validation.Errors
-import org.springframework.validation.ValidationUtils
+import team.bakkas.clientcommand.shop.ShopCommand
+import team.bakkas.clientcommand.shop.annotations.ShopCreatable
 import team.bakkas.common.error.ErrorResponse
 import team.bakkas.common.exceptions.RegionNotKoreaException
 import team.bakkas.common.exceptions.RequestFieldException
 import team.bakkas.common.exceptions.shop.ShopBranchInfoInvalidException
-import team.bakkas.dynamo.shop.Shop
-import team.bakkas.domainshopcommand.validator.ShopValidator
+import team.bakkas.servicecommand.validator.ShopValidator
 
 // Shop을 검증하는 로직을 정의하는 클래스
 @Component
-class ShopValidatorImpl : ShopValidator {
+class ShopValidatorImpl : ShopValidator() {
 
+    // reject Validate의 타겟을 정해주는 메소드
     override fun supports(clazz: Class<*>): Boolean {
-        return Shop::class.java.isAssignableFrom(clazz)
+        return ShopCommand.CreateRequest::class.java.isAssignableFrom(clazz)
     }
 
     override fun validate(target: Any, errors: Errors) {
-        // shopName, lotNumberAddress, roadNameAddress에 대한 필드 유효성 검증
-        ValidationUtils.rejectIfEmpty(errors, "shopName", "field.required", arrayOf(), "shopName이 비어있습니다.")
+        target::class.java.annotations.map {
+            // class에 따라 검증 로직을 분기한다
+            when(it) {
+                is ShopCreatable -> rejectEmptyByFieldList(
+                    errors,
+                    listOf("shopName", "openTime", "closeTime", "lotNumberAddress", "roadNameAddress", "latitude", "longitude", "shopCategory", "shopDetailCategory")
+                )
+            }
+        }
+
+        // Field에 error가 발생하여 errors에 content가 채워져서 보내진 경우 RequestFieldException을 일으킨다
+        check(errors.allErrors.isEmpty()) {
+            val errorList = errors.allErrors.map {
+                ErrorResponse.FieldError.of(
+                    it.objectName,
+                    it.arguments.contentToString(),
+                    it.defaultMessage!!
+                )
+            }
+            throw RequestFieldException(errorList, "잘못된 요청입니다")
+        }
     }
 
     // 해당 가게가 생성 가능한지 검증하는 메소드
-    override fun validateCreatable(shop: Shop) = with(shop) {
-        validateFirst(this)
+    override fun validateCreatable(request: ShopCommand.CreateRequest) = with(request) {
+        val errors = BeanPropertyBindingResult(this, ShopCommand.CreateRequest::class.java.name)
 
-        check(validateIsInSouthKorea(latLon.latitude, latLon.longitude)) {
+        // 우선 field에 대해서 검증한다
+        validate(this, errors)
+
+        check(validateIsInSouthKorea(request.latitude, request.longitude)) {
             throw RegionNotKoreaException("주어진 좌표가 한국(South Korea)내에 존재하지 않습니다.")
         }
 
-        check(validateBranchInfo(branchInfo.isBranch, branchInfo.branchName)) {
+        check(validateBranchInfo(request.isBranch, request.branchName)) {
             throw ShopBranchInfoInvalidException("본점/지점 정보가 잘못 주어졌습니다.")
-        }
-    }
-
-    // 제일 먼저 필드의 유효성을 검증하는 메소드
-    private fun validateFirst(shop: Shop) = with(shop) {
-        val errors = BeanPropertyBindingResult(this, Shop::class.java.name)
-        validate(this, errors)
-
-        check(errors.allErrors.isEmpty()) {
-            val errorList = errors.allErrors.map {
-                ErrorResponse.FieldError.of(it.objectName, it.arguments.contentToString(), it.defaultMessage!!)
-            }
-            throw RequestFieldException(errorList, "잘못된 요청입니다.")
         }
     }
 

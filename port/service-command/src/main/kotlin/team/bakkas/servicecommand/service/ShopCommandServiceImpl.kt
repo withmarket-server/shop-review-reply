@@ -1,4 +1,4 @@
-package team.bakkas.domainshopcommand.service
+package team.bakkas.servicecommand.service
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.reactor.awaitSingleOrNull
@@ -6,7 +6,7 @@ import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import team.bakkas.dynamo.shop.Shop
-import team.bakkas.domainshopcommand.service.ifs.ShopCommandService
+import team.bakkas.servicecommand.service.ifs.ShopCommandService
 import team.bakkas.repository.ifs.dynamo.ShopDynamoRepository
 import team.bakkas.repository.ifs.redis.ShopRedisRepository
 

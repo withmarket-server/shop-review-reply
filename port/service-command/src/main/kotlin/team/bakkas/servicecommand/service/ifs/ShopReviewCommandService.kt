@@ -1,4 +1,4 @@
-package team.bakkas.domainshopcommand.service.ifs
+package team.bakkas.servicecommand.service.ifs
 
 import team.bakkas.dynamo.shopReview.ShopReview
 

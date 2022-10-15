@@ -1,10 +1,10 @@
-package team.bakkas.domainshopcommand
+package team.bakkas.dao
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
-class DomainShopcommandApplicationTests {
+class DaoApplicationTests {
 
     @Test
     fun contextLoads() {
