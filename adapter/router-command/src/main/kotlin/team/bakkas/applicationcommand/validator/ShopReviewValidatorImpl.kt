@@ -62,7 +62,7 @@ class ShopReviewValidatorImpl(
             when(it) {
                 is ReviewCreatable -> rejectEmptyByFieldList(
                     errors,
-                    listOf("reviewId", "reviewTitle", "shopId", "shopName", "reviewContent")
+                    listOf("reviewTitle", "shopId", "shopName", "reviewContent")
                 )
             }
         }
