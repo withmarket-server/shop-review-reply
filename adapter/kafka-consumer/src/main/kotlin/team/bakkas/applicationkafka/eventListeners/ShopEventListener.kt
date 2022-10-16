@@ -25,27 +25,6 @@ class ShopEventListener(
         shopRedisRepository.cacheShop(shop).subscribe()
     }
 
-    // shop에 대해서 리뷰가 작성되면 카운트를 증가시켜주는 리스너 메소드
-    @KafkaListener(
-        topics = [KafkaTopics.reviewGenerateEventTopic],
-        groupId = KafkaConsumerGroups.updateShopReviewCountGroup
-    )
-    fun updateReviewCount(reviewCreatedEvent: ShopCommand.ReviewCreatedEvent) {
-        /*
-        1. Shop을 DynamoDB로부터 가져온다
-        2. DynamoDB로부터 가져온 Shop에 대해서 averageScore, reviewCount를 조작한다.
-        3. 해당 Shop을 DynamoDB에 갱신하고, 동시에 Redis에도 갱신한다.
-         */
-        val shopMono = with(reviewCreatedEvent) {
-            shopDynamoRepository.findShopByIdAndName(shopId, shopName)
-        }.map { it!! }
-            .map { changeShopInfo(it, reviewCreatedEvent) }
-
-        // 비동기적으로 dynamo, redis에 해당 정보 저장
-        shopMono.flatMap { shopDynamoRepository.createShop(it) }.subscribe()
-        shopMono.flatMap { shopRedisRepository.cacheShop(it) }.subscribe()
-    }
-
     // shop의 변화를 반영해주는 메소드
     private fun changeShopInfo(shop: Shop, reviewCreatedEvent: ShopCommand.ReviewCreatedEvent): Shop {
         return when (reviewCreatedEvent.isGenerated) {
