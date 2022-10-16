@@ -60,6 +60,11 @@ class ShopReviewQueryHandler(
         val shopId = request.queryParamOrNull("shop-id") ?: throw RequestParamLostException("shopId is lost!!")
         val shopName = request.queryParamOrNull("shop-name") ?: throw RequestParamLostException("shopName is lost!!")
 
+        // shopId, shopName을 검증하는 코드
+        check(shopId.isNotEmpty() && shopName.isNotEmpty()) {
+            throw RequestParamLostException("query parameter is lost!!")
+        }
+
         val reviewList = shopReviewService.getReviewListByShop(shopId, shopName)
 
         // flow에 item이 하나도 전달이 안 되는 경우의 예외 처리

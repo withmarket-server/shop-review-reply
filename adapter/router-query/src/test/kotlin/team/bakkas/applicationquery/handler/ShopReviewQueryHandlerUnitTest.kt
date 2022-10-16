@@ -22,14 +22,14 @@ import java.time.LocalDateTime
 
 @ExtendWith(MockKExtension::class)
 internal class ShopReviewQueryHandlerUnitTest {
-    private lateinit var shopReviewHandler: ShopReviewQueryHandler
+    private lateinit var shopReviewQueryHandler: ShopReviewQueryHandler
 
     private lateinit var shopReviewService: ShopReviewQueryService
 
     @BeforeEach
     fun setUp() {
         shopReviewService = mockk(relaxed = true)
-        shopReviewHandler = spyk(ShopReviewQueryHandler(shopReviewService))
+        shopReviewQueryHandler = spyk(ShopReviewQueryHandler(shopReviewService))
     }
 
     @Test
@@ -44,7 +44,7 @@ internal class ShopReviewQueryHandlerUnitTest {
             .build()
 
         // then
-        shouldThrow<RequestParamLostException> { shopReviewHandler.findReviewByIdAndTitle(request) }
+        shouldThrow<RequestParamLostException> { shopReviewQueryHandler.findReviewByIdAndTitle(request) }
     }
 
     @Test
@@ -59,7 +59,7 @@ internal class ShopReviewQueryHandlerUnitTest {
             .build()
 
         // then
-        shouldThrow<RequestParamLostException> { shopReviewHandler.findReviewByIdAndTitle(request) }
+        shouldThrow<RequestParamLostException> { shopReviewQueryHandler.findReviewByIdAndTitle(request) }
     }
 
     @Test
@@ -74,7 +74,7 @@ internal class ShopReviewQueryHandlerUnitTest {
             .build()
 
         // then
-        shouldThrow<RequestParamLostException> { shopReviewHandler.findReviewByIdAndTitle(request) }
+        shouldThrow<RequestParamLostException> { shopReviewQueryHandler.findReviewByIdAndTitle(request) }
     }
 
     @Test
@@ -91,7 +91,7 @@ internal class ShopReviewQueryHandlerUnitTest {
         coEvery { shopReviewService.findReviewByIdAndTitle(reviewId, reviewTitle) } returns null
 
         // then
-        shouldThrow<ShopReviewNotFoundException> { shopReviewHandler.findReviewByIdAndTitle(request) }
+        shouldThrow<ShopReviewNotFoundException> { shopReviewQueryHandler.findReviewByIdAndTitle(request) }
     }
 
     @Test
@@ -109,12 +109,102 @@ internal class ShopReviewQueryHandlerUnitTest {
                 getMockReview(reviewId, reviewTitle, "shop id", "shop name")
 
         // when
-        val result = shopReviewHandler.findReviewByIdAndTitle(request)
+        val result = shopReviewQueryHandler.findReviewByIdAndTitle(request)
 
         // then
         coVerify(exactly = 1) { shopReviewService.findReviewByIdAndTitle(reviewId, reviewTitle) }
-        coVerify(exactly = 1) { shopReviewHandler.findReviewByIdAndTitle(request) }
+        coVerify(exactly = 1) { shopReviewQueryHandler.findReviewByIdAndTitle(request) }
         assertEquals(result.statusCode(), HttpStatus.OK)
+    }
+
+    @Test
+    @DisplayName("[getReviewListByShopIdAndName] 1. shop-id가 빈 상태로 들어와서 RequestParamLostException을 일으키는 테스트")
+    fun getReviewListByShopTest1(): Unit = runBlocking {
+        // given
+        val shopId = ""
+        val shopName = "shop name"
+        val request = MockServerRequest.builder()
+            .queryParam("shop-id", shopId)
+            .queryParam("shop-name", shopName)
+            .build()
+
+        // then
+        shouldThrow<RequestParamLostException> { shopReviewQueryHandler.getReviewListByShopIdAndName(request) }
+    }
+
+    @Test
+    @DisplayName("[getReviewListByShopIdAndName] 2. shop-name이 빈 상태로 들어와서 RequestParamLostException을 일으키는 테스트")
+    fun getReviewListByShopTest2(): Unit = runBlocking {
+        // given
+        val shopId = "shop id"
+        val shopName = ""
+        val request = MockServerRequest.builder()
+            .queryParam("shop-id", shopId)
+            .queryParam("shop-name", shopName)
+            .build()
+
+        // then
+        shouldThrow<RequestParamLostException> { shopReviewQueryHandler.getReviewListByShopIdAndName(request) }
+    }
+
+    @Test
+    @DisplayName("[getReviewListByShopIdAndName] 3. shop-id, shop-name이 모두 비어서 들어오는 경우")
+    fun getReviewListByShopTest3(): Unit = runBlocking {
+        // given
+        val shopId = ""
+        val shopName = ""
+        val request = MockServerRequest.builder()
+            .queryParam("shop-id", shopId)
+            .queryParam("shop-name", shopName)
+            .build()
+
+        // then
+        shouldThrow<RequestParamLostException> { shopReviewQueryHandler.getReviewListByShopIdAndName(request) }
+    }
+
+    @Test
+    @DisplayName("[getReviewListByShopIdAndName] 4. shopId, shopName에 대응하는 review가 존재하지 않는 경우")
+    fun getReviewListByShopTest4(): Unit = runBlocking {
+        // given
+        val shopId = "shop-id"
+        val shopName = "shop-name"
+        val request = MockServerRequest.builder()
+            .queryParam("shop-id", shopId)
+            .queryParam("shop-name", shopName)
+            .build()
+
+        // 비어있는 리스트를 반환한다
+        coEvery { shopReviewService.getReviewListByShop(shopId, shopName) } returns listOf()
+
+        // then
+        shouldThrow<ShopReviewNotFoundException> { shopReviewQueryHandler.getReviewListByShopIdAndName(request) }
+    }
+
+    @Test
+    @DisplayName("[getReviewListByShopIdAndName] 성공 테스트")
+    fun getReviewListByShopSuccess(): Unit = runBlocking {
+        // given
+        val shopId = "shop-id"
+        val shopName = "shop-name"
+        val request = MockServerRequest.builder()
+            .queryParam("shop-id", shopId)
+            .queryParam("shop-name", shopName)
+            .build()
+
+        // 리뷰가 존재하는 경우
+        coEvery { shopReviewService.getReviewListByShop(shopId, shopName) } returns
+                listOf(
+                    getMockReview("1", "review1", shopId, shopName),
+                    getMockReview("2", "review2", shopId, shopName)
+                )
+
+        // when
+        val response = shopReviewQueryHandler.getReviewListByShopIdAndName(request)
+
+        // then
+        coVerify(exactly = 1) { shopReviewService.getReviewListByShop(shopId, shopName) }
+        coVerify(exactly = 1) { shopReviewQueryHandler.getReviewListByShopIdAndName(request) }
+        assertEquals(response.statusCode(), HttpStatus.OK)
     }
 
     // 가짜 review를 반환하는 메소드

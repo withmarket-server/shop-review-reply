@@ -52,10 +52,11 @@ class ShopReviewDynamoRepositoryImpl(
     }
 
     // review를 하나 생성하는 메소드
-    override fun createReviewAsync(shopReview: ShopReview): Mono<Void> {
+    override fun createReviewAsync(shopReview: ShopReview): Mono<ShopReview> {
         val reviewFuture = asyncTable.putItem(shopReview)
 
         return Mono.fromFuture(reviewFuture)
+            .thenReturn(shopReview)
     }
 
     // review를 삭제하는 메소드

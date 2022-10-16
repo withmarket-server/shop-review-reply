@@ -13,7 +13,7 @@ interface ShopReviewDynamoRepository {
     fun getAllReviewFlowByShopIdAndName(shopId: String, shopName: String): Flow<ShopReview>
 
     // review를 하나 생성하는 메소드
-    fun createReviewAsync(shopReview: ShopReview): Mono<Void>
+    fun createReviewAsync(shopReview: ShopReview): Mono<ShopReview>
 
     // review를 삭제하는 메소드
     fun deleteReviewAsync(reviewId: String, reviewTitle: String): Mono<ShopReview>

@@ -40,9 +40,7 @@ class ShopCommandServiceImpl(
     override suspend fun cacheShop(shop: Shop): Shop = withContext(Dispatchers.IO) {
         val shopMono = shopRedisRepository.cacheShop(shop)
 
-        shopMono.awaitSingleOrNull()
-
-        shop
+        shopMono.awaitSingle()
     }
 
     // TODO shop을 수정하는 메소드
