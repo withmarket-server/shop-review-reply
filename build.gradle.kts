@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val coroutineVersion = "1.6.3"
-val mockkVersion = "1.12.7"
+val mockkVersion = "1.12.5"
 val kotestVersion = "5.3.2"
 val springCloudVersion = "2021.0.2"
 
