@@ -1,12 +1,12 @@
 package team.bakkas.servicecommand.service
 
 import io.kotest.common.runBlocking
-import io.mockk.coVerify
-import io.mockk.every
+import io.mockk.*
 import io.mockk.junit5.MockKExtension
-import io.mockk.mockk
-import io.mockk.spyk
+import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -14,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import reactor.core.publisher.Mono
 import team.bakkas.clientcommand.shop.ShopCommand
 import team.bakkas.dynamo.shop.Shop
+import team.bakkas.dynamo.shop.usecases.applyReviewCreate
 import team.bakkas.servicecommand.service.ifs.ShopCommandService
 import team.bakkas.dynamo.shop.vo.*
 import team.bakkas.dynamo.shop.vo.category.Category
@@ -25,7 +26,7 @@ import java.time.LocalTime
 import java.util.*
 
 @ExtendWith(MockKExtension::class)
-internal class ShopCommandServiceTest {
+internal class ShopCommandServiceUnitTest {
 
     // shopDynamoRepository에 대한 mock 객체
     private lateinit var shopDynamoRepository: ShopDynamoRepository
@@ -38,28 +39,89 @@ internal class ShopCommandServiceTest {
 
     @BeforeEach
     fun setUp() {
-        shopDynamoRepository = mockk()
-        shopRedisRepository = mockk()
-        shopCommandService = spyk(ShopCommandServiceImpl(shopDynamoRepository, shopRedisRepository)) // shopCommandService를 spyK mock으로 선언
+        shopDynamoRepository = mockk(relaxed = true)
+        shopRedisRepository = mockk(relaxed = true)
+        shopCommandService = spyk(
+            ShopCommandServiceImpl(shopDynamoRepository, shopRedisRepository)
+        )
     }
 
     @Test
     @DisplayName("[create shop] 성공 케이스 테스트")
-    fun failCreateShopTest3(): Unit = runBlocking {
+    fun createTestSuccess(): Unit = runBlocking {
         // given
         val mockShopDto = generateDto()
         val mockShop = mockShopDto.toEntity()
-        // Mono<Void>는 Mockk 테스트가 진행되지 않기 때문에 Mono.empty로 스터빙
-        every { shopDynamoRepository.createShop(mockShop) }.returns(Mono.empty())
+
+        every { shopDynamoRepository.createShop(mockShop) } returns
+                Mono.just(mockShop)
 
         // when
-        val createShop = shopCommandService.createShop(mockShop)
+        val createShop = shopCommandService.createShop(mockShop).awaitSingleOrNull()
 
         // then
+        coVerify(exactly = 1) { shopDynamoRepository.createShop(mockShop) }
         coVerify(exactly = 1) { shopCommandService.createShop(mockShop) }
         Assertions.assertNotNull(createShop)
 
         println("Test passed!!")
+    }
+
+    @Test
+    @DisplayName("[apply create review] 성공 케이스 테스트")
+    fun applyCreateReviewTest(): Unit = runBlocking {
+        // given
+        val mockShop = generateDto().toEntity()
+        val shopId = mockShop.shopId
+        val shopName = mockShop.shopName
+        val reviewScore = 5.0
+
+        every { shopDynamoRepository.findShopByIdAndName(shopId, shopName) } returns Mono.just(mockShop)
+        every { shopDynamoRepository.createShop(mockShop) } returns Mono.just(mockShop)
+
+        // when
+        val result = shopCommandService.applyCreateReview(shopId, shopName, reviewScore).awaitSingleOrNull()
+
+        // then
+        verify(exactly = 1) { shopCommandService.applyCreateReview(shopId, shopName, reviewScore) }
+        verify(exactly = 1) { shopDynamoRepository.findShopByIdAndName(shopId, shopName) }
+        verify(exactly = 1) { shopDynamoRepository.createShop(mockShop) }
+        verify(exactly = 1) { shopRedisRepository.cacheShop(mockShop) }
+        assertNotNull(result)
+        result?.let {
+            assertEquals(it.reviewNumber, 1)
+            assertEquals(it.totalScore, reviewScore)
+        }
+    }
+
+    @Test
+    @DisplayName("[apply delete review] 성공 케이스 테스트")
+    fun applyDeleteReviewTest(): Unit = runBlocking {
+        // given
+        val reviewScore = 5.0
+        val mockShop = generateDto().toEntity().apply {
+            this.reviewNumber = 1
+            this.totalScore = reviewScore
+        }
+        val shopId = mockShop.shopId
+        val shopName = mockShop.shopName
+
+        every { shopDynamoRepository.findShopByIdAndName(shopId, shopName) } returns Mono.just(mockShop)
+        every { shopDynamoRepository.createShop(mockShop) } returns Mono.just(mockShop)
+
+        // when
+        val result = shopCommandService.applyDeleteReview(shopId, shopName, reviewScore).awaitSingleOrNull()
+
+        // then
+        verify(exactly = 1) { shopCommandService.applyDeleteReview(shopId, shopName, reviewScore) }
+        verify(exactly = 1) { shopDynamoRepository.findShopByIdAndName(shopId, shopName) }
+        verify(exactly = 1) { shopDynamoRepository.createShop(mockShop) }
+        verify(exactly = 1) { shopRedisRepository.cacheShop(mockShop) }
+        assertNotNull(result)
+        result?.let {
+            assertEquals(it.reviewNumber, 0)
+            assertEquals(it.totalScore, 0.0)
+        }
     }
 
     // create test용 dto를 생성해내는 메소드

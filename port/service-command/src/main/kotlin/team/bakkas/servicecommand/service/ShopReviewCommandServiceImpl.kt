@@ -6,28 +6,36 @@ import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import reactor.core.publisher.Mono
+import team.bakkas.common.utils.RedisUtils
 import team.bakkas.servicecommand.service.ifs.ShopReviewCommandService
 import team.bakkas.dynamo.shopReview.ShopReview
 import team.bakkas.repository.ifs.dynamo.ShopReviewDynamoRepository
+import team.bakkas.repository.ifs.redis.ShopReviewRedisRepository
 
 @Service
 class ShopReviewCommandServiceImpl(
-    private val shopReviewDynamoRepository: ShopReviewDynamoRepository
+    private val shopReviewDynamoRepository: ShopReviewDynamoRepository,
+    private val shopReviewRedisRepository: ShopReviewRedisRepository
 ) : ShopReviewCommandService {
 
     @Transactional
-    override suspend fun createReview(shopReview: ShopReview): ShopReview = withContext(Dispatchers.IO) {
+    override fun createReview(shopReview: ShopReview): Mono<ShopReview> {
         // 검증이 끝나면 review 생성
-        shopReviewDynamoRepository.createReviewAsync(shopReview).awaitSingleOrNull()
-
-        return@withContext shopReview
+        return shopReviewDynamoRepository.createReviewAsync(shopReview) // review를 dynamo에 저장하고
+            .doOnSuccess { shopReviewRedisRepository.cacheReview(it).subscribe() } // 동시에 redis에 캐싱한다
     }
 
     @Transactional
-    override suspend fun deleteReview(reviewId: String, reviewTitle: String): ShopReview = withContext(Dispatchers.IO) {
-        // 검증이 끝나면 review 삭제
-        val deletedReview = shopReviewDynamoRepository.deleteReviewAsync(reviewId, reviewTitle).awaitSingle()
+    override fun deleteReview(reviewId: String, reviewTitle: String): Mono<ShopReview> {
+        // review redis key
+        val redisKey = RedisUtils.generateReviewRedisKey(reviewId, reviewTitle)
+        val redisMono = shopReviewRedisRepository.findReviewByKey(redisKey)
+            .switchIfEmpty(Mono.empty())
+            .flatMap { shopReviewRedisRepository.deleteReview(it) }
 
-        return@withContext deletedReview
+        // 검증이 끝나면 review 삭제
+        return shopReviewDynamoRepository.deleteReviewAsync(reviewId, reviewTitle) // 우선 dynamo에서 review를 제거하고
+            .doOnSuccess { redisMono.subscribe() } // redis에서 캐시를 evict 처리한다
     }
 }

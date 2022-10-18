@@ -2,11 +2,8 @@ package team.bakkas.eventinterface.kafka
 
 object KafkaConsumerGroups {
 
-    const val createShopGroup = "withmarket-shop-create-group"
+    // Dynamo에 이벤트를 전달해주는 컨슈머 그룹
+    const val shopGroup = "withmarket-shop-group"
 
-    const val updateShopReviewCountGroup = "withmarket-shop-review-count-group"
-
-    const val createShopReviewGroup = "withmarket-shopReview-create-group"
-
-    const val deleteShopReviewGroup = "withmarket-shopReview-delete-group"
+    const val shopReviewGroup = "withmarket-shopReview-group"
 }
