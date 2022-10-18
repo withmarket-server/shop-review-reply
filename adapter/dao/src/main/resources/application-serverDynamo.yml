@@ -2,7 +2,7 @@ spring:
   config:
     activate:
       on-profile: serverDynamo
-    import: "optional:configserver:http://10.1.101.192:9500/"
+    import: "optional:configserver:http://10.1.1.173:9500/"
   cloud:
     config:
       name: nosql

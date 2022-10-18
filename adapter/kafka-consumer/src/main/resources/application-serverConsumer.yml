@@ -1,4 +1,8 @@
 spring:
+  config:
+    activate:
+      on-profile: serverConsumer
+
   kafka:
     consumer:
       bootstrap-servers: 43.200.107.196:9092,43.200.107.196:9093,43.200.107.196:9094

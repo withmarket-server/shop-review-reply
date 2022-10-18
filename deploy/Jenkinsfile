@@ -1,0 +1,54 @@
+pipeline {
+    agent any
+
+    environment {
+        QUERY_ECR_REPO = "326991552997.dkr.ecr.ap-northeast-2.amazonaws.com/withmarket-shop-server-query"
+        COMMAND_ECR_REPO = "326991552997.dkr.ecr.ap-northeast-2.amazonaws.com/withmarket-shop-server-command"
+        KAFKA_CONSUMER_ECR_REPO = "326991552997.dkr.ecr.ap-northeast-2.amazonaws.com/withmarket-shop-server-kafka-consumer"
+
+        NAME = "withmarket-shop-server"
+
+        ECS_CLUSTER_NAME = "withmarket-main-cluster"
+
+        AWS_CREDENTIALS = "jenkins_deploy_user_credentials"
+    }
+
+    stages {
+        stage("========== Test the project ==========") {
+            steps {
+                dir("${env.WORKSPACE}") {
+                    sh 'chmod 755 ./gradlew'
+                    sh './gradlew clean test'
+                }
+            }
+
+            post {
+                success {
+                    echo 'The Test stage is done successfully.'
+                }
+
+                failure {
+                    echo 'The Test stage is fail.'
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            slackSend(
+                channel: "#server-build-history",
+                color: "good",
+                message: "[Successful] Job:${env.JOB_NAME}, Build num:#${env.BUILD_NUMBER} (<${env.RUN_DISPLAY_URL}|open job detail>)"
+            )
+        }
+
+        failure {
+            slackSend(
+                channel: "#server-build-history",
+                color: "danger",
+                message: "[Failed] Job:${env.JOB_NAME}, Build num:#${env.BUILD_NUMBER} @channel (<${env.RUN_DISPLAY_URL}|open job detail>)"
+            )
+        }
+    }
+}
