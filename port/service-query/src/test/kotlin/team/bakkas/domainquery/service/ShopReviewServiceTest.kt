@@ -40,6 +40,7 @@ internal class ShopReviewServiceTest {
 
         every { shopReviewRepository.findReviewByIdAndTitle(reviewId, reviewTitle) } returns Mono.empty()
 
+
         // when
         val result = shopReviewService.findReviewByIdAndTitle(reviewId, reviewTitle)
 
