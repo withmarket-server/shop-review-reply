@@ -18,7 +18,7 @@ import org.springframework.core.CoroutinesUtils
 import reactor.core.publisher.Mono
 import team.bakkas.common.exceptions.shop.ShopNotFoundException
 import team.bakkas.dynamo.shop.Shop
-import team.bakkas.domainquery.repository.ifs.ShopReader
+import team.bakkas.domainquery.reader.ifs.ShopReader
 import team.bakkas.dynamo.shop.vo.*
 import team.bakkas.dynamo.shop.vo.category.Category
 import team.bakkas.dynamo.shop.vo.category.DetailCategory

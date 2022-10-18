@@ -9,7 +9,7 @@ import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory
 
 @Configuration
-@Profile("localcache")
+@Profile("localCache")
 class LocalRedisConfig(
     @Value("\${spring.redis.host}")
     val host: String,

@@ -46,7 +46,7 @@ sealed class ErrorResponse {
                 val fieldErrorList = bindingResult.fieldErrors
 
                 return fieldErrorList.map { error ->
-                    FieldError(error.field, error.rejectedValue.toString() ?: "", error.defaultMessage!!)
+                    FieldError(error.field, error.rejectedValue.toString(), error.defaultMessage!!)
                 }.toList()
             }
         }

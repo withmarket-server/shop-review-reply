@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import team.bakkas.common.exceptions.shop.ShopNotFoundException
 import team.bakkas.dynamo.shop.Shop
-import team.bakkas.domainquery.repository.ifs.ShopReader
+import team.bakkas.domainquery.reader.ifs.ShopReader
 import team.bakkas.domainquery.service.ifs.ShopQueryService
 
 /** Shop에 대한 비지니스 로직을 구현하는 service layer class

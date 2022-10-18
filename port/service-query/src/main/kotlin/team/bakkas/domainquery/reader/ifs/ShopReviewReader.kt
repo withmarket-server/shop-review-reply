@@ -1,4 +1,4 @@
-package team.bakkas.domainquery.repository.ifs
+package team.bakkas.domainquery.reader.ifs
 
 import kotlinx.coroutines.flow.Flow
 import reactor.core.publisher.Mono

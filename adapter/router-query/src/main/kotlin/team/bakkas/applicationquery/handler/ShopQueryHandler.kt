@@ -50,6 +50,8 @@ class ShopQueryHandler(
 
         val shopResponseList = shopList.map { it.toSimpleResponse() }
 
-        ok().bodyValueAndAwait(ResultFactory.getMultipleResult(shopResponseList))
+        return@coroutineScope ok()
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValueAndAwait(ResultFactory.getMultipleResult(shopResponseList))
     }
 }

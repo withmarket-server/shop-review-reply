@@ -1,4 +1,4 @@
-package team.bakkas.eventinterface.config
+package team.bakkas.applicationcommand.producerConfig
 
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.StringSerializer
@@ -9,7 +9,6 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.kafka.core.ProducerFactory
 import org.springframework.kafka.support.serializer.JsonSerializer
-import team.bakkas.clientcommand.shop.ShopCommand
 import team.bakkas.clientcommand.shopReview.ShopReviewCommand
 import team.bakkas.dynamo.shop.Shop
 import team.bakkas.dynamo.shopReview.ShopReview

@@ -35,8 +35,6 @@ internal class GrpcShopReviewServiceUnitTest {
         // given
         val reviewId = "1"
         val reviewTitle = "review1"
-        val shopId = "1"
-        val shopName = "shop1"
         val request = CheckExistShopReviewRequest.newBuilder()
             .setReviewId(reviewId)
             .setReviewTitle(reviewTitle)

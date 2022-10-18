@@ -7,7 +7,7 @@ import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import team.bakkas.common.exceptions.shopReview.ShopReviewNotFoundException
-import team.bakkas.domainquery.repository.ifs.ShopReviewReader
+import team.bakkas.domainquery.reader.ifs.ShopReviewReader
 import team.bakkas.domainquery.service.ifs.ShopReviewQueryService
 import team.bakkas.dynamo.shopReview.ShopReview
 

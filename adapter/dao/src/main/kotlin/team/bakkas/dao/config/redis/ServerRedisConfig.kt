@@ -10,7 +10,7 @@ import org.springframework.data.redis.connection.RedisClusterConfiguration
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory
 
 @Configuration
-@Profile("servercache")
+@Profile("serverCxache")
 class ServerRedisConfig(
     @Value("\${spring.redis.cluster.nodes}") private val clusterNodes: List<String>
 ) : RedisConfig {

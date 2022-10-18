@@ -1,4 +1,4 @@
-package team.bakkas.domainquery.repository
+package team.bakkas.domainquery.reader
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
 import team.bakkas.common.utils.RedisUtils
 import team.bakkas.dynamo.shop.Shop
-import team.bakkas.domainquery.repository.ifs.ShopReader
+import team.bakkas.domainquery.reader.ifs.ShopReader
 import team.bakkas.repository.ifs.dynamo.ShopDynamoRepository
 import team.bakkas.repository.ifs.redis.ShopRedisRepository
 

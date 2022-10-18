@@ -1,4 +1,4 @@
-package team.bakkas.domainquery.repository
+package team.bakkas.domainquery.reader
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.buffer
