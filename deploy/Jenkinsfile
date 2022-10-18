@@ -18,7 +18,7 @@ pipeline {
             steps {
                 dir("${env.WORKSPACE}") {
                     sh 'chmod 755 ./gradlew'
-                    sh './gradlew clean test'
+                    sh './gradlew test'
                 }
             }
 
