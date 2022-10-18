@@ -45,17 +45,17 @@ class ShopValidatorImpl : ShopValidator() {
     }
 
     // 해당 가게가 생성 가능한지 검증하는 메소드
-    override fun validateCreatable(request: ShopCommand.CreateRequest) = with(request) {
+    override fun validateCreatable(createRequest: ShopCommand.CreateRequest) = with(createRequest) {
         val errors = BeanPropertyBindingResult(this, ShopCommand.CreateRequest::class.java.name)
 
         // 우선 field에 대해서 검증한다
         validate(this, errors)
 
-        check(validateIsInSouthKorea(request.latitude, request.longitude)) {
+        check(validateIsInSouthKorea(createRequest.latitude, createRequest.longitude)) {
             throw RegionNotKoreaException("주어진 좌표가 한국(South Korea)내에 존재하지 않습니다.")
         }
 
-        check(validateBranchInfo(request.isBranch, request.branchName)) {
+        check(validateBranchInfo(createRequest.isBranch, createRequest.branchName)) {
             throw ShopBranchInfoInvalidException("본점/지점 정보가 잘못 주어졌습니다.")
         }
     }
