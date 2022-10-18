@@ -1,4 +1,4 @@
-FROM openjdk:11-jdk
+FROM openjdk:17-oracle
 
 ARG APP_NAME=router-command
 ARG VERSION=1.0.0
