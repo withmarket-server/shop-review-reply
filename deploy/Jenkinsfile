@@ -32,6 +32,66 @@ pipeline {
                 }
             }
         }
+
+        stage("========== Build the command application ==========") {
+            steps {
+                dir("${env.WORKSPACE}") {
+                    sh 'cd adapter/router-command'
+                    sh 'chmod 755 ./gradlew'
+                    sh './gradlew build'
+                }
+            }
+
+            post {
+                success {
+                    echo 'The Building command application is done successfully.'
+                }
+
+                failure {
+                    echo 'The Building command application is failed.'
+                }
+            }
+        }
+
+        stage("========== Build the query application ==========") {
+            steps {
+                dir("${env.WORKSPACE}") {
+                    sh 'cd adapter/router-query'
+                    sh 'chmod 755 ./gradlew'
+                    sh './gradlew build'
+                }
+            }
+
+            post {
+                success {
+                    echo 'The Building query application is done successfully.'
+                }
+
+                failure {
+                    echo 'The Building query application is failed.'
+                }
+            }
+        }
+
+        stage("========== Build the listener application ==========") {
+            steps {
+                dir("${env.WORKSPACE}") {
+                    sh 'cd adapter/kafka-consumer'
+                    sh 'chmod 755 ./gradlew'
+                    sh './gradlew build'
+                }
+            }
+
+            post {
+                success {
+                    echo 'The Building consumer application is done successfully.'
+                }
+
+                failure {
+                    echo 'The Building consumer application is failed.'
+                }
+            }
+        }
     }
 
     post {
