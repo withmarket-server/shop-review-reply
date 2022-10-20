@@ -8,7 +8,7 @@ pipeline {
 
         COMMAND_APP_NAME = "withmarket-shop-review-server-command"
         QUERY_APP_NAME = "withmarket-shop-review-server-query"
-        KAFKA_LISTENER_APP_NAME = "withmarket-shop-review-server-kafka-listener"
+        KAFKA_CONSUMER_APP_NAME = "withmarket-shop-review-server-kafka-consumer"
 
         ECS_CLUSTER_NAME = "withmarket-main-cluster"
 
@@ -110,6 +110,44 @@ pipeline {
 
                 failure {
                     echo 'The docker building command application is failed.'
+                }
+            }
+        }
+
+        stage("========== Build docker image of query application ==========") {
+            steps {
+                dir("${dir.WORKSPACE}}") {
+                    sh 'cd adapter/router-query && docker build -t ${QUERY_APP_NAME} .'
+                    sh 'docker tag ${QUERY_APP_NAME}:latest ${QUERY_ECR_REPO}:latest'
+                }
+            }
+
+            post {
+                success {
+                    echo 'The docker building query application is done successfully.'
+                }
+
+                failure {
+                    echo 'The docker building query application is failed.'
+                }
+            }
+        }
+
+        stage("========== Build docker image of query application ==========") {
+            steps {
+                dir("${dir.WORKSPACE}}") {
+                    sh 'cd adapter/kafka-consumer && docker build -t ${KAFKA_CONSUMER_APP_NAME} .'
+                    sh 'docker tag ${KAFKA_CONSUMER_APP_NAME}:latest ${KAFKA_CONSUMER_ECR_REPO}:latest'
+                }
+            }
+
+            post {
+                success {
+                    echo 'The docker building kafka consumer application is done successfully.'
+                }
+
+                failure {
+                    echo 'The docker building kafka consumer application is failed.'
                 }
             }
         }
