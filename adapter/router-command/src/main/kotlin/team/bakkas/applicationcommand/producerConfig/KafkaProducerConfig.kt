@@ -9,6 +9,7 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.kafka.core.ProducerFactory
 import org.springframework.kafka.support.serializer.JsonSerializer
+import team.bakkas.clientcommand.shop.ShopCommand
 import team.bakkas.clientcommand.shopReview.ShopReviewCommand
 import team.bakkas.dynamo.shop.Shop
 import team.bakkas.dynamo.shopReview.ShopReview
@@ -25,6 +26,11 @@ class KafkaProducerConfig(
         return KafkaTemplate(shopProducerFactory())
     }
 
+    @Bean
+    fun shopDeletedEventKafkaTemplate(): KafkaTemplate<String, ShopCommand.DeletedEvent> {
+        return KafkaTemplate(shopDeletedEventProducerFactory())
+    }
+
     // ShopRwview에 대한 Kafka Template
     @Bean
     fun shopReviewKafkaTemplate(): KafkaTemplate<String, ShopReview> {
@@ -38,6 +44,10 @@ class KafkaProducerConfig(
 
     // Shop에 대한 Kafka Template를 사용하기 위한 Producer Factory
     private fun shopProducerFactory(): ProducerFactory<String, Shop> =
+        DefaultKafkaProducerFactory(producerConfig())
+
+    // Shop에 대한 delete 처리를 하기 위한 template 정의를 위해 producer factory 생성
+    private fun shopDeletedEventProducerFactory(): ProducerFactory<String, ShopCommand.DeletedEvent> =
         DefaultKafkaProducerFactory(producerConfig())
 
     // ShopReview에 대한 Template를 사용하기 위한 Producer Factory

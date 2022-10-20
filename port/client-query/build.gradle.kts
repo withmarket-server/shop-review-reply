@@ -11,6 +11,7 @@ tasks.withType<Test> {
 // root folder의 gradle project는 빌드하지 않는다
 tasks {
     named<Jar>("jar") {
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
         enabled = true
     }
 

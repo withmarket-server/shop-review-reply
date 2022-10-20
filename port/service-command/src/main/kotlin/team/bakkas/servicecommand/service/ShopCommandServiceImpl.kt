@@ -24,9 +24,6 @@ class ShopCommandServiceImpl(
     private val shopDynamoRepository: ShopDynamoRepository,
     private val shopRedisRepository: ShopRedisRepository
 ) : ShopCommandService {
-
-    // TODO Kafka Consumer에서 사용할 수 있도록 Webflux 기반으로 모두 전환
-
     /** shop을 생성하는 비지니스 로직을 정의하는 메소드
      * @param shop 생성 가능성이 검증된 이후로 들어오는 shop entity 객체
      */
@@ -34,6 +31,12 @@ class ShopCommandServiceImpl(
     override fun createShop(shop: Shop): Mono<Shop> {
         return shopDynamoRepository.createShop(shop)
             .doOnSuccess { shopRedisRepository.cacheShop(it).subscribe() }
+    }
+
+    @Transactional
+    override fun deleteShop(shopId: String, shopName: String): Mono<Shop> {
+        return shopDynamoRepository.deleteShop(shopId, shopName) // shop을 dynamo에서 삭제시키고
+            .doOnSuccess { shopRedisRepository.deleteShop(shopId, shopName).subscribe() } // 삭제에 성공하면 redis에 있는 shop도 삭제
     }
 
     // Shop에 review 생성에 의해 생긴 변화를 반영해서 다시 저장해주는 메소드

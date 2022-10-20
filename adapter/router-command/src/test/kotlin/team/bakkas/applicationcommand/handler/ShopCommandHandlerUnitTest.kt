@@ -10,18 +10,22 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.mock.web.reactive.function.server.MockServerRequest
 import reactor.core.publisher.Mono
+import team.bakkas.applicationcommand.grpc.ifs.ShopGrpcClient
 import team.bakkas.applicationcommand.validator.ShopValidatorImpl
 import team.bakkas.clientcommand.shop.ShopCommand
 import team.bakkas.common.exceptions.RegionNotKoreaException
 import team.bakkas.common.exceptions.RequestBodyLostException
 import team.bakkas.common.exceptions.RequestFieldException
+import team.bakkas.common.exceptions.RequestParamLostException
 import team.bakkas.common.exceptions.shop.ShopBranchInfoInvalidException
+import team.bakkas.common.exceptions.shop.ShopNotFoundException
 import team.bakkas.servicecommand.validator.ShopValidator
 import team.bakkas.dynamo.shop.vo.DeliveryTipPerDistance
 import team.bakkas.dynamo.shop.vo.category.Category
 import team.bakkas.dynamo.shop.vo.category.DetailCategory
 import team.bakkas.dynamo.shop.vo.sale.Days
 import team.bakkas.eventinterface.eventProducer.ShopEventProducer
+import team.bakkas.grpcIfs.v1.shop.CheckExistShopResponse
 import java.time.LocalTime
 
 @ExtendWith(MockKExtension::class)
@@ -30,12 +34,15 @@ internal class ShopCommandHandlerUnitTest {
 
     private lateinit var shopValidator: ShopValidator
 
+    private lateinit var shopGrpcClient: ShopGrpcClient
+
     private lateinit var shopEventProducer: ShopEventProducer
 
     @BeforeEach
     fun setUp() {
-        shopValidator = spyk(ShopValidatorImpl()) // 실제 validator를 사용하기 위해 spyk로 선언
-        shopEventProducer = mockk()
+        shopGrpcClient = mockk(relaxed = true)
+        shopValidator = spyk(ShopValidatorImpl(shopGrpcClient)) // 실제 validator를 사용하기 위해 spyk로 선언
+        shopEventProducer = mockk(relaxed = true)
         shopCommandHandler = spyk(ShopCommandHandler(shopValidator, shopEventProducer))
     }
 
@@ -147,6 +154,77 @@ internal class ShopCommandHandlerUnitTest {
 
         // then
         shouldThrow<RequestFieldException> { shopCommandHandler.createShop(request) }
+    }
+
+    @Test
+    @DisplayName("[deleteShop] 1. shopId가 비어있는 문자열로 들어오는 경우 RequestParamLostException을 일으키는 테스트")
+    fun deleteShopTest1(): Unit = runBlocking {
+        // given
+        val shopId = ""
+        val shopName = "shop1"
+        val request = MockServerRequest.builder()
+            .queryParam("id", shopId)
+            .queryParam("name", shopName)
+            .build()
+
+        // then
+        shouldThrow<RequestParamLostException> { shopCommandHandler.deleteShop(request) }
+    }
+
+    @Test
+    @DisplayName("[deleteShop] 2. shopName이 비어있는 문자열로 들어오는 경우 RequestParamLostException을 일으키는 테스트")
+    fun deleteShopTest2(): Unit = runBlocking {
+        // given
+        val shopId = "1"
+        val shopName = ""
+        val request = MockServerRequest.builder()
+            .queryParam("id", shopId)
+            .queryParam("name", shopName)
+            .build()
+
+        // then
+        shouldThrow<RequestParamLostException> { shopCommandHandler.deleteShop(request) }
+    }
+
+    @Test
+    @DisplayName("[deleteShop] 3. shopId, shopName이 모두 비어서 들어오는 경우 RequestParamLostException을 일으키는 테스트")
+    fun deleteShopTest3(): Unit = runBlocking {
+        // given
+        val shopId = ""
+        val shopName = ""
+        val request = MockServerRequest.builder()
+            .queryParam("id", shopId)
+            .queryParam("name", shopName)
+            .build()
+
+        // then
+        shouldThrow<RequestParamLostException> { shopCommandHandler.deleteShop(request) }
+    }
+
+    @Test
+    @DisplayName("[deleteShop] 4. shop이 존재하지 않는 경우 shopNotFoundException을 일으키는 테스트")
+    fun deleteShopTest4(): Unit = runBlocking {
+        // given
+        val shopId = "1"
+        val shopName = "shop1"
+        val request = MockServerRequest.builder()
+            .queryParam("id", shopId)
+            .queryParam("name", shopName)
+            .build()
+
+        coEvery { shopGrpcClient.isExistShop(shopId, shopName) } returns
+                CheckExistShopResponse.newBuilder()
+                    .setResult(false)
+                    .build()
+
+        // then
+        shouldThrow<ShopNotFoundException> { shopCommandHandler.deleteShop(request) }
+    }
+
+    // MockRequest를 생성해주는 메소드
+    private inline fun generateRequest(block:() -> Mono<Any>): MockServerRequest {
+        return MockServerRequest.builder()
+            .body(block.invoke())
     }
 
     private fun generateDto(): ShopCommand.CreateRequest = ShopCommand.CreateRequest(

@@ -3,17 +3,22 @@ package team.bakkas.applicationcommand.validator
 import org.springframework.stereotype.Component
 import org.springframework.validation.BeanPropertyBindingResult
 import org.springframework.validation.Errors
+import team.bakkas.applicationcommand.grpc.ifs.ShopGrpcClient
 import team.bakkas.clientcommand.shop.ShopCommand
 import team.bakkas.clientcommand.shop.annotations.ShopCreatable
 import team.bakkas.common.error.ErrorResponse
 import team.bakkas.common.exceptions.RegionNotKoreaException
 import team.bakkas.common.exceptions.RequestFieldException
+import team.bakkas.common.exceptions.RequestParamLostException
 import team.bakkas.common.exceptions.shop.ShopBranchInfoInvalidException
+import team.bakkas.common.exceptions.shop.ShopNotFoundException
 import team.bakkas.servicecommand.validator.ShopValidator
 
 // Shop을 검증하는 로직을 정의하는 클래스
 @Component
-class ShopValidatorImpl : ShopValidator() {
+class ShopValidatorImpl(
+    private val shopGrpcClient: ShopGrpcClient
+) : ShopValidator() {
 
     // reject Validate의 타겟을 정해주는 메소드
     override fun supports(clazz: Class<*>): Boolean {
@@ -57,6 +62,18 @@ class ShopValidatorImpl : ShopValidator() {
 
         check(validateBranchInfo(createRequest.isBranch, createRequest.branchName)) {
             throw ShopBranchInfoInvalidException("본점/지점 정보가 잘못 주어졌습니다.")
+        }
+    }
+
+    override suspend fun validateDeletable(shopId: String, shopName: String) {
+        // 두 파라미터가 빈 스트링으로 들어오는 것을 방지한다
+        check(shopId.isNotEmpty() && shopName.isNotEmpty()) {
+            throw RequestParamLostException("Empty request params!!")
+        }
+
+        // shopId, shopName에 대응하는 shop이 존재하는지만 검증하면 끝이다
+        check(shopGrpcClient.isExistShop(shopId, shopName).result) {
+            throw ShopNotFoundException("The shop does not exist!!")
         }
     }
 

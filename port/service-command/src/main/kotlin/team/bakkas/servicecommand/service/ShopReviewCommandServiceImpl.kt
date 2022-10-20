@@ -1,11 +1,13 @@
 package team.bakkas.servicecommand.service
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.reactor.asFlux
 import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import team.bakkas.common.utils.RedisUtils
 import team.bakkas.servicecommand.service.ifs.ShopReviewCommandService
@@ -37,5 +39,18 @@ class ShopReviewCommandServiceImpl(
         // 검증이 끝나면 review 삭제
         return shopReviewDynamoRepository.deleteReviewAsync(reviewId, reviewTitle) // 우선 dynamo에서 review를 제거하고
             .doOnSuccess { redisMono.subscribe() } // redis에서 캐시를 evict 처리한다
+    }
+
+    /** shop의 모든 review를 제거하는 service 메소드
+     * @param shopId shop의 id
+     * @param shopName shop의 name
+     * @return Flux of shopReview
+     */
+    @Transactional
+    override fun deleteAllReviewsOfShop(shopId: String, shopName: String): Flux<ShopReview> {
+        return shopReviewDynamoRepository.getAllReviewFlowByShopIdAndName(shopId, shopName)
+            .asFlux()
+            .flatMap { shopReviewDynamoRepository.deleteReviewAsync(it.reviewId, it.reviewTitle) }
+            .flatMap { shopReviewRedisRepository.deleteReview(it) }
     }
 }

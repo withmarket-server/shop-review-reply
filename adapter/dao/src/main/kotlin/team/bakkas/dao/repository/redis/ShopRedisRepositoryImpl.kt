@@ -37,4 +37,11 @@ class ShopRedisRepositoryImpl(
             .filter { key -> StringTokenizer(key, ":").nextToken().equals("shop") }
             .map { findShopByKey(it).awaitSingle() }
     }
+
+    // shop을 삭제하는 메소드
+    override fun deleteShop(shopId: String, shopName: String): Mono<Boolean> {
+        val shopKey = RedisUtils.generateShopRedisKey(shopId, shopName)
+
+        return shopReactiveRedisTemplate.opsForValue().delete(shopKey)
+    }
 }
