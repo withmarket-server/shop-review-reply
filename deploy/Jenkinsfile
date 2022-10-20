@@ -133,7 +133,7 @@ pipeline {
             }
         }
 
-        stage("========== Build docker image of query application ==========") {
+        stage("========== Build docker image of kafka consumer application ==========") {
             steps {
                 dir("${dir.WORKSPACE}}") {
                     sh 'cd adapter/kafka-consumer && docker build -t ${KAFKA_CONSUMER_APP_NAME} .'
