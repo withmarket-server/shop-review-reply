@@ -58,6 +58,7 @@ sourceSets {
 // DuplicatesStrategy 설정
 tasks.withType<Jar> {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    enabled = true
 }
 
 // 해당 module은 테스트 대상에서 제외한다
