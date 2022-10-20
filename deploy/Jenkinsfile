@@ -6,7 +6,9 @@ pipeline {
         COMMAND_ECR_REPO = "326991552997.dkr.ecr.ap-northeast-2.amazonaws.com/withmarket-shop-server-command"
         KAFKA_CONSUMER_ECR_REPO = "326991552997.dkr.ecr.ap-northeast-2.amazonaws.com/withmarket-shop-server-kafka-consumer"
 
-        NAME = "withmarket-shop-server"
+        COMMAND_APP_NAME = "withmarket-shop-review-server-command"
+        QUERY_APP_NAME = "withmarket-shop-review-server-query"
+        KAFKA_LISTENER_APP_NAME = "withmarket-shop-review-server-kafka-listener"
 
         ECS_CLUSTER_NAME = "withmarket-main-cluster"
 
@@ -89,6 +91,25 @@ pipeline {
 
                 failure {
                     echo 'The Building consumer application is failed.'
+                }
+            }
+        }
+
+        stage("========== Build docker image of command application ==========") {
+            steps {
+                dir("${env.WORKSPACE}") {
+                    sh 'cd adapter/router-command && docker build -t ${COMMAND_APP_NAME} .'
+                    sh 'docker tag ${COMMAND_APP_NAME}:latest ${COMMAND_ECR_REPO}:latest'
+                }
+            }
+
+            post {
+                success {
+                    echo 'The docker building command application is done successfully.'
+                }
+
+                failure {
+                    echo 'The docker building command application is failed.'
                 }
             }
         }
