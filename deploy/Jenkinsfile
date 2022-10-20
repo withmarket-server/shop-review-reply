@@ -147,7 +147,7 @@ pipeline {
                 }
 
                 failure {
-                    echo 'The docker building kafka consumer application is failed.'
+                    echo 'The docker building kafka consumer application is failed..'
                 }
             }
         }
