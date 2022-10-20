@@ -151,6 +151,77 @@ pipeline {
                 }
             }
         }
+
+        stage("========== ECR Upload(command application) ==========") {
+            steps {
+                script {
+                    try {
+                        withAWS(credentials: "${AWS_CREDENTIALS}", role: 'arn:aws:iam::326991552997:role/jenkins_deploy_role', roleAccount: "326991552997", externalId: "18k7102dy@gmail.com") {
+                            sh "aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin ${COMMAND_ECR_REPO}"
+                            sh 'docker push ${COMMAND_ECR_REPO}:latest'
+                        }
+                    }catch(error) {
+                        print(error)
+                        currentBuild.result = 'FAILURE'
+                    }
+                }
+            }
+
+            post {
+                success {
+                    echo "The ECR Upload(command) stage is done successfully."
+                }
+                failure {
+                    echo "The ECR Upload(command) stage is fail."
+                }
+            }
+        }
+
+        stage("========== ECR Upload(query application) ==========") {
+            steps {
+                script {
+                    try {
+                        sh "aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin ${QUERY_ECR_REPO}"
+                        sh 'docker push ${QUERY_ECR_REPO}:latest'
+                    }catch(error) {
+                        print(error)
+                        currentBuild.result = 'FAILURE'
+                    }
+                }
+            }
+
+            post {
+                success {
+                    echo "The ECR Upload(query) stage is done successfully."
+                }
+                failure {
+                    echo "The ECR Upload(query) stage is fail."
+                }
+            }
+        }
+
+        stage("========== ECR Upload(kafka consumer application) ==========") {
+            steps {
+                script {
+                    try {
+                        sh "aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin ${KAFKA_CONSUMER_ECR_REPO}"
+                        sh 'docker push ${KAFKA_CONSUMER_ECR_REPO}:latest'
+                    }catch(error) {
+                        print(error)
+                        currentBuild.result = 'FAILURE'
+                    }
+                }
+            }
+
+            post {
+                success {
+                    echo "The ECR Upload(kafka consumer) stage is done successfully."
+                }
+                failure {
+                    echo "The ECR Upload(kafka consumer) stage is fail."
+                }
+            }
+        }
     }
 
     post {
