@@ -88,8 +88,6 @@ internal class ShopServiceTest {
             assertEquals(it.shopId, shopId)
             assertEquals(it.shopName, shopName)
         }
-
-        println("[shop을 가져올 수 있는 케이스] passed!!")
     }
 
     // 1-3. service logic 검증 -> Key가 잘못된 경우
@@ -108,8 +106,6 @@ internal class ShopServiceTest {
         verify(exactly = 1) { shopReader.findShopById(shopId) }
         coVerify(exactly = 1) { shopService.findShopById(shopId) } // 코루틴의 경우 coVerify로 검증한다
         assertNull(result)
-
-        println("[[service] findShopByIdAndName 실패 테스트] passed!!")
     }
 
     @Test
@@ -135,8 +131,6 @@ internal class ShopServiceTest {
             assertEquals(it.shopId, shopId)
             assertEquals(it.shopName, shopName)
         }
-
-        println("[[service] findShopByIdAndName 성공 테스트] passed!!")
     }
 
     // mock shop을 생성해내는 메소드

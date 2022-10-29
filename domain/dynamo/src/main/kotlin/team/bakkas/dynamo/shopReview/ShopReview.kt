@@ -39,7 +39,6 @@ class ShopReview(
             .addAttribute(String::class.java) {
                 it.name("review_title").getter(ShopReview::reviewTitle::get)
                     .setter(ShopReview::reviewTitle::set)
-                    .tags(StaticAttributeTags.primarySortKey())
             }
             .addAttribute(String::class.java) {
                 it.name("shop_id").getter(ShopReview::shopId::get)
