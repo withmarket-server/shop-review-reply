@@ -43,11 +43,10 @@ internal class ShopServiceTest {
 
     // 1-1, shop이 존재하지 않는 경우 테스트 (shop에 대한 key값이 잘못되었음)
     @Test
-    @DisplayName("shop에 대한 key 정보가 잘못되어서 shop을 못 찾아오는 경우 테스트")
+    @DisplayName("shop에 대한 key 정보가 잘못되어서 shop을 못 찾아오는 경우 테스트입니다")
     fun failFindShop() = runBlocking {
         // given
         val shopId = "test-fake-key"
-        val shopName = "fake shop"
 
         every { shopReader.findShopById(shopId) } returns Mono.empty()
 
@@ -99,7 +98,6 @@ internal class ShopServiceTest {
     fun failFindShop2() = runBlocking {
         // given
         val shopId = "fake-id"
-        val shopName = "fake-name"
 
         // when
         // 잘못된 key 값을 주는 경우 empty mono를 반환하게 설정
