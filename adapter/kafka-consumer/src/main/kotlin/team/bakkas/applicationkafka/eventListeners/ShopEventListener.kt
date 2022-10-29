@@ -24,13 +24,14 @@ class ShopEventListener(
         shopCommandService.createShop(shop).subscribe()
     }
 
+    // Shop을 Soft Delete를 수행하는 리스너
     @KafkaListener(
         topics = [KafkaTopics.shopDeleteTopic],
         groupId = KafkaConsumerGroups.shopGroup
     )
     fun deleteShop(shopId: String, shopName: String) {
-        shopCommandService.deleteShop(shopId, shopName)
-            .doOnSuccess { shopReviewCommandService.deleteAllReviewsOfShop(shopId, shopName).subscribe() }
+        shopCommandService.softDeleteShop(shopId, shopName)
+            .doOnSuccess { shopReviewCommandService.softDeleteAllReviewsOfShop(shopId, shopName).subscribe() }
             .subscribe()
     }
 }

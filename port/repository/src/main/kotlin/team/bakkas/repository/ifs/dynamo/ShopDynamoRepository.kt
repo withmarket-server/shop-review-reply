@@ -16,4 +16,7 @@ interface ShopDynamoRepository {
 
     // shop을 제거하는 메소드
     fun deleteShop(shopId: String, shopName: String): Mono<Shop>
+
+    // shop을 soft delete하는 메소드
+    fun softDeleteShop(shopId: String, shopName: String): Mono<Shop>
 }

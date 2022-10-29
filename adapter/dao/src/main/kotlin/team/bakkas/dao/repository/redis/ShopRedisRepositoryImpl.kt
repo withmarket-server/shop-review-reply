@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
 import team.bakkas.common.utils.RedisUtils
 import team.bakkas.dynamo.shop.Shop
+import team.bakkas.dynamo.shop.usecases.softDelete
 import team.bakkas.repository.ifs.redis.ShopRedisRepository
 import java.time.Duration
 import java.util.StringTokenizer
@@ -43,5 +44,13 @@ class ShopRedisRepositoryImpl(
         val shopKey = RedisUtils.generateShopRedisKey(shopId, shopName)
 
         return shopReactiveRedisTemplate.opsForValue().delete(shopKey)
+    }
+
+    override fun softDeleteShop(shopId: String, shopName: String): Mono<Shop> {
+        val shopKey = RedisUtils.generateShopRedisKey(shopId, shopName)
+
+        return findShopByKey(shopKey) // shopId, shopName을 기반으로 shop을 찾아온 다음에
+            .map { it.softDelete() } // 해당 shop을 soft delete를 수행하고
+            .flatMap { cacheShop(it) } // 해당 shop을 다시 redis에 저장한다
     }
 }

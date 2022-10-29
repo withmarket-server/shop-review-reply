@@ -14,7 +14,7 @@ class ShopReviewCommandRouter(
     fun shopReviewCommandRoutes() = coRouter {
         "/v2/shop-review".nest {
             POST("", shopReviewCommandHandler::createReview)
-            DELETE("", shopReviewCommandHandler::deleteReview)
+            DELETE("", shopReviewCommandHandler::deleteReview) // [DELETE] localhost:10101/api/v2/shop-review : ShopReview 삭제 (Soft Delete)
         }
     }
 }

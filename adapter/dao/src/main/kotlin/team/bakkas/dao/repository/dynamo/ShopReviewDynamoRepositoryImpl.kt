@@ -11,6 +11,7 @@ import software.amazon.awssdk.enhanced.dynamodb.Key
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 import team.bakkas.dynamo.shopReview.ShopReview
+import team.bakkas.dynamo.shopReview.usecases.softDelete
 import team.bakkas.repository.ifs.dynamo.ShopReviewDynamoRepository
 
 /** shop_review 테이블에 대한 repository class
@@ -63,6 +64,13 @@ class ShopReviewDynamoRepositoryImpl(
     override fun deleteReviewAsync(reviewId: String, reviewTitle: String): Mono<ShopReview> {
         val deleteReviewFuture = asyncTable.deleteItem(generateKey(reviewId, reviewTitle))
         return Mono.fromFuture(deleteReviewFuture)
+    }
+
+    // review를 soft delete 하는 메소드
+    override fun softDeleteReview(reviewId: String, reviewTitle: String): Mono<ShopReview> {
+        return findReviewByIdAndTitle(reviewId, reviewTitle)
+            .map { it.softDelete() }
+            .flatMap { createReviewAsync(it) }
     }
 
     /** Key를 반환하는 private method

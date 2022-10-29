@@ -1,8 +1,9 @@
-package team.bakkas.dynamo
+package team.bakkas.dynamo.reviewReply
 
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema
 import software.amazon.awssdk.enhanced.dynamodb.mapper.StaticAttributeTags
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean
+import team.bakkas.dynamo.BaseTimeEntity
 import java.io.Serializable
 import java.time.LocalDateTime
 import java.util.UUID

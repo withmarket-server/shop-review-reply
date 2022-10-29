@@ -39,6 +39,13 @@ class ShopCommandServiceImpl(
             .doOnSuccess { shopRedisRepository.deleteShop(shopId, shopName).subscribe() } // 삭제에 성공하면 redis에 있는 shop도 삭제
     }
 
+    // Shop을 soft delete하는 메소드
+    @Transactional
+    override fun softDeleteShop(shopId: String, shopName: String): Mono<Shop> {
+        return shopDynamoRepository.softDeleteShop(shopId, shopName)
+            .doOnSuccess { shopRedisRepository.softDeleteShop(shopId, shopName).subscribe() }
+    }
+
     // Shop에 review 생성에 의해 생긴 변화를 반영해서 다시 저장해주는 메소드
     @Transactional
     override fun applyCreateReview(shopId: String, shopName: String, reviewScore: Double): Mono<Shop> {
