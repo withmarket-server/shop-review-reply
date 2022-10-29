@@ -3,7 +3,7 @@ package team.bakkas.clientquery.shop
 import com.fasterxml.jackson.annotation.JsonProperty
 import team.bakkas.dynamo.shop.vo.category.Category
 import team.bakkas.dynamo.shop.vo.category.DetailCategory
-import team.bakkas.dynamo.shop.vo.sale.Days
+import team.bakkas.dynamo.shop.vo.sale.Status
 
 sealed class ShopQuery {
 
@@ -15,7 +15,7 @@ sealed class ShopQuery {
     data class SimpleResponse(
         @JsonProperty("shop_id") var shopId: String,
         @JsonProperty("shop_name") var shopName: String,
-        @JsonProperty("is_open") var isOpen: Boolean,
+        @JsonProperty("status") var status: Status,
         @JsonProperty("lot_number_address") var lotNumberAddress: String,
         @JsonProperty("road_name_address") var roadNameAddress: String,
         @JsonProperty("latitude") var latitude: Double,

@@ -22,6 +22,7 @@ import team.bakkas.domainquery.reader.ifs.ShopReader
 import team.bakkas.dynamo.shop.vo.*
 import team.bakkas.dynamo.shop.vo.category.Category
 import team.bakkas.dynamo.shop.vo.category.DetailCategory
+import team.bakkas.dynamo.shop.vo.sale.Status
 import java.time.LocalTime
 
 /**
@@ -79,7 +80,7 @@ internal class ShopServiceTest {
         val shopName = "correct-shop-name"
 
         every { shopRepository.findShopByIdAndName(shopId, shopName) } returns mono {
-            getMockShop(shopId, shopName, true)
+            getMockShop(shopId, shopName, Status.OPEN)
         }
 
         // when
@@ -126,7 +127,7 @@ internal class ShopServiceTest {
         val shopName = "success-name"
 
         every { shopRepository.findShopByIdAndName(shopId, shopName) } returns mono {
-            getMockShop(shopId, shopName, true)
+            getMockShop(shopId, shopName, Status.OPEN)
         }
 
         // when
@@ -146,10 +147,10 @@ internal class ShopServiceTest {
     }
 
     // mock shop을 생성해내는 메소드
-    private fun getMockShop(shopId: String, shopName: String, isOpen: Boolean) = Shop(
+    private fun getMockShop(shopId: String, shopName: String, status: Status) = Shop(
         shopId = shopId,
         shopName = shopName,
-        salesInfo = SalesInfo(status = isOpen, openTime = LocalTime.now(), closeTime = LocalTime.now()),
+        salesInfo = SalesInfo(status = status, openTime = LocalTime.now(), closeTime = LocalTime.now()),
         addressInfo = AddressInfo(
             lotNumberAddress = "경상북도 경산시 조영동 307-1",
             roadNameAddress = "경상북도 경산시 대학로 318",

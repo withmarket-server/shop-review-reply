@@ -89,8 +89,6 @@ internal class ShopReviewServiceTest {
             shopName = shopName,
             reviewContent = "저는 아주 불만족했어요! ^^",
             reviewScore = 1.0,
-            reviewPhotoList = listOf(),
-            createdAt = LocalDateTime.now(),
-            updatedAt = null
+            reviewPhotoList = listOf()
         )
 }

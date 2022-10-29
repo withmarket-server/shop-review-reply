@@ -5,6 +5,7 @@ import software.amazon.awssdk.enhanced.dynamodb.TableSchema
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbAttribute
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean
 import team.bakkas.dynamo.shop.vo.sale.Days
+import team.bakkas.dynamo.shop.vo.sale.Status
 import java.time.LocalTime
 
 /** 가게의 open/close 정보를 저장하는 vo
@@ -14,7 +15,7 @@ import java.time.LocalTime
 @DynamoDbBean
 data class SalesInfo(
     @get:DynamoDbAttribute("is_open")
-    var status: Boolean = false,
+    var status: Status = Status.CLOSE,
     @get:DynamoDbAttribute("open_time")
     var openTime: LocalTime = LocalTime.now(),
     @get:DynamoDbAttribute("close_time")
