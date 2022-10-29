@@ -9,6 +9,7 @@ import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedAsyncClient
 import software.amazon.awssdk.enhanced.dynamodb.Key
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema
 import team.bakkas.dynamo.shop.Shop
+import team.bakkas.dynamo.shop.usecases.softDelete
 import team.bakkas.repository.ifs.dynamo.ShopDynamoRepository
 
 /**
@@ -55,6 +56,13 @@ class ShopDynamoRepositoryImpl(
     override fun deleteShop(shopId: String, shopName: String): Mono<Shop> {
         val deleteShopFuture = asyncTable.deleteItem(generateKey(shopId, shopName))
         return Mono.fromFuture(deleteShopFuture)
+    }
+
+    // shopId, shopName에 해당하는 shop을 soft delete하는 메소드
+    override fun softDeleteShop(shopId: String, shopName: String): Mono<Shop> {
+        return findShopByIdAndName(shopId, shopName) // shopId, shopName 기반으로 shop을 찾아와서
+            .map { it.softDelete() } // shop을 soft delete를 해주고
+            .flatMap { createShop(it) } // dynamo에 다시 저장한다
     }
 
     private fun generateKey(shopId: String, shopName: String): Key = Key.builder()

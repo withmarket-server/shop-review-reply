@@ -33,15 +33,13 @@ sealed class ShopCommand {
         @JsonProperty("delivery_tip_per_distance_list") var deliveryTipPerDistanceList: List<DeliveryTipPerDistance>
     )
 
-    /** shop에 대한 review가 작성되거나, 혹은 삭제되었을 때의 이벤트를 처리하는 dto
-     * @param shopId shop의 id
-     * @param shopName shop의 name
-     * @param isGenerated shop의 리뷰가 작성되었는지, 아니면 삭제되었는지 여부를 저장하는 변수
-     */
-    data class ReviewCreatedEvent(
+    data class DeletedEvent(
         var shopId: String,
-        var shopName: String,
-        var isGenerated: Boolean,
-        var reviewScore: Double
-    )
+        var shopName: String
+    ) {
+        companion object {
+            // constructor
+            fun of(shopId: String, shopName: String) = DeletedEvent(shopId, shopName)
+        }
+    }
 }

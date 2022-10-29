@@ -2,23 +2,18 @@ package team.bakkas.dao.repository.dynamo
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.reactor.awaitSingle
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.core.CoroutinesUtils
 import org.springframework.test.annotation.Rollback
-import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedAsyncClient
 import software.amazon.awssdk.enhanced.dynamodb.Key
 import team.bakkas.dynamo.shop.Shop
 import team.bakkas.dynamo.shop.vo.*
 import team.bakkas.dynamo.shop.vo.category.Category
 import team.bakkas.dynamo.shop.vo.category.DetailCategory
 import team.bakkas.dynamo.shop.vo.sale.Days
-import team.bakkas.repository.ifs.dynamo.ShopDynamoRepository
 import java.time.LocalTime
 import java.util.*
 
@@ -46,7 +41,7 @@ internal class ShopDynamoRepositoryTest @Autowired constructor(
     private fun getMockShop(shopId: String, shopName: String, isOpen: Boolean) = Shop(
         shopId = shopId,
         shopName = shopName,
-        salesInfo = SalesInfo(isOpen = isOpen, openTime = LocalTime.now(), closeTime = LocalTime.now(), restDayList = listOf(Days.SUN)),
+        salesInfo = SalesInfo(status = isOpen, openTime = LocalTime.now(), closeTime = LocalTime.now(), restDayList = listOf(Days.SUN)),
         addressInfo = AddressInfo(
             lotNumberAddress = "경상북도 경산시 조영동 307-1",
             roadNameAddress = "경상북도 경산시 대학로 318",

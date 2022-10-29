@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.http.HttpStatus
 import org.springframework.mock.web.reactive.function.server.MockServerRequest
-import org.springframework.web.reactive.function.server.ServerResponse
 import reactor.core.publisher.Mono
 import team.bakkas.common.exceptions.RequestParamLostException
 import team.bakkas.common.exceptions.shop.ShopNotFoundException
@@ -25,7 +24,6 @@ import team.bakkas.dynamo.shop.vo.category.Category
 import team.bakkas.dynamo.shop.vo.category.DetailCategory
 import team.bakkas.dynamo.shop.vo.sale.Days
 import java.time.LocalTime
-import java.util.*
 
 @ExtendWith(MockKExtension::class)
 internal class ShopQueryHandlerUnitTest {
@@ -172,7 +170,7 @@ internal class ShopQueryHandlerUnitTest {
         shopId = shopId,
         shopName = shopName,
         salesInfo = SalesInfo(
-            isOpen = false,
+            status = false,
             openTime = LocalTime.now(),
             closeTime = LocalTime.now(),
             restDayList = listOf(Days.SUN)

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
 import team.bakkas.common.utils.RedisUtils
 import team.bakkas.dynamo.shopReview.ShopReview
+import team.bakkas.dynamo.shopReview.usecases.softDelete
 import team.bakkas.repository.ifs.redis.ShopReviewRedisRepository
 import java.time.Duration
 import java.util.StringTokenizer
@@ -38,6 +39,14 @@ class ShopReviewRedisRepositoryImpl(
             .single()
             .flatMap { shopReviewReactiveRedisTemplate.opsForValue().delete(reviewKey) }
             .thenReturn(this)
+    }
+
+    override fun softDeleteReview(reviewId: String, reviewTitle: String): Mono<ShopReview> {
+        val reviewKey = RedisUtils.generateReviewRedisKey(reviewId, reviewTitle)
+
+        return findReviewByKey(reviewKey) // reviewId, reviewTitle을 기반으로 review를 찾아와서
+            .map { it.softDelete() } // review를 soft delete 처리를 하고
+            .flatMap { cacheReview(it) } // 다시 저장한다
     }
 
     /** 해당 shop의 id와 name을 통해서 shopReview 모두를 가져오는 메소드

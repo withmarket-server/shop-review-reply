@@ -13,7 +13,8 @@ class ShopCommandRouter(
     @Bean
     fun shopCommandRoutes() = coRouter {
         "/v2/shop".nest {
-            POST("", shopCommandHandler::createShop) // [POST] localhost:10101/v2/shop : shopDto로 들어온 요청을 shop으로 생성한다
+            POST("", shopCommandHandler::createShop) // [POST] localhost:10101/api/v2/shop : shopDto로 들어온 요청을 shop으로 생성한다
+            DELETE("", shopCommandHandler::deleteShop) // [DELETE] localhost:10101/api/v2/shop : shop 삭제 (Soft Delete)
         }
     }
 }

@@ -17,9 +17,7 @@ import team.bakkas.dynamo.shop.vo.*
 import team.bakkas.dynamo.shop.vo.category.Category
 import team.bakkas.dynamo.shop.vo.category.DetailCategory
 import team.bakkas.dynamo.shop.vo.sale.Days
-import team.bakkas.dynamo.shopReview.ShopReview
 import team.bakkas.grpcIfs.v1.shop.CheckExistShopRequest
-import java.time.LocalDateTime
 import java.time.LocalTime
 
 // gRPC shop service에 대한 단위테스트
@@ -87,7 +85,7 @@ internal class GrpcShopServiceUnitTest {
         shopId = shopId,
         shopName = shopName,
         salesInfo = SalesInfo(
-            isOpen = false,
+            status = false,
             openTime = LocalTime.now(),
             closeTime = LocalTime.now(),
             restDayList = listOf(Days.SUN)

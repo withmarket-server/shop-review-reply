@@ -9,7 +9,7 @@ import java.time.LocalDateTime
  */
 open class BaseTimeEntity(
     open var createdAt: LocalDateTime = LocalDateTime.now(),
-    open var updatedAt: LocalDateTime? = null
+    open var deletedAt: LocalDateTime? = null
 ): Serializable {
 
 }

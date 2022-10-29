@@ -31,13 +31,13 @@ class ShopReviewEventListener(
             .subscribe()
     }
 
-    // review 삭제 이벤트가 발행되면 dynamo, redis에 반영하는 메소드
+    // review 삭제 이벤트가 발행되면 dynamo, redis에 반영하는 메소드 (soft delete)
     @KafkaListener(
         topics = [KafkaTopics.shopReviewDeleteTopic],
         groupId = KafkaConsumerGroups.shopReviewGroup
     )
     fun deleteShopReview(deletedEvent: ShopReviewCommand.DeletedEvent) = with(deletedEvent) {
-        shopReviewCommandService.deleteReview(reviewId, reviewTitle) // 우선 review부터 삭제해주고
+        shopReviewCommandService.softDeleteReview(reviewId, reviewTitle) // 우선 review부터 삭제해주고
             .doOnSuccess {
                 shopCommandService.applyDeleteReview(it.shopId, it.shopName, it.reviewScore).subscribe()
             } // shopReview의 삭제를 shop에 반영

@@ -8,7 +8,7 @@ import java.util.*
 fun ShopCommand.CreateRequest.toEntity() = Shop(
     shopId = UUID.randomUUID().toString(),
     shopName = shopName,
-    salesInfo = SalesInfo(isOpen = false, openTime = openTime, closeTime = closeTime, restDayList = restDayList),
+    salesInfo = SalesInfo(status = false, openTime = openTime, closeTime = closeTime, restDayList = restDayList),
     addressInfo = AddressInfo(lotNumberAddress, roadNameAddress, detailAddress),
     latLon = LatLon(latitude, longitude),
     shopImageInfo = ShopImageInfo(mainImageUrl, representativeImageUrlList),

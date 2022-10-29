@@ -10,6 +10,7 @@ import team.bakkas.applicationcommand.extensions.toEntity
 import team.bakkas.clientcommand.shop.ShopCommand
 import team.bakkas.common.ResultFactory
 import team.bakkas.common.exceptions.RequestBodyLostException
+import team.bakkas.common.exceptions.RequestParamLostException
 import team.bakkas.servicecommand.validator.ShopValidator
 import team.bakkas.eventinterface.eventProducer.ShopEventProducer
 
@@ -44,6 +45,26 @@ class ShopCommandHandler(
 
         // Handler에서 Kafka로 이벤트를 전송하여 Kafka에 생성 책임을 위임한다
         shopEventProducer.propagateShopCreated(generatedShop)
+
+        return@coroutineScope ok().contentType(MediaType.APPLICATION_JSON)
+            .bodyValueAndAwait(ResultFactory.getSuccessResult())
+    }
+
+    /** shop을 하나 삭제하는 메소드
+     * @param request
+     * @return ServerResponse
+     */
+    suspend fun deleteShop(request: ServerRequest): ServerResponse = coroutineScope {
+        // query parameter들을 받아온다
+        val shopId = request.queryParamOrNull("id") ?: throw RequestParamLostException("request param is lost!!")
+        val shopName = request.queryParamOrNull("name") ?: throw RequestParamLostException("request param is lost!!")
+
+        // 해당 요청이 유효한지 검증한다
+        shopValidator.validateDeletable(shopId, shopName)
+
+        // deleteShop 이벤트를 발행한다
+        val shopDeletedEvent = ShopCommand.DeletedEvent.of(shopId, shopName)
+        shopEventProducer.propagateShopDeleted(shopDeletedEvent)
 
         return@coroutineScope ok().contentType(MediaType.APPLICATION_JSON)
             .bodyValueAndAwait(ResultFactory.getSuccessResult())
