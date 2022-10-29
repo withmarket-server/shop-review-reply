@@ -5,7 +5,7 @@ object RedisUtils {
 
     const val DAYS_TO_LIVE = 30L
 
-    fun generateShopRedisKey(shopId: String, shopName: String) = "shop:${shopId}-${shopName}"
+    fun generateShopRedisKey(shopId: String) = "shop:${shopId}"
 
     fun generateReviewRedisKey(reviewId: String, reviewTitle: String) = "shopReview:$reviewId-$reviewTitle"
 }

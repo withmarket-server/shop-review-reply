@@ -31,9 +31,9 @@ class ShopReviewQueryServiceImpl(
         }
 
     @Transactional(readOnly = true)
-    override suspend fun getReviewListByShop(shopId: String, shopName: String): List<ShopReview> =
+    override suspend fun getReviewsByShopId(shopId: String): List<ShopReview> =
         withContext(Dispatchers.IO) {
-            val reviewFlow = shopReviewReader.getReviewsByShopKey(shopId, shopName)
+            val reviewFlow = shopReviewReader.getReviewsByShopId(shopId)
 
             val reviewList = reviewFlow.toList()
 

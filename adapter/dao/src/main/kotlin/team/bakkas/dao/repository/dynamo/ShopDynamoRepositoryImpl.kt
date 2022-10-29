@@ -34,8 +34,8 @@ class ShopDynamoRepositoryImpl(
      * @param shopName shop의 이름
      * @return Mono<Shop?>
      */
-    override fun findShopByIdAndName(shopId: String, shopName: String): Mono<Shop> {
-        val shopKey = generateKey(shopId, shopName)
+    override fun findShopById(shopId: String): Mono<Shop> {
+        val shopKey = generateKey(shopId)
         return Mono.fromFuture(asyncTable.getItem(shopKey))
     }
 
@@ -53,20 +53,19 @@ class ShopDynamoRepositoryImpl(
     }
 
     // shop을 제거하는 메소드
-    override fun deleteShop(shopId: String, shopName: String): Mono<Shop> {
-        val deleteShopFuture = asyncTable.deleteItem(generateKey(shopId, shopName))
+    override fun deleteShop(shopId: String): Mono<Shop> {
+        val deleteShopFuture = asyncTable.deleteItem(generateKey(shopId))
         return Mono.fromFuture(deleteShopFuture)
     }
 
     // shopId, shopName에 해당하는 shop을 soft delete하는 메소드
-    override fun softDeleteShop(shopId: String, shopName: String): Mono<Shop> {
-        return findShopByIdAndName(shopId, shopName) // shopId, shopName 기반으로 shop을 찾아와서
+    override fun softDeleteShop(shopId: String): Mono<Shop> {
+        return findShopById(shopId) // shopId 기반으로 shop을 찾아와서
             .map { it.softDelete() } // shop을 soft delete를 해주고
             .flatMap { createShop(it) } // dynamo에 다시 저장한다
     }
 
-    private fun generateKey(shopId: String, shopName: String): Key = Key.builder()
+    private fun generateKey(shopId: String): Key = Key.builder()
         .partitionValue(shopId)
-        .sortValue(shopName)
         .build()
 }

@@ -15,7 +15,7 @@ class ShopQueryRouter(
     @Bean
     fun shopRoutes() = coRouter {
         uriComponent.SHOP_QUERY_URL.nest {
-            GET("", shopHandler::findByIdAndName)
+            GET("", shopHandler::findById)
             GET("/list", shopHandler::getAllShops)
         }
     }

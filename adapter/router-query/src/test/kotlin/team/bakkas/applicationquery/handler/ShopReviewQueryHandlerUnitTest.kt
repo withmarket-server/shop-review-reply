@@ -129,7 +129,7 @@ internal class ShopReviewQueryHandlerUnitTest {
             .build()
 
         // then
-        shouldThrow<RequestParamLostException> { shopReviewQueryHandler.getReviewListByShopIdAndName(request) }
+        shouldThrow<RequestParamLostException> { shopReviewQueryHandler.getReviewListByShopId(request) }
     }
 
     @Test
@@ -144,7 +144,7 @@ internal class ShopReviewQueryHandlerUnitTest {
             .build()
 
         // then
-        shouldThrow<RequestParamLostException> { shopReviewQueryHandler.getReviewListByShopIdAndName(request) }
+        shouldThrow<RequestParamLostException> { shopReviewQueryHandler.getReviewListByShopId(request) }
     }
 
     @Test
@@ -159,7 +159,7 @@ internal class ShopReviewQueryHandlerUnitTest {
             .build()
 
         // then
-        shouldThrow<RequestParamLostException> { shopReviewQueryHandler.getReviewListByShopIdAndName(request) }
+        shouldThrow<RequestParamLostException> { shopReviewQueryHandler.getReviewListByShopId(request) }
     }
 
     @Test
@@ -174,10 +174,10 @@ internal class ShopReviewQueryHandlerUnitTest {
             .build()
 
         // 비어있는 리스트를 반환한다
-        coEvery { shopReviewService.getReviewListByShop(shopId, shopName) } returns listOf()
+        coEvery { shopReviewService.getReviewsByShopId(shopId, shopName) } returns listOf()
 
         // then
-        shouldThrow<ShopReviewNotFoundException> { shopReviewQueryHandler.getReviewListByShopIdAndName(request) }
+        shouldThrow<ShopReviewNotFoundException> { shopReviewQueryHandler.getReviewListByShopId(request) }
     }
 
     @Test
@@ -192,18 +192,18 @@ internal class ShopReviewQueryHandlerUnitTest {
             .build()
 
         // 리뷰가 존재하는 경우
-        coEvery { shopReviewService.getReviewListByShop(shopId, shopName) } returns
+        coEvery { shopReviewService.getReviewsByShopId(shopId, shopName) } returns
                 listOf(
                     getMockReview("1", "review1", shopId, shopName),
                     getMockReview("2", "review2", shopId, shopName)
                 )
 
         // when
-        val response = shopReviewQueryHandler.getReviewListByShopIdAndName(request)
+        val response = shopReviewQueryHandler.getReviewListByShopId(request)
 
         // then
-        coVerify(exactly = 1) { shopReviewService.getReviewListByShop(shopId, shopName) }
-        coVerify(exactly = 1) { shopReviewQueryHandler.getReviewListByShopIdAndName(request) }
+        coVerify(exactly = 1) { shopReviewService.getReviewsByShopId(shopId, shopName) }
+        coVerify(exactly = 1) { shopReviewQueryHandler.getReviewListByShopId(request) }
         assertEquals(response.statusCode(), HttpStatus.OK)
     }
 

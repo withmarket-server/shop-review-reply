@@ -7,7 +7,7 @@ import team.bakkas.dynamo.shop.Shop
 interface ShopDynamoRepository {
 
     // shopId와 shopName을 이용해서 비동기식으로 아이템을 가져오는 메소드
-    fun findShopByIdAndName(shopId: String, shopName: String): Mono<Shop>
+    fun findShopById(shopId: String): Mono<Shop>
 
     fun getAllShops(): Flow<Shop>
 
@@ -15,8 +15,8 @@ interface ShopDynamoRepository {
     fun createShop(shop: Shop): Mono<Shop>
 
     // shop을 제거하는 메소드
-    fun deleteShop(shopId: String, shopName: String): Mono<Shop>
+    fun deleteShop(shopId: String): Mono<Shop>
 
     // shop을 soft delete하는 메소드
-    fun softDeleteShop(shopId: String, shopName: String): Mono<Shop>
+    fun softDeleteShop(shopId: String): Mono<Shop>
 }

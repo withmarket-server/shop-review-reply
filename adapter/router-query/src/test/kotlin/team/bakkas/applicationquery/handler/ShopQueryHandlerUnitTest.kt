@@ -49,7 +49,7 @@ internal class ShopQueryHandlerUnitTest {
             .build()
 
         // then
-        shouldThrow<RequestParamLostException> { shopQueryHandler.findByIdAndName(request) }
+        shouldThrow<RequestParamLostException> { shopQueryHandler.findById(request) }
     }
 
     @Test
@@ -64,7 +64,7 @@ internal class ShopQueryHandlerUnitTest {
             .build()
 
         // then
-        shouldThrow<RequestParamLostException> { shopQueryHandler.findByIdAndName(request) }
+        shouldThrow<RequestParamLostException> { shopQueryHandler.findById(request) }
     }
 
     @Test
@@ -79,7 +79,7 @@ internal class ShopQueryHandlerUnitTest {
             .build()
 
         // then
-        shouldThrow<RequestParamLostException> { shopQueryHandler.findByIdAndName(request) }
+        shouldThrow<RequestParamLostException> { shopQueryHandler.findById(request) }
     }
 
     @Test
@@ -94,10 +94,10 @@ internal class ShopQueryHandlerUnitTest {
             .build()
 
         // shop이 존재하지 않는다고 가정한다
-        coEvery { shopQueryService.findShopByIdAndName(shopId, shopName) } returns null
+        coEvery { shopQueryService.findShopById(shopId, shopName) } returns null
 
         // then
-        shouldThrow<ShopNotFoundException> { shopQueryHandler.findByIdAndName(request) }
+        shouldThrow<ShopNotFoundException> { shopQueryHandler.findById(request) }
     }
 
     @Test
@@ -112,14 +112,14 @@ internal class ShopQueryHandlerUnitTest {
             .build()
 
         // shop이 존재하지 않는다고 가정한다
-        coEvery { shopQueryService.findShopByIdAndName(shopId, shopName) } returns generateFakeShop(shopId, shopName)
+        coEvery { shopQueryService.findShopById(shopId, shopName) } returns generateFakeShop(shopId, shopName)
 
         // when
-        val result = shopQueryHandler.findByIdAndName(request)
+        val result = shopQueryHandler.findById(request)
 
         // then
-        coVerify(exactly = 1) { shopQueryHandler.findByIdAndName(request) } // queryHandler는 정확히 1회만 호출
-        coVerify(exactly = 1) { shopQueryService.findShopByIdAndName(shopId, shopName) } // queryService는 정확히 1회만 호출
+        coVerify(exactly = 1) { shopQueryHandler.findById(request) } // queryHandler는 정확히 1회만 호출
+        coVerify(exactly = 1) { shopQueryService.findShopById(shopId, shopName) } // queryService는 정확히 1회만 호출
         assertEquals(result.statusCode(), HttpStatus.OK) // OK response를 반환
     }
 

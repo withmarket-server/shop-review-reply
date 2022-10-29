@@ -37,7 +37,7 @@ class ShopReviewValidatorImpl(
         validate(this, errors)
 
         // WebClient를 이용해서 해당 shop이 존재하는지 여부만 뽑아온다
-        val isShopExists: Boolean = shopGrpcClient.isExistShop(shopId, shopName).result
+        val isShopExists: Boolean = shopGrpcClient.isExistShop(shopId).result
 
         // shop이 존재하지 않는 경우 예외를 발생시킨다
         check(isShopExists) {
@@ -70,10 +70,10 @@ class ShopReviewValidatorImpl(
     override fun validate(target: Any, errors: Errors) {
         target::class.java.annotations.map {
             // annotation에 따라서 분기한다
-            when(it) {
+            when (it) {
                 is ReviewCreatable -> rejectEmptyByFieldList(
                     errors,
-                    listOf("reviewTitle", "shopId", "shopName", "reviewContent")
+                    listOf("reviewTitle", "shopId", "reviewContent")
                 )
             }
         }

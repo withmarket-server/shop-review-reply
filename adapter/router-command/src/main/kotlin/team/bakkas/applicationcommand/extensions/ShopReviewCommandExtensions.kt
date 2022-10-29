@@ -10,10 +10,7 @@ fun ShopReviewCommand.CreateRequest.toEntity() = ShopReview(
     reviewId = UUID.randomUUID().toString(),
     reviewTitle = this.reviewTitle,
     shopId = this.shopId,
-    shopName = this.shopName,
     reviewContent = this.reviewContent,
     reviewScore = this.reviewScore,
-    reviewPhotoList = this.reviewPhotoList,
-    createdAt = LocalDateTime.now(),
-    updatedAt = null
+    reviewPhotoList = this.reviewPhotoList
 )

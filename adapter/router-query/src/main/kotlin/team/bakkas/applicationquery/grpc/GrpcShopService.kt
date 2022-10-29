@@ -18,14 +18,14 @@ class GrpcShopService(
      */
     override suspend fun isExistShop(request: CheckExistShopRequest): CheckExistShopResponse {
         val shopId = request.shopId
-        val shopName = request.shopName
 
-        val foundShop = shopQueryService.findShopByIdAndName(shopId, shopName)
+        val foundShop = shopQueryService.findShopById(shopId)
 
         return when (foundShop) {
             null -> CheckExistShopResponse.newBuilder()
                 .setResult(false)
                 .build()
+
             else -> CheckExistShopResponse.newBuilder()
                 .setResult(true)
                 .build()

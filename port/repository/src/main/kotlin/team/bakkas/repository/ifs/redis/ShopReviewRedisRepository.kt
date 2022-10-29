@@ -19,5 +19,5 @@ interface ShopReviewRedisRepository {
     fun softDeleteReview(reviewId: String, reviewTitle: String): Mono<ShopReview>
 
     // shopId, shopName의 정보를 이용하여 해당 shop의 모든 review를 가져오는 메소드
-    fun getShopReviewFlowByShopIdAndName(shopId: String, shopName: String): Flow<ShopReview>
+    fun getShopReviewsByShopId(shopId: String): Flow<ShopReview>
 }

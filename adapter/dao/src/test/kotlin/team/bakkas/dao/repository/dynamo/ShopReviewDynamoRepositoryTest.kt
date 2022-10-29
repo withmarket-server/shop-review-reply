@@ -119,6 +119,7 @@ internal class ShopReviewDynamoRepositoryTest @Autowired constructor(
             println(it)
         }
     }
+
     @ParameterizedTest
     @CsvSource(value = ["ecdc2-test005:저는 만족 못해요:33daf043-7f36-4a52-b791-018f9d5eb218:역전할머니맥주 영남대점"], delimiter = ':')
     @DisplayName("[Repository] Async 방식으로 review를 하나 생성한다")
@@ -142,11 +143,8 @@ internal class ShopReviewDynamoRepositoryTest @Autowired constructor(
             reviewId = reviewId,
             reviewTitle = reviewTitle,
             shopId = shopId,
-            shopName = shopName,
             reviewContent = "매우 불만족.",
             reviewScore = 1.0,
-            reviewPhotoList = listOf(),
-            createdAt = LocalDateTime.now(),
-            updatedAt = null
+            reviewPhotoList = listOf()
         )
 }

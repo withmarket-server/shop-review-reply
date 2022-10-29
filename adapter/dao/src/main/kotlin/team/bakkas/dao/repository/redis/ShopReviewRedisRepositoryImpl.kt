@@ -53,13 +53,13 @@ class ShopReviewRedisRepositoryImpl(
      * @param shopId 해당 shop의 id
      * @param shopName 해당 shop의 name
      */
-    override fun getShopReviewFlowByShopIdAndName(shopId: String, shopName: String): Flow<ShopReview> {
+    override fun getShopReviewsByShopId(shopId: String): Flow<ShopReview> {
         return shopReviewReactiveRedisTemplate.scanAsFlow()
             .filter { key ->
                 val tokenizer = StringTokenizer(key, ":")
                 tokenizer.nextToken().equals("shopReview")
             }
             .map { findReviewByKey(it).awaitSingle() }
-            .filter { it.shopId == shopId && it.shopName == shopName }
+            .filter { it.shopId == shopId }
     }
 }

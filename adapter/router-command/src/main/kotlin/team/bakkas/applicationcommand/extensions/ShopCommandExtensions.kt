@@ -3,12 +3,13 @@ package team.bakkas.applicationcommand.extensions
 import team.bakkas.clientcommand.shop.ShopCommand
 import team.bakkas.dynamo.shop.Shop
 import team.bakkas.dynamo.shop.vo.*
+import team.bakkas.dynamo.shop.vo.sale.Status
 import java.util.*
 
 fun ShopCommand.CreateRequest.toEntity() = Shop(
     shopId = UUID.randomUUID().toString(),
     shopName = shopName,
-    salesInfo = SalesInfo(status = false, openTime = openTime, closeTime = closeTime, restDayList = restDayList),
+    salesInfo = SalesInfo(status = Status.CLOSE, openTime = openTime, closeTime = closeTime, restDayList = restDayList),
     addressInfo = AddressInfo(lotNumberAddress, roadNameAddress, detailAddress),
     latLon = LatLon(latitude, longitude),
     shopImageInfo = ShopImageInfo(mainImageUrl, representativeImageUrlList),

@@ -43,8 +43,8 @@ class ShopReviewCommandServiceImpl(
      * @return Flux of shopReview
      */
     @Transactional
-    override fun deleteAllReviewsOfShop(shopId: String, shopName: String): Flux<ShopReview> {
-        return shopReviewDynamoRepository.getAllShopsByShopIdAndName(shopId, shopName)
+    override fun deleteAllReviewsOfShop(shopId: String): Flux<ShopReview> {
+        return shopReviewDynamoRepository.getAllShopsByShopId(shopId)
             .asFlux()
             .flatMap { shopReviewDynamoRepository.deleteReviewAsync(it.reviewId, it.reviewTitle) }
             .flatMap { shopReviewRedisRepository.deleteReview(it) }
@@ -60,10 +60,20 @@ class ShopReviewCommandServiceImpl(
 
     // shop의 모든 review를 soft delete하는 메소드
     @Transactional
-    override fun softDeleteAllReviewsOfShop(shopId: String, shopName: String): Flux<ShopReview> {
-        return shopReviewDynamoRepository.getAllShopsByShopIdAndName(shopId, shopName) // shopId, shopName에 대응하는 shop의 모든 review를 가져와서
+    override fun softDeleteAllReviewsOfShop(shopId: String): Flux<ShopReview> {
+        return shopReviewDynamoRepository.getAllShopsByShopId(shopId) // shopId, shopName에 대응하는 shop의 모든 review를 가져와서
             .asFlux()
-            .flatMap { shopReviewDynamoRepository.softDeleteReview(it.reviewId, it.reviewTitle) } // Dynamo에 있는 데이터는 모두 soft delete 처리하고
-            .flatMap { shopReviewRedisRepository.softDeleteReview(it.reviewId, it.reviewTitle) } // Redis에 있는 데이터도 모두 soft delete 처리한다
+            .flatMap {
+                shopReviewDynamoRepository.softDeleteReview(
+                    it.reviewId,
+                    it.reviewTitle
+                )
+            } // Dynamo에 있는 데이터는 모두 soft delete 처리하고
+            .flatMap {
+                shopReviewRedisRepository.softDeleteReview(
+                    it.reviewId,
+                    it.reviewTitle
+                )
+            } // Redis에 있는 데이터도 모두 soft delete 처리한다
     }
 }

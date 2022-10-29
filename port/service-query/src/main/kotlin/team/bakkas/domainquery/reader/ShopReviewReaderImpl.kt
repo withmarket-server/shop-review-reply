@@ -42,16 +42,16 @@ class ShopReviewReaderImpl(
      * @param shopName
      * @return flow consisted with review of given shop
      */
-    override fun getReviewsByShopKey(shopId: String, shopName: String): Flow<ShopReview> =
-        shopReviewRedisRepository.getShopReviewFlowByShopIdAndName(shopId, shopName)
+    override fun getReviewsByShopId(shopId: String): Flow<ShopReview> =
+        shopReviewRedisRepository.getShopReviewsByShopId(shopId)
 
-    /** review list에 대한 flow를 반환해주는 메소드
+    /** review list에 대한 flow를 반환해주는 메소드. Dynamo에서 먼저 가져와서 그걸로 review를 가져온다
      * @param shopId
      * @param shopName
      * @return flow consisted with review of given shop
      */
-    override fun getReviewsOfShopWithCaching(shopId: String, shopName: String): Flow<ShopReview> {
-        return shopReviewDynamoRepository.getAllShopsByShopIdAndName(shopId, shopName)
+    override fun getReviewsOfShopWithCaching(shopId: String): Flow<ShopReview> {
+        return shopReviewDynamoRepository.getAllShopsByShopId(shopId)
             .map { findReviewByIdAndTitle(it.reviewId, it.reviewTitle).awaitSingle() }
     }
 }

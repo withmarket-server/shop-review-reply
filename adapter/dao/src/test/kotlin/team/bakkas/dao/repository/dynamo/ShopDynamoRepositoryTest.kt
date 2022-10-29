@@ -14,6 +14,7 @@ import team.bakkas.dynamo.shop.vo.*
 import team.bakkas.dynamo.shop.vo.category.Category
 import team.bakkas.dynamo.shop.vo.category.DetailCategory
 import team.bakkas.dynamo.shop.vo.sale.Days
+import team.bakkas.dynamo.shop.vo.sale.Status
 import java.time.LocalTime
 import java.util.*
 
@@ -41,7 +42,7 @@ internal class ShopDynamoRepositoryTest @Autowired constructor(
     private fun getMockShop(shopId: String, shopName: String, isOpen: Boolean) = Shop(
         shopId = shopId,
         shopName = shopName,
-        salesInfo = SalesInfo(status = isOpen, openTime = LocalTime.now(), closeTime = LocalTime.now(), restDayList = listOf(Days.SUN)),
+        salesInfo = SalesInfo(status = Status.OPEN, openTime = LocalTime.now(), closeTime = LocalTime.now(), restDayList = listOf(Days.SUN)),
         addressInfo = AddressInfo(
             lotNumberAddress = "경상북도 경산시 조영동 307-1",
             roadNameAddress = "경상북도 경산시 대학로 318",

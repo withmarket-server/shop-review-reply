@@ -46,8 +46,8 @@ class ShopReviewDynamoRepositoryImpl(
      * @param shopName
      * @return Flow consisted with review of given shop
      */
-    override fun getAllShopsByShopIdAndName(shopId: String, shopName: String): Flow<ShopReview> {
-        return asyncTable.scan { it.filterExpression(generateShopExpression(shopId, shopName)) }
+    override fun getAllShopsByShopId(shopId: String): Flow<ShopReview> {
+        return asyncTable.scan { it.filterExpression(generateShopExpression(shopId)) }
             .items()
             .asFlow()
     }
@@ -87,20 +87,18 @@ class ShopReviewDynamoRepositoryImpl(
      * @param shopId
      * @param shopName
      */
-    private fun generateShopExpression(shopId: String, shopName: String): Expression {
+    private fun generateShopExpression(shopId: String): Expression {
         val attributeAliasMap = mutableMapOf<String, String>()
         val attributeValueMap = mutableMapOf<String, AttributeValue>()
 
         attributeAliasMap["#shop_id"] = "shop_id"
-        attributeAliasMap["#shop_name"] = "shop_name"
 
         attributeValueMap[":id_val"] = AttributeValue.fromS(shopId)
-        attributeValueMap[":name_val"] = AttributeValue.fromS(shopName)
 
         return Expression.builder()
             .expressionNames(attributeAliasMap)
             .expressionValues(attributeValueMap)
-            .expression("#shop_id = :id_val AND #shop_name = :name_val")
+            .expression("#shop_id = :id_val")
             .build()
     }
 }

@@ -34,12 +34,11 @@ sealed class ShopCommand {
     )
 
     data class DeletedEvent(
-        var shopId: String,
-        var shopName: String
+        var shopId: String
     ) {
         companion object {
             // constructor
-            fun of(shopId: String, shopName: String) = DeletedEvent(shopId, shopName)
+            fun of(shopId: String) = DeletedEvent(shopId)
         }
     }
 }

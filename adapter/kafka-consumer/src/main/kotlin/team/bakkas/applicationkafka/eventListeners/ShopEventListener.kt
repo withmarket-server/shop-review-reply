@@ -29,9 +29,9 @@ class ShopEventListener(
         topics = [KafkaTopics.shopDeleteTopic],
         groupId = KafkaConsumerGroups.shopGroup
     )
-    fun deleteShop(shopId: String, shopName: String) {
-        shopCommandService.softDeleteShop(shopId, shopName)
-            .doOnSuccess { shopReviewCommandService.softDeleteAllReviewsOfShop(shopId, shopName).subscribe() }
+    fun deleteShop(shopId: String) {
+        shopCommandService.softDeleteShop(shopId)
+            .doOnSuccess { shopReviewCommandService.softDeleteAllReviewsOfShop(shopId).subscribe() }
             .subscribe()
     }
 }

@@ -21,17 +21,15 @@ class ShopQueryHandler(
 
     // shopId와 shopName을 기반으로 shop에 대한 response를 반환해주는 메소드
     // http://localhost:10100/v2/shop/simple?id=xx&name=xx
-    suspend fun findByIdAndName(request: ServerRequest): ServerResponse = coroutineScope {
+    suspend fun findById(request: ServerRequest): ServerResponse = coroutineScope {
         val shopId = request.queryParamOrNull("id") ?: throw RequestParamLostException("shopId is lost")
-        val shopName = request.queryParamOrNull("name") ?: throw RequestParamLostException("shopName is lost")
 
-        check(shopId.isNotEmpty() && shopName.isNotEmpty()) {
+        check(shopId.isNotEmpty()) {
             throw RequestParamLostException("Empty query parameter")
         }
 
         // shop이 발견되지 않으면 ShopNotFoundException을 일으킨다
-        val shop = shopQueryService.findShopByIdAndName(shopId, shopName)
-            ?: throw ShopNotFoundException("Shop is not found!!")
+        val shop = shopQueryService.findShopById(shopId) ?: throw ShopNotFoundException("Shop is not found!!")
 
         return@coroutineScope ok()
             .contentType(MediaType.APPLICATION_JSON)

@@ -10,7 +10,7 @@ interface ShopReviewDynamoRepository {
     fun findReviewByIdAndTitle(reviewId: String, reviewTitle: String): Mono<ShopReview>
 
     // shop에 대한 모든 review를 가져오는 메소드
-    fun getAllShopsByShopIdAndName(shopId: String, shopName: String): Flow<ShopReview>
+    fun getAllShopsByShopId(shopId: String): Flow<ShopReview>
 
     // review를 하나 생성하는 메소드
     fun createReviewAsync(shopReview: ShopReview): Mono<ShopReview>

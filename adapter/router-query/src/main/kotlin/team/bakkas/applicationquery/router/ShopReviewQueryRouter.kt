@@ -16,7 +16,7 @@ class ShopReviewQueryRouter(
     fun shopReviewRoutes() = coRouter {
         uriComponent.SHOP_REVIEW_URL.nest {
             GET("", shopReviewHandler::findReviewByIdAndTitle)
-            GET("/list", shopReviewHandler::getReviewListByShopIdAndName)
+            GET("/list", shopReviewHandler::getReviewListByShopId)
         }
     }
 }

@@ -62,7 +62,7 @@ internal class ShopReviewServiceTest {
         val shopName = "shop-name"
 
         every { shopReviewRepository.findReviewByIdAndTitle(reviewId, reviewTitle) } returns
-                mono { getMockReview(reviewId, reviewTitle, shopId, shopName) }
+                mono { getMockReview(reviewId, reviewTitle, shopId) }
 
         // when
         val shopReview = shopReviewService.findReviewByIdAndTitle(reviewId, reviewTitle)
@@ -75,18 +75,16 @@ internal class ShopReviewServiceTest {
             assertEquals(it.reviewId, reviewId)
             assertEquals(it.reviewTitle, reviewTitle)
             assertEquals(it.shopId, shopId)
-            assertEquals(it.shopName, shopName)
         }
 
         println("[[service] review를 하나 성공적으로 가져오는 메소드] passed!!")
     }
 
-    private fun getMockReview(reviewId: String, reviewTitle: String, shopId: String, shopName: String) =
+    private fun getMockReview(reviewId: String, reviewTitle: String, shopId: String) =
         ShopReview(
             reviewId = reviewId,
             reviewTitle = reviewTitle,
             shopId = shopId,
-            shopName = shopName,
             reviewContent = "저는 아주 불만족했어요! ^^",
             reviewScore = 1.0,
             reviewPhotoList = listOf()

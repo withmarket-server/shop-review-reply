@@ -29,10 +29,6 @@ class ShopReviewCommandHandler(
     private val shopReviewEventProducer: ShopReviewEventProducer
 ) {
 
-    companion object {
-        val logger = LoggerFactory.getLogger(this::class.java)
-    }
-
     // shopReview를 하나 생성하는 메소드
     suspend fun createReview(request: ServerRequest): ServerResponse = coroutineScope {
         // 비동기적으로 reviewDto를 body로부터 뽑아온다

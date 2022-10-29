@@ -57,13 +57,12 @@ class ShopCommandHandler(
     suspend fun deleteShop(request: ServerRequest): ServerResponse = coroutineScope {
         // query parameter들을 받아온다
         val shopId = request.queryParamOrNull("id") ?: throw RequestParamLostException("request param is lost!!")
-        val shopName = request.queryParamOrNull("name") ?: throw RequestParamLostException("request param is lost!!")
 
         // 해당 요청이 유효한지 검증한다
-        shopValidator.validateDeletable(shopId, shopName)
+        shopValidator.validateDeletable(shopId)
 
         // deleteShop 이벤트를 발행한다
-        val shopDeletedEvent = ShopCommand.DeletedEvent.of(shopId, shopName)
+        val shopDeletedEvent = ShopCommand.DeletedEvent.of(shopId)
         shopEventProducer.propagateShopDeleted(shopDeletedEvent)
 
         return@coroutineScope ok().contentType(MediaType.APPLICATION_JSON)

@@ -26,7 +26,7 @@ class ShopReviewEventListener(
     fun createShopReview(shopReview: ShopReview) {
         shopReviewCommandService.createReview(shopReview) // shopReview를 우선 dynamo에 넣고
             .doOnSuccess {
-                shopCommandService.applyCreateReview(it.shopId, it.shopName, it.reviewScore).subscribe()
+                shopCommandService.applyCreateReview(it.shopId, it.reviewScore).subscribe()
             } // shop의 리뷰 관련 정보를 수정해준다
             .subscribe()
     }
@@ -39,7 +39,7 @@ class ShopReviewEventListener(
     fun deleteShopReview(deletedEvent: ShopReviewCommand.DeletedEvent) = with(deletedEvent) {
         shopReviewCommandService.softDeleteReview(reviewId, reviewTitle) // 우선 review부터 삭제해주고
             .doOnSuccess {
-                shopCommandService.applyDeleteReview(it.shopId, it.shopName, it.reviewScore).subscribe()
+                shopCommandService.applyDeleteReview(it.shopId, it.reviewScore).subscribe()
             } // shopReview의 삭제를 shop에 반영
             .subscribe()
     }

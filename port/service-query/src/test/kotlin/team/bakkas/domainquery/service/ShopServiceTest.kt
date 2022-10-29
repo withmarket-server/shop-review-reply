@@ -32,13 +32,13 @@ import java.time.LocalTime
 @ExtendWith(MockKExtension::class)
 internal class ShopServiceTest {
     @MockK(relaxed = true)
-    private lateinit var shopRepository: ShopReader // mock stub 오류를 안 잡아내게 설정
+    private lateinit var shopReader: ShopReader // mock stub 오류를 안 잡아내게 설정
 
     private lateinit var shopService: ShopQueryServiceImpl
 
     @BeforeEach
     fun setUp() {
-        shopService = spyk(ShopQueryServiceImpl(shopRepository)) // 실제 내부 로직을 테스트하기 위해 spyK로 선언한다
+        shopService = spyk(ShopQueryServiceImpl(shopReader)) // 실제 내부 로직을 테스트하기 위해 spyK로 선언한다
     }
 
     // 1-1, shop이 존재하지 않는 경우 테스트 (shop에 대한 key값이 잘못되었음)
@@ -49,26 +49,17 @@ internal class ShopServiceTest {
         val shopId = "test-fake-key"
         val shopName = "fake shop"
 
-        every { shopRepository.findShopByIdAndName(shopId, shopName) } returns mono {
-            null
-        }
+        every { shopReader.findShopById(shopId) } returns Mono.empty()
 
         // when
-        val shopMono = shopRepository.findShopByIdAndName(shopId, shopName) // mono 가져오기
+        val shopMono = shopReader.findShopById(shopId) // mono 가져오기
         val shop = withContext(Dispatchers.IO) {
             CoroutinesUtils.monoToDeferred(shopMono).await()
         }
 
         // then
-        verify(exactly = 1) {
-            shopRepository.findShopByIdAndName(
-                shopId,
-                shopName
-            )
-        } // repository 메소드가 불렸는지 검증
+        verify(exactly = 1) { shopReader.findShopById(shopId) } // repository 메소드가 불렸는지 검증
         assertNull(shop)
-
-        println("[shop에 대한 key 정보가 잘못되어서 shop을 못 찾아오는 경우 테스트] passed!!")
     }
 
     // 1-2. shop이 존재하는 경우 테스트
@@ -79,16 +70,20 @@ internal class ShopServiceTest {
         val shopId = "correct-shop-id"
         val shopName = "correct-shop-name"
 
-        every { shopRepository.findShopByIdAndName(shopId, shopName) } returns mono {
-            getMockShop(shopId, shopName, Status.OPEN)
-        }
+        every { shopReader.findShopById(shopId) } returns Mono.just(
+            getMockShop(
+                shopId,
+                shopName,
+                Status.OPEN
+            )
+        )
 
         // when
-        val shopMono = shopRepository.findShopByIdAndName(shopId, shopName)
+        val shopMono = shopReader.findShopById(shopId)
         val shop: Shop? = CoroutinesUtils.monoToDeferred(shopMono).await()
 
         // then
-        verify(exactly = 1) { shopRepository.findShopByIdAndName(shopId, shopName) }
+        verify(exactly = 1) { shopReader.findShopById(shopId) }
         assertNotNull(shop)
         shop?.let {
             assertEquals(it.shopId, shopId)
@@ -108,12 +103,12 @@ internal class ShopServiceTest {
 
         // when
         // 잘못된 key 값을 주는 경우 empty mono를 반환하게 설정
-        every { shopRepository.findShopByIdAndName(shopId, shopName) } returns Mono.empty()
-        val result = shopService.findShopByIdAndName(shopId, shopName)
+        every { shopReader.findShopById(shopId) } returns Mono.empty()
+        val result = shopService.findShopById(shopId)
 
         // then
-        verify(exactly = 1) { shopRepository.findShopByIdAndName(shopId, shopName) }
-        coVerify(exactly = 1) { shopService.findShopByIdAndName(shopId, shopName) } // 코루틴의 경우 coVerify로 검증한다
+        verify(exactly = 1) { shopReader.findShopById(shopId) }
+        coVerify(exactly = 1) { shopService.findShopById(shopId) } // 코루틴의 경우 coVerify로 검증한다
         assertNull(result)
 
         println("[[service] findShopByIdAndName 실패 테스트] passed!!")
@@ -126,17 +121,17 @@ internal class ShopServiceTest {
         val shopId = "success-id"
         val shopName = "success-name"
 
-        every { shopRepository.findShopByIdAndName(shopId, shopName) } returns mono {
+        every { shopReader.findShopById(shopId) } returns mono {
             getMockShop(shopId, shopName, Status.OPEN)
         }
 
         // when
-        val shop = shopService.findShopByIdAndName(shopId, shopName)
+        val shop = shopService.findShopById(shopId)
 
         // then
-        verify(exactly = 1) { shopRepository.findShopByIdAndName(shopId, shopName) }
-        coVerify(exactly = 1) { shopService.findShopByIdAndName(shopId, shopName) }
-        shouldNotThrow<ShopNotFoundException> { shopService.findShopByIdAndName(shopId, shopName) } // 예외가 안 터져야함!
+        verify(exactly = 1) { shopReader.findShopById(shopId) }
+        coVerify(exactly = 1) { shopService.findShopById(shopId) }
+        shouldNotThrow<ShopNotFoundException> { shopService.findShopById(shopId) } // 예외가 안 터져야함!
         assertNotNull(shop)
         shop?.let {
             assertEquals(it.shopId, shopId)
@@ -157,8 +152,10 @@ internal class ShopServiceTest {
             detailAddress = null
         ),
         latLon = LatLon(latitude = 35.838597, longitude = 128.756576),
-        shopImageInfo = ShopImageInfo(mainImage = "https://withmarket-image-bucket.s3.ap-northeast-2.amazonaws.com/c247bc62-e17f-43c1-90e9-60d566faaa3e.jpeg",
-            representativeImageList = listOf("https://withmarket-image-bucket.s3.ap-northeast-2.amazonaws.com/c2570a85-1da7-4fec-9754-52a178e2abf5.jpeg")),
+        shopImageInfo = ShopImageInfo(
+            mainImage = "https://withmarket-image-bucket.s3.ap-northeast-2.amazonaws.com/c247bc62-e17f-43c1-90e9-60d566faaa3e.jpeg",
+            representativeImageList = listOf("https://withmarket-image-bucket.s3.ap-northeast-2.amazonaws.com/c2570a85-1da7-4fec-9754-52a178e2abf5.jpeg")
+        ),
         branchInfo = BranchInfo(isBranch = false, branchName = null),
         categoryInfo = CategoryInfo(shopCategory = Category.ETC, shopDetailCategory = DetailCategory.ETC_ALL),
         totalScore = 0.0,

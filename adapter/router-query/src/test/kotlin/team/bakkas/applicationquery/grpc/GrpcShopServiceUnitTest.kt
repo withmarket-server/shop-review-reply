@@ -44,14 +44,14 @@ internal class GrpcShopServiceUnitTest {
             .setShopName(shopName)
             .build()
 
-        coEvery { shopQueryService.findShopByIdAndName(shopId, shopName) } returns null
+        coEvery { shopQueryService.findShopById(shopId, shopName) } returns null
 
         // when
         val response = grpcShopService.isExistShop(request)
 
         // then
         coVerify(exactly = 1) { grpcShopService.isExistShop(request) }
-        coVerify(exactly = 1) { shopQueryService.findShopByIdAndName(shopId, shopName) }
+        coVerify(exactly = 1) { shopQueryService.findShopById(shopId, shopName) }
         assertEquals(response.result, false)
     }
 
@@ -66,7 +66,7 @@ internal class GrpcShopServiceUnitTest {
             .setShopName(shopName)
             .build()
 
-        coEvery { shopQueryService.findShopByIdAndName(shopId, shopName) } returns
+        coEvery { shopQueryService.findShopById(shopId, shopName) } returns
                 generateFakeShop(shopId, shopName)
 
         // when
@@ -74,7 +74,7 @@ internal class GrpcShopServiceUnitTest {
 
         // then
         coVerify(exactly = 1) { grpcShopService.isExistShop(request) }
-        coVerify(exactly = 1) { shopQueryService.findShopByIdAndName(shopId, shopName) }
+        coVerify(exactly = 1) { shopQueryService.findShopById(shopId, shopName) }
         with(response) {
             assertEquals(this.result, true)
         }
