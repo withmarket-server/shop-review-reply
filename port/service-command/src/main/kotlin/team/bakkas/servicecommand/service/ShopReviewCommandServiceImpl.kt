@@ -1,10 +1,6 @@
 package team.bakkas.servicecommand.service
 
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.reactor.asFlux
-import kotlinx.coroutines.reactor.awaitSingle
-import kotlinx.coroutines.reactor.awaitSingleOrNull
-import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Flux
@@ -48,7 +44,7 @@ class ShopReviewCommandServiceImpl(
      */
     @Transactional
     override fun deleteAllReviewsOfShop(shopId: String, shopName: String): Flux<ShopReview> {
-        return shopReviewDynamoRepository.getAllReviewFlowByShopIdAndName(shopId, shopName)
+        return shopReviewDynamoRepository.getAllShopsByShopIdAndName(shopId, shopName)
             .asFlux()
             .flatMap { shopReviewDynamoRepository.deleteReviewAsync(it.reviewId, it.reviewTitle) }
             .flatMap { shopReviewRedisRepository.deleteReview(it) }

@@ -6,7 +6,7 @@ import team.bakkas.dynamo.shop.Shop
 fun Shop.toSimpleResponse() = ShopQuery.SimpleResponse(
     shopId = this.shopId,
     shopName = this.shopName,
-    isOpen = this.salesInfo.isOpen,
+    isOpen = this.salesInfo.status,
     lotNumberAddress = this.addressInfo.lotNumberAddress,
     roadNameAddress = this.addressInfo.roadNameAddress,
     latitude = this.latLon.latitude,

@@ -24,7 +24,7 @@ class ShopReviewDynamoRepositoryImpl(
     private val dynamoDbEnhancedAsyncClient: DynamoDbEnhancedAsyncClient
 ) : ShopReviewDynamoRepository {
     val asyncTable: DynamoDbAsyncTable<ShopReview> =
-        dynamoDbEnhancedAsyncClient.table("shop_review", TableSchema.fromBean(ShopReview::class.java))
+        dynamoDbEnhancedAsyncClient.table("shop_review", ShopReview.tableSchema)
 
     /* ==============================[Async Methods]============================== */
 
@@ -45,7 +45,7 @@ class ShopReviewDynamoRepositoryImpl(
      * @param shopName
      * @return Flow consisted with review of given shop
      */
-    override fun getAllReviewFlowByShopIdAndName(shopId: String, shopName: String): Flow<ShopReview> {
+    override fun getAllShopsByShopIdAndName(shopId: String, shopName: String): Flow<ShopReview> {
         return asyncTable.scan { it.filterExpression(generateShopExpression(shopId, shopName)) }
             .items()
             .asFlow()

@@ -149,7 +149,7 @@ internal class ShopServiceTest {
     private fun getMockShop(shopId: String, shopName: String, isOpen: Boolean) = Shop(
         shopId = shopId,
         shopName = shopName,
-        salesInfo = SalesInfo(isOpen = isOpen, openTime = LocalTime.now(), closeTime = LocalTime.now()),
+        salesInfo = SalesInfo(status = isOpen, openTime = LocalTime.now(), closeTime = LocalTime.now()),
         addressInfo = AddressInfo(
             lotNumberAddress = "경상북도 경산시 조영동 307-1",
             roadNameAddress = "경상북도 경산시 대학로 318",

@@ -14,7 +14,6 @@ import org.junit.jupiter.api.extension.ExtendWith
 import reactor.core.publisher.Mono
 import team.bakkas.clientcommand.shop.ShopCommand
 import team.bakkas.dynamo.shop.Shop
-import team.bakkas.dynamo.shop.usecases.applyReviewCreate
 import team.bakkas.servicecommand.service.ifs.ShopCommandService
 import team.bakkas.dynamo.shop.vo.*
 import team.bakkas.dynamo.shop.vo.category.Category
@@ -147,7 +146,7 @@ internal class ShopCommandServiceUnitTest {
     private fun ShopCommand.CreateRequest.toEntity() = Shop(
         shopId = UUID.randomUUID().toString(),
         shopName = shopName,
-        salesInfo = SalesInfo(isOpen = false, openTime = openTime, closeTime = closeTime, restDayList = restDayList),
+        salesInfo = SalesInfo(status = false, openTime = openTime, closeTime = closeTime, restDayList = restDayList),
         addressInfo = AddressInfo(lotNumberAddress, roadNameAddress),
         latLon = LatLon(latitude, longitude),
         shopImageInfo = ShopImageInfo(mainImageUrl, representativeImageUrlList),

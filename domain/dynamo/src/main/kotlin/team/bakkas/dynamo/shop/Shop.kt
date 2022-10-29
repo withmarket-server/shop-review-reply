@@ -27,7 +27,8 @@ class Shop(
     var deliveryTipPerDistanceList: List<DeliveryTipPerDistance> = listOf(),  // 배달 거리별 팁 정보
     var totalScore: Double = 0.0, // 가게의 총점
     var reviewNumber: Int = 0, // 리뷰의 개수
-    var shopDescription: String? = null // 가게에 대한 설명
+    var shopDescription: String? = null,  // 가게에 대한 설명
+    var updatedAt: LocalDateTime? = null
 ) : Serializable, BaseTimeEntity() {
 
     companion object {
@@ -90,6 +91,11 @@ class Shop(
             .addAttribute(LocalDateTime::class.java) {
                 it.name("updated_at").getter(Shop::updatedAt::get)
                     .setter(Shop::updatedAt::set)
+            }
+            .addAttribute(LocalDateTime::class.java) {
+                it.name("deleted_at").getter(Shop::deletedAt::get)
+                    .setter(Shop::deletedAt::set)
+
             }
             .build()
     }
