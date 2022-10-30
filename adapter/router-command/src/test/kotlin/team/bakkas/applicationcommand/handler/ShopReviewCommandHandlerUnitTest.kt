@@ -72,22 +72,10 @@ internal class ShopReviewCommandHandlerUnitTest {
     }
 
     @Test
-    @DisplayName("[createReview] 3. shopName가 비어서 들어오는 경우 RequestFieldException을 일으키는 테스트")
-    fun createReviewTest3(): Unit = runBlocking {
-        val requestBody = generateCreateRequest().apply {
-            shopName = ""
-        }
-        val request = generateRequest { Mono.just(requestBody) }
-
-        // then
-        shouldThrow<RequestFieldException> { shopReviewCommandHandler.createReview(request) }
-    }
-
-    @Test
     @DisplayName("[createReview] 4. reviewContent가 비어서 들어오는 경우 RequestFieldException을 일으키는 테스트")
     fun createReviewTest4(): Unit = runBlocking {
         val requestBody = generateCreateRequest().apply {
-            reviewContent= ""
+            reviewContent = ""
         }
         val request = generateRequest { Mono.just(requestBody) }
 
@@ -142,7 +130,7 @@ internal class ShopReviewCommandHandlerUnitTest {
         val request = generateRequest { Mono.just(requestBody) }
 
         // request
-        coEvery { shopGrpcClient.isExistShop(requestBody.shopId, requestBody.shopName) } returns
+        coEvery { shopGrpcClient.isExistShop(requestBody.shopId) } returns
                 CheckExistShopResponse.newBuilder()
                     .setResult(false).build()
 
@@ -207,7 +195,7 @@ internal class ShopReviewCommandHandlerUnitTest {
             .build()
 
         // id, title에 대응하는 shopReview는 없다고 가정한다
-        coEvery { shopReviewGrpcClient.isExistShopReview(id, title) } returns
+        coEvery { shopReviewGrpcClient.isExistShopReview(id) } returns
                 CheckExistShopReviewResponse.newBuilder()
                     .setResult(false)
                     .build()
@@ -220,7 +208,6 @@ internal class ShopReviewCommandHandlerUnitTest {
     private fun generateCreateRequest(): ShopReviewCommand.CreateRequest = ShopReviewCommand.CreateRequest(
         reviewTitle = "가짜 리뷰",
         shopId = "test-001",
-        shopName = "가짜 가게",
         reviewContent = "가짜 리뷰입니다. 속지 마세요!",
         reviewScore = 9.5,
         reviewPhotoList = listOf("가짜 사진")
@@ -235,7 +222,7 @@ internal class ShopReviewCommandHandlerUnitTest {
     private fun createContent(token: String, length: Int): String {
         val sb = java.lang.StringBuilder()
 
-        for(i in 1..length) {
+        for (i in 1..length) {
             sb.append(token)
         }
 

@@ -31,15 +31,14 @@ class ShopReviewQueryHandler(
     suspend fun findReviewByIdAndTitle(request: ServerRequest): ServerResponse = coroutineScope {
         // id와 title을 request로부터 받아오고, 존재하지 않으면 바로 에러 처리를 수행한다
         val reviewId = request.queryParamOrNull("id") ?: throw RequestParamLostException("reviewId is lost!!")
-        val reviewTitle = request.queryParamOrNull("title") ?: throw RequestParamLostException("reviewTitle is lost!!")
 
-        check(reviewId.isNotEmpty() && reviewTitle.isNotEmpty()) {
+        check(reviewId.isNotEmpty()) {
             throw RequestParamLostException("query parameter is lost!!")
         }
 
         // review가 존재하지 않으면 exception을 일으킨다
-        val review = shopReviewService.findReviewByIdAndTitle(reviewId, reviewTitle)
-            ?: throw ShopReviewNotFoundException("review is not found!!")
+        val review =
+            shopReviewService.findReviewById(reviewId) ?: throw ShopReviewNotFoundException("review is not found!!")
 
         return@coroutineScope ok()
             .contentType(MediaType.APPLICATION_JSON)

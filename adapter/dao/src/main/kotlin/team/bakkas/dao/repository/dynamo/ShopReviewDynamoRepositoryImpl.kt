@@ -34,8 +34,8 @@ class ShopReviewDynamoRepositoryImpl(
      * @param reviewTitle 리뷰의 제목
      * @return Mono<ShopReview?>
      */
-    override fun findReviewByIdAndTitle(reviewId: String, reviewTitle: String): Mono<ShopReview> {
-        val reviewKey = generateKey(reviewId, reviewTitle)
+    override fun findReviewByIdAndTitle(reviewId: String): Mono<ShopReview> {
+        val reviewKey = generateKey(reviewId)
         val reviewFuture = asyncTable.getItem(reviewKey)
 
         return Mono.fromFuture(reviewFuture)
@@ -61,26 +61,25 @@ class ShopReviewDynamoRepositoryImpl(
     }
 
     // review를 삭제하는 메소드
-    override fun deleteReviewAsync(reviewId: String, reviewTitle: String): Mono<ShopReview> {
-        val deleteReviewFuture = asyncTable.deleteItem(generateKey(reviewId, reviewTitle))
+    override fun deleteReviewAsync(reviewId: String): Mono<ShopReview> {
+        val reviewKey = generateKey(reviewId)
+        val deleteReviewFuture = asyncTable.deleteItem(generateKey(reviewId))
         return Mono.fromFuture(deleteReviewFuture)
     }
 
     // review를 soft delete 하는 메소드
-    override fun softDeleteReview(reviewId: String, reviewTitle: String): Mono<ShopReview> {
-        return findReviewByIdAndTitle(reviewId, reviewTitle)
+    override fun softDeleteReview(reviewId: String): Mono<ShopReview> {
+        return findReviewByIdAndTitle(reviewId)
             .map { it.softDelete() }
             .flatMap { createReviewAsync(it) }
     }
 
     /** Key를 반환하는 private method
      * @param reviewId Partition Key of shop_review
-     * @param reviewTitle Sort Key of shop_review
      * @return key of sjop_review table
      */
-    private fun generateKey(reviewId: String, reviewTitle: String): Key = Key.builder()
+    private fun generateKey(reviewId: String): Key = Key.builder()
         .partitionValue(reviewId)
-        .sortValue(reviewTitle)
         .build()
 
     /** shopId, shopName에 대한 expression을 반환해주는 메소드

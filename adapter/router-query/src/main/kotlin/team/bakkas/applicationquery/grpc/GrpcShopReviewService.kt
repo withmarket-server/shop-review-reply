@@ -9,7 +9,7 @@ import team.bakkas.grpcIfs.v1.shopReview.ShopReviewServiceGrpcKt
 @Service
 class GrpcShopReviewService(
     private val shopReviewQueryService: ShopReviewQueryService
-): ShopReviewServiceGrpcKt.ShopReviewServiceCoroutineImplBase() {
+) : ShopReviewServiceGrpcKt.ShopReviewServiceCoroutineImplBase() {
 
     /** Shop이 존재하는지 검증해주는 메소드
      * @param request reviewId, reviewTitle이 포함된 parameter
@@ -18,15 +18,15 @@ class GrpcShopReviewService(
      */
     override suspend fun isExistShopReview(request: CheckExistShopReviewRequest): CheckExistShopReviewResponse {
         val reviewId = request.reviewId
-        val reviewTitle = request.reviewTitle
 
         // 찾으면 예외 발생이 없음
-        val foundReview = shopReviewQueryService.findReviewByIdAndTitle(reviewId, reviewTitle)
+        val foundReview = shopReviewQueryService.findReviewById(reviewId)
 
-        return when(foundReview) {
+        return when (foundReview) {
             null -> CheckExistShopReviewResponse.newBuilder()
                 .setResult(false)
                 .build()
+
             else -> CheckExistShopReviewResponse.newBuilder()
                 .setResult(true)
                 .build()

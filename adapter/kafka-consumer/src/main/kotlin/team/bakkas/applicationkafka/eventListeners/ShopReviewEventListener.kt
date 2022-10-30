@@ -37,7 +37,7 @@ class ShopReviewEventListener(
         groupId = KafkaConsumerGroups.shopReviewGroup
     )
     fun deleteShopReview(deletedEvent: ShopReviewCommand.DeletedEvent) = with(deletedEvent) {
-        shopReviewCommandService.softDeleteReview(reviewId, reviewTitle) // 우선 review부터 삭제해주고
+        shopReviewCommandService.softDeleteReview(reviewId) // 우선 review부터 삭제해주고
             .doOnSuccess {
                 shopCommandService.applyDeleteReview(it.shopId, it.reviewScore).subscribe()
             } // shopReview의 삭제를 shop에 반영

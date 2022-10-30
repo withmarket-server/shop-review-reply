@@ -9,7 +9,7 @@ import team.bakkas.grpcIfs.v1.shopReview.ShopReviewServiceGrpcKt
 
 // ShopReview에 대한 gRPC 서비스를 스터빙하는 클래스
 @Component
-class ShopReviewGrpcClientImpl: ShopReviewGrpcClient {
+class ShopReviewGrpcClientImpl : ShopReviewGrpcClient {
 
     companion object {
         // query server를 대상으로 gRPC 포트를 타겟한다
@@ -26,10 +26,9 @@ class ShopReviewGrpcClientImpl: ShopReviewGrpcClient {
      * @param reviewTitle
      * @return CheckExistShopReviewResponse
      */
-    override suspend fun isExistShopReview(reviewId: String, reviewTitle: String): CheckExistShopReviewResponse {
+    override suspend fun isExistShopReview(reviewId: String): CheckExistShopReviewResponse {
         val request = CheckExistShopReviewRequest.newBuilder()
             .setReviewId(reviewId)
-            .setReviewTitle(reviewTitle)
             .build()
 
         return shopReviewStub.isExistShopReview(request)

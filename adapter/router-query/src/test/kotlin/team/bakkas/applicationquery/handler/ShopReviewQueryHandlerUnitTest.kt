@@ -88,7 +88,7 @@ internal class ShopReviewQueryHandlerUnitTest {
             .queryParam("title", reviewTitle)
             .build()
 
-        coEvery { shopReviewService.findReviewByIdAndTitle(reviewId, reviewTitle) } returns null
+        coEvery { shopReviewService.findReviewById(reviewId) } returns null
 
         // then
         shouldThrow<ShopReviewNotFoundException> { shopReviewQueryHandler.findReviewByIdAndTitle(request) }
@@ -105,14 +105,14 @@ internal class ShopReviewQueryHandlerUnitTest {
             .queryParam("title", reviewTitle)
             .build()
 
-        coEvery { shopReviewService.findReviewByIdAndTitle(reviewId, reviewTitle) } returns
+        coEvery { shopReviewService.findReviewById(reviewId) } returns
                 getMockReview(reviewId, reviewTitle, "shop id", "shop name")
 
         // when
         val result = shopReviewQueryHandler.findReviewByIdAndTitle(request)
 
         // then
-        coVerify(exactly = 1) { shopReviewService.findReviewByIdAndTitle(reviewId, reviewTitle) }
+        coVerify(exactly = 1) { shopReviewService.findReviewById(reviewId) }
         coVerify(exactly = 1) { shopReviewQueryHandler.findReviewByIdAndTitle(request) }
         assertEquals(result.statusCode(), HttpStatus.OK)
     }
@@ -174,7 +174,7 @@ internal class ShopReviewQueryHandlerUnitTest {
             .build()
 
         // 비어있는 리스트를 반환한다
-        coEvery { shopReviewService.getReviewsByShopId(shopId, shopName) } returns listOf()
+        coEvery { shopReviewService.getReviewsByShopId(shopId) } returns listOf()
 
         // then
         shouldThrow<ShopReviewNotFoundException> { shopReviewQueryHandler.getReviewListByShopId(request) }
@@ -192,7 +192,7 @@ internal class ShopReviewQueryHandlerUnitTest {
             .build()
 
         // 리뷰가 존재하는 경우
-        coEvery { shopReviewService.getReviewsByShopId(shopId, shopName) } returns
+        coEvery { shopReviewService.getReviewsByShopId(shopId) } returns
                 listOf(
                     getMockReview("1", "review1", shopId, shopName),
                     getMockReview("2", "review2", shopId, shopName)
@@ -202,7 +202,7 @@ internal class ShopReviewQueryHandlerUnitTest {
         val response = shopReviewQueryHandler.getReviewListByShopId(request)
 
         // then
-        coVerify(exactly = 1) { shopReviewService.getReviewsByShopId(shopId, shopName) }
+        coVerify(exactly = 1) { shopReviewService.getReviewsByShopId(shopId) }
         coVerify(exactly = 1) { shopReviewQueryHandler.getReviewListByShopId(request) }
         assertEquals(response.statusCode(), HttpStatus.OK)
     }
@@ -213,11 +213,8 @@ internal class ShopReviewQueryHandlerUnitTest {
             reviewId = reviewId,
             reviewTitle = reviewTitle,
             shopId = shopId,
-            shopName = shopName,
             reviewContent = "저는 아주 불만족했어요! ^^",
             reviewScore = 1.0,
-            reviewPhotoList = listOf(),
-            createdAt = LocalDateTime.now(),
-            updatedAt = null
+            reviewPhotoList = listOf()
         )
 }

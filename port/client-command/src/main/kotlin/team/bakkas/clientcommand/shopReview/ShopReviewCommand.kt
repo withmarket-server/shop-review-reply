@@ -18,12 +18,11 @@ sealed class ShopReviewCommand {
 
     // Review가 삭제될 때 발행하는 이벤트
     data class DeletedEvent(
-        var reviewId: String,
-        var reviewTitle: String
+        var reviewId: String
     ) {
         companion object {
             // DeletedEvent를 생성하는데 사용하는 메소드
-            fun of(reviewId: String, reviewTitle: String) = DeletedEvent(reviewId, reviewTitle)
+            fun of(reviewId: String) = DeletedEvent(reviewId)
         }
     }
 }

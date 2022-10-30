@@ -21,19 +21,19 @@ class ShopReviewRedisRepositoryImpl(
 ) : ShopReviewRedisRepository {
 
     override fun cacheReview(shopReview: ShopReview): Mono<ShopReview> = with(shopReview) {
-        val reviewKey = RedisUtils.generateReviewRedisKey(reviewId, reviewTitle)
+        val reviewKey = RedisUtils.generateReviewRedisKey(reviewId)
 
         shopReviewReactiveRedisTemplate.opsForValue().set(reviewKey, this, Duration.ofDays(RedisUtils.DAYS_TO_LIVE))
             .thenReturn(this)
     }
 
     // review Key를 이용해서 review를 가져오는 메소드
-    override fun findReviewByKey(reviewKey: String): Mono<ShopReview> =
-        shopReviewReactiveRedisTemplate.opsForValue().get(reviewKey)
+    override fun findReviewById(reviewId: String): Mono<ShopReview> =
+        shopReviewReactiveRedisTemplate.opsForValue().get(RedisUtils.generateReviewRedisKey(reviewId))
 
     // review를 삭제하는데 사용하는 메소드
     override fun deleteReview(shopReview: ShopReview): Mono<ShopReview> = with(shopReview) {
-        val reviewKey = RedisUtils.generateReviewRedisKey(reviewId, reviewTitle)
+        val reviewKey = RedisUtils.generateReviewRedisKey(reviewId)
 
         shopReviewReactiveRedisTemplate.opsForValue().get(reviewKey)
             .single()
@@ -41,10 +41,10 @@ class ShopReviewRedisRepositoryImpl(
             .thenReturn(this)
     }
 
-    override fun softDeleteReview(reviewId: String, reviewTitle: String): Mono<ShopReview> {
-        val reviewKey = RedisUtils.generateReviewRedisKey(reviewId, reviewTitle)
+    override fun softDeleteReview(reviewId: String): Mono<ShopReview> {
+        val reviewKey = RedisUtils.generateReviewRedisKey(reviewId)
 
-        return findReviewByKey(reviewKey) // reviewId, reviewTitle을 기반으로 review를 찾아와서
+        return findReviewById(reviewKey) // reviewId, reviewTitle을 기반으로 review를 찾아와서
             .map { it.softDelete() } // review를 soft delete 처리를 하고
             .flatMap { cacheReview(it) } // 다시 저장한다
     }
@@ -59,7 +59,7 @@ class ShopReviewRedisRepositoryImpl(
                 val tokenizer = StringTokenizer(key, ":")
                 tokenizer.nextToken().equals("shopReview")
             }
-            .map { findReviewByKey(it).awaitSingle() }
+            .map { findReviewById(it).awaitSingle() }
             .filter { it.shopId == shopId }
     }
 }
