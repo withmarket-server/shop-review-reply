@@ -17,6 +17,7 @@ import team.bakkas.dynamo.shop.vo.*
 import team.bakkas.dynamo.shop.vo.category.Category
 import team.bakkas.dynamo.shop.vo.category.DetailCategory
 import team.bakkas.dynamo.shop.vo.sale.Days
+import team.bakkas.dynamo.shop.vo.sale.Status
 import team.bakkas.grpcIfs.v1.shop.CheckExistShopRequest
 import java.time.LocalTime
 
@@ -38,20 +39,18 @@ internal class GrpcShopServiceUnitTest {
     fun isExistShopTest1(): Unit = runBlocking {
         // given
         val shopId = "shopId"
-        val shopName = "shopName"
         val request = CheckExistShopRequest.newBuilder()
             .setShopId(shopId)
-            .setShopName(shopName)
             .build()
 
-        coEvery { shopQueryService.findShopById(shopId, shopName) } returns null
+        coEvery { shopQueryService.findShopById(shopId) } returns null
 
         // when
         val response = grpcShopService.isExistShop(request)
 
         // then
         coVerify(exactly = 1) { grpcShopService.isExistShop(request) }
-        coVerify(exactly = 1) { shopQueryService.findShopById(shopId, shopName) }
+        coVerify(exactly = 1) { shopQueryService.findShopById(shopId) }
         assertEquals(response.result, false)
     }
 
@@ -63,10 +62,9 @@ internal class GrpcShopServiceUnitTest {
         val shopName = "shopName"
         val request = CheckExistShopRequest.newBuilder()
             .setShopId(shopId)
-            .setShopName(shopName)
             .build()
 
-        coEvery { shopQueryService.findShopById(shopId, shopName) } returns
+        coEvery { shopQueryService.findShopById(shopId) } returns
                 generateFakeShop(shopId, shopName)
 
         // when
@@ -74,7 +72,7 @@ internal class GrpcShopServiceUnitTest {
 
         // then
         coVerify(exactly = 1) { grpcShopService.isExistShop(request) }
-        coVerify(exactly = 1) { shopQueryService.findShopById(shopId, shopName) }
+        coVerify(exactly = 1) { shopQueryService.findShopById(shopId) }
         with(response) {
             assertEquals(this.result, true)
         }
@@ -85,7 +83,7 @@ internal class GrpcShopServiceUnitTest {
         shopId = shopId,
         shopName = shopName,
         salesInfo = SalesInfo(
-            status = false,
+            status = Status.OPEN,
             openTime = LocalTime.now(),
             closeTime = LocalTime.now(),
             restDayList = listOf(Days.SUN)

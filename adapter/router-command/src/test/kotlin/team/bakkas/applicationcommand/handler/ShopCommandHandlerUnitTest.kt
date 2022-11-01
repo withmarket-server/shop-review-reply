@@ -172,36 +172,6 @@ internal class ShopCommandHandlerUnitTest {
     }
 
     @Test
-    @DisplayName("[deleteShop] 2. shopName이 비어있는 문자열로 들어오는 경우 RequestParamLostException을 일으키는 테스트")
-    fun deleteShopTest2(): Unit = runBlocking {
-        // given
-        val shopId = "1"
-        val shopName = ""
-        val request = MockServerRequest.builder()
-            .queryParam("id", shopId)
-            .queryParam("name", shopName)
-            .build()
-
-        // then
-        shouldThrow<RequestParamLostException> { shopCommandHandler.deleteShop(request) }
-    }
-
-    @Test
-    @DisplayName("[deleteShop] 3. shopId, shopName이 모두 비어서 들어오는 경우 RequestParamLostException을 일으키는 테스트")
-    fun deleteShopTest3(): Unit = runBlocking {
-        // given
-        val shopId = ""
-        val shopName = ""
-        val request = MockServerRequest.builder()
-            .queryParam("id", shopId)
-            .queryParam("name", shopName)
-            .build()
-
-        // then
-        shouldThrow<RequestParamLostException> { shopCommandHandler.deleteShop(request) }
-    }
-
-    @Test
     @DisplayName("[deleteShop] 4. shop이 존재하지 않는 경우 shopNotFoundException을 일으키는 테스트")
     fun deleteShopTest4(): Unit = runBlocking {
         // given
@@ -212,7 +182,7 @@ internal class ShopCommandHandlerUnitTest {
             .queryParam("name", shopName)
             .build()
 
-        coEvery { shopGrpcClient.isExistShop(shopId, shopName) } returns
+        coEvery { shopGrpcClient.isExistShop(shopId) } returns
                 CheckExistShopResponse.newBuilder()
                     .setResult(false)
                     .build()

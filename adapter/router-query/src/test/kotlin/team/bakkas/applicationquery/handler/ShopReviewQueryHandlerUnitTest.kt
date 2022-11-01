@@ -48,21 +48,6 @@ internal class ShopReviewQueryHandlerUnitTest {
     }
 
     @Test
-    @DisplayName("[findReviewByIdAndTitle] 2. reviewTitle이 유실되어 RequestParamLostException을 일으키는 테스트")
-    fun findReviewByIdAndTitleTest2(): Unit = runBlocking {
-        // given
-        val reviewId = "review id"
-        val reviewTitle = ""
-        val request = MockServerRequest.builder()
-            .queryParam("id", reviewId)
-            .queryParam("title", reviewTitle)
-            .build()
-
-        // then
-        shouldThrow<RequestParamLostException> { shopReviewQueryHandler.findReviewByIdAndTitle(request) }
-    }
-
-    @Test
     @DisplayName("[findReviewByIdAndTitle] 3. reviewId와 reviewTitle 모두 유실되어 RequestParamLostException을 일으키는 테스트")
     fun findReviewByIdAndTitleTest3(): Unit = runBlocking {
         // given
@@ -122,10 +107,8 @@ internal class ShopReviewQueryHandlerUnitTest {
     fun getReviewListByShopTest1(): Unit = runBlocking {
         // given
         val shopId = ""
-        val shopName = "shop name"
         val request = MockServerRequest.builder()
             .queryParam("shop-id", shopId)
-            .queryParam("shop-name", shopName)
             .build()
 
         // then
@@ -133,44 +116,12 @@ internal class ShopReviewQueryHandlerUnitTest {
     }
 
     @Test
-    @DisplayName("[getReviewListByShopIdAndName] 2. shop-name이 빈 상태로 들어와서 RequestParamLostException을 일으키는 테스트")
-    fun getReviewListByShopTest2(): Unit = runBlocking {
-        // given
-        val shopId = "shop id"
-        val shopName = ""
-        val request = MockServerRequest.builder()
-            .queryParam("shop-id", shopId)
-            .queryParam("shop-name", shopName)
-            .build()
-
-        // then
-        shouldThrow<RequestParamLostException> { shopReviewQueryHandler.getReviewListByShopId(request) }
-    }
-
-    @Test
-    @DisplayName("[getReviewListByShopIdAndName] 3. shop-id, shop-name이 모두 비어서 들어오는 경우")
-    fun getReviewListByShopTest3(): Unit = runBlocking {
-        // given
-        val shopId = ""
-        val shopName = ""
-        val request = MockServerRequest.builder()
-            .queryParam("shop-id", shopId)
-            .queryParam("shop-name", shopName)
-            .build()
-
-        // then
-        shouldThrow<RequestParamLostException> { shopReviewQueryHandler.getReviewListByShopId(request) }
-    }
-
-    @Test
-    @DisplayName("[getReviewListByShopIdAndName] 4. shopId, shopName에 대응하는 review가 존재하지 않는 경우")
+    @DisplayName("[getReviewListByShopIdAndName] 4. shopId에 대응하는 review가 존재하지 않는 경우")
     fun getReviewListByShopTest4(): Unit = runBlocking {
         // given
         val shopId = "shop-id"
-        val shopName = "shop-name"
         val request = MockServerRequest.builder()
             .queryParam("shop-id", shopId)
-            .queryParam("shop-name", shopName)
             .build()
 
         // 비어있는 리스트를 반환한다
@@ -188,7 +139,6 @@ internal class ShopReviewQueryHandlerUnitTest {
         val shopName = "shop-name"
         val request = MockServerRequest.builder()
             .queryParam("shop-id", shopId)
-            .queryParam("shop-name", shopName)
             .build()
 
         // 리뷰가 존재하는 경우

@@ -23,6 +23,7 @@ import team.bakkas.dynamo.shop.vo.*
 import team.bakkas.dynamo.shop.vo.category.Category
 import team.bakkas.dynamo.shop.vo.category.DetailCategory
 import team.bakkas.dynamo.shop.vo.sale.Days
+import team.bakkas.dynamo.shop.vo.sale.Status
 import java.time.LocalTime
 
 @ExtendWith(MockKExtension::class)
@@ -42,10 +43,8 @@ internal class ShopQueryHandlerUnitTest {
     fun findByIdAndNameTest1(): Unit = runBlocking {
         // given
         val shopId = ""
-        val shopName = "fake shop"
         val request = MockServerRequest.builder()
             .queryParam("id", shopId)
-            .queryParam("name", shopName)
             .build()
 
         // then
@@ -53,48 +52,16 @@ internal class ShopQueryHandlerUnitTest {
     }
 
     @Test
-    @DisplayName("[findByIdAndName] 2. shopName이 비어서 들어온 경우 RequestParamLostException을 일으키는 테스트")
-    fun findByIdAndNameTest2(): Unit = runBlocking {
-        // given
-        val shopId = "fake shop id"
-        val shopName = ""
-        val request = MockServerRequest.builder()
-            .queryParam("id", shopId)
-            .queryParam("name", shopName)
-            .build()
-
-        // then
-        shouldThrow<RequestParamLostException> { shopQueryHandler.findById(request) }
-    }
-
-    @Test
-    @DisplayName("[findByIdAndName] 3. shopId와 shopName이 비어서 들어온 경우 RequestParamLostException을 일으키는 테스트")
-    fun findByIdAndNameTest3(): Unit = runBlocking {
-        // given
-        val shopId = ""
-        val shopName = ""
-        val request = MockServerRequest.builder()
-            .queryParam("id", shopId)
-            .queryParam("name", shopName)
-            .build()
-
-        // then
-        shouldThrow<RequestParamLostException> { shopQueryHandler.findById(request) }
-    }
-
-    @Test
-    @DisplayName("[findByIdAndName] 4. shopId와 shopName에 대응하는 shop이 존재하지 않는 경우 ShopNotFoundException을 일으키는 테스트")
+    @DisplayName("[findById] 4. shopId에 대응하는 shop이 존재하지 않는 경우 ShopNotFoundException을 일으키는 테스트")
     fun findByIdAndNameTest4(): Unit = runBlocking {
         // given
         val shopId = "fake shop id"
-        val shopName = "fake shop name"
         val request = MockServerRequest.builder()
             .queryParam("id", shopId)
-            .queryParam("name", shopName)
             .build()
 
         // shop이 존재하지 않는다고 가정한다
-        coEvery { shopQueryService.findShopById(shopId, shopName) } returns null
+        coEvery { shopQueryService.findShopById(shopId) } returns null
 
         // then
         shouldThrow<ShopNotFoundException> { shopQueryHandler.findById(request) }
@@ -108,18 +75,17 @@ internal class ShopQueryHandlerUnitTest {
         val shopName = "fake shop name"
         val request = MockServerRequest.builder()
             .queryParam("id", shopId)
-            .queryParam("name", shopName)
             .build()
 
         // shop이 존재하지 않는다고 가정한다
-        coEvery { shopQueryService.findShopById(shopId, shopName) } returns generateFakeShop(shopId, shopName)
+        coEvery { shopQueryService.findShopById(shopId) } returns generateFakeShop(shopId, shopName)
 
         // when
         val result = shopQueryHandler.findById(request)
 
         // then
         coVerify(exactly = 1) { shopQueryHandler.findById(request) } // queryHandler는 정확히 1회만 호출
-        coVerify(exactly = 1) { shopQueryService.findShopById(shopId, shopName) } // queryService는 정확히 1회만 호출
+        coVerify(exactly = 1) { shopQueryService.findShopById(shopId) } // queryService는 정확히 1회만 호출
         assertEquals(result.statusCode(), HttpStatus.OK) // OK response를 반환
     }
 
@@ -170,7 +136,7 @@ internal class ShopQueryHandlerUnitTest {
         shopId = shopId,
         shopName = shopName,
         salesInfo = SalesInfo(
-            status = false,
+            status = Status.CLOSE,
             openTime = LocalTime.now(),
             closeTime = LocalTime.now(),
             restDayList = listOf(Days.SUN)

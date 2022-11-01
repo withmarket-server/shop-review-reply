@@ -20,13 +20,13 @@ import team.bakkas.dynamo.shopReview.ShopReview
 @ExtendWith(MockKExtension::class)
 internal class ShopReviewServiceTest {
     @MockK(relaxed = true)
-    private lateinit var shopReviewRepository: ShopReviewReader
+    private lateinit var shopReviewReader: ShopReviewReader
 
     private lateinit var shopReviewService: ShopReviewQueryServiceImpl
 
     @BeforeEach
     fun setUp() {
-        shopReviewService = spyk(ShopReviewQueryServiceImpl(shopReviewRepository))
+        shopReviewService = spyk(ShopReviewQueryServiceImpl(shopReviewReader))
     }
 
     // 1-1. 잘못된 review Key로 인해서 review를 가져오지 못하는 경우 테스트
@@ -37,14 +37,14 @@ internal class ShopReviewServiceTest {
         val reviewId = "review-fake-id"
         val reviewTitle = "review-fake-title"
 
-        every { shopReviewRepository.findReviewById(reviewId) } returns Mono.empty()
+        every { shopReviewReader.findReviewById(reviewId) } returns Mono.empty()
 
 
         // when
         val result = shopReviewService.findReviewById(reviewId)
 
         // then
-        verify(exactly = 1) { shopReviewRepository.findReviewById(reviewId) }
+        verify(exactly = 1) { shopReviewReader.findReviewById(reviewId) }
         coVerify(exactly = 1) { shopReviewService.findReviewById(reviewId) }
         assertNull(result)
 
@@ -60,14 +60,14 @@ internal class ShopReviewServiceTest {
         val shopId = "shop-id"
         val shopName = "shop-name"
 
-        every { shopReviewRepository.findReviewById(reviewId) } returns
+        every { shopReviewReader.findReviewById(reviewId) } returns
                 mono { getMockReview(reviewId, reviewTitle, shopId) }
 
         // when
         val shopReview = shopReviewService.findReviewById(reviewId)
 
         // then
-        verify(exactly = 1) { shopReviewRepository.findReviewById(reviewId) }
+        verify(exactly = 1) { shopReviewReader.findReviewById(reviewId) }
         coVerify(exactly = 1) { shopReviewService.findReviewById(reviewId) }
         assertNotNull(shopReview)
         shopReview?.let {
