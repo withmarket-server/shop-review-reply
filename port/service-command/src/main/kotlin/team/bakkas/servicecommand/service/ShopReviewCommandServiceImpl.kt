@@ -64,6 +64,6 @@ class ShopReviewCommandServiceImpl(
         return shopReviewDynamoRepository.getAllShopsByShopId(shopId) // shopId, shopName에 대응하는 shop의 모든 review를 가져와서
             .asFlux()
             .flatMap { shopReviewDynamoRepository.softDeleteReview(it.reviewId) } // Dynamo에 있는 데이터는 모두 soft delete 처리하고
-            .flatMap { shopReviewRedisRepository.softDeleteReview(it.reviewId) } // Redis에 있는 데이터도 모두 soft delete 처리한다
+            .doOnNext { shopReviewRedisRepository.deleteReview(it).subscribe() }
     }
 }

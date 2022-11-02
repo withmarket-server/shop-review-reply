@@ -20,7 +20,7 @@ class GrpcShopService(
         val shopId = request.shopId
 
         val foundShop = shopQueryService.findShopById(shopId)
-        val isSatisfied: Boolean = foundShop?.deletedAt != null
+        val isSatisfied: Boolean = foundShop != null && foundShop.deletedAt == null
 
         return CheckExistShopResponse.newBuilder()
             .setResult(isSatisfied)

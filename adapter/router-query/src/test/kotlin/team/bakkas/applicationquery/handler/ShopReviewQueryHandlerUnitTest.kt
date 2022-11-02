@@ -18,7 +18,6 @@ import team.bakkas.common.exceptions.RequestParamLostException
 import team.bakkas.common.exceptions.shopReview.ShopReviewNotFoundException
 import team.bakkas.domainquery.service.ifs.ShopReviewQueryService
 import team.bakkas.dynamo.shopReview.ShopReview
-import java.time.LocalDateTime
 
 @ExtendWith(MockKExtension::class)
 internal class ShopReviewQueryHandlerUnitTest {
@@ -44,7 +43,7 @@ internal class ShopReviewQueryHandlerUnitTest {
             .build()
 
         // then
-        shouldThrow<RequestParamLostException> { shopReviewQueryHandler.findReviewByIdAndTitle(request) }
+        shouldThrow<RequestParamLostException> { shopReviewQueryHandler.findReviewById(request) }
     }
 
     @Test
@@ -59,7 +58,7 @@ internal class ShopReviewQueryHandlerUnitTest {
             .build()
 
         // then
-        shouldThrow<RequestParamLostException> { shopReviewQueryHandler.findReviewByIdAndTitle(request) }
+        shouldThrow<RequestParamLostException> { shopReviewQueryHandler.findReviewById(request) }
     }
 
     @Test
@@ -76,7 +75,7 @@ internal class ShopReviewQueryHandlerUnitTest {
         coEvery { shopReviewService.findReviewById(reviewId) } returns null
 
         // then
-        shouldThrow<ShopReviewNotFoundException> { shopReviewQueryHandler.findReviewByIdAndTitle(request) }
+        shouldThrow<ShopReviewNotFoundException> { shopReviewQueryHandler.findReviewById(request) }
     }
 
     @Test
@@ -94,11 +93,11 @@ internal class ShopReviewQueryHandlerUnitTest {
                 getMockReview(reviewId, reviewTitle, "shop id", "shop name")
 
         // when
-        val result = shopReviewQueryHandler.findReviewByIdAndTitle(request)
+        val result = shopReviewQueryHandler.findReviewById(request)
 
         // then
         coVerify(exactly = 1) { shopReviewService.findReviewById(reviewId) }
-        coVerify(exactly = 1) { shopReviewQueryHandler.findReviewByIdAndTitle(request) }
+        coVerify(exactly = 1) { shopReviewQueryHandler.findReviewById(request) }
         assertEquals(result.statusCode(), HttpStatus.OK)
     }
 

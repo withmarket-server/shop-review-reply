@@ -21,7 +21,7 @@ class GrpcShopReviewService(
 
         // 찾으면 예외 발생이 없음
         val foundReview = shopReviewQueryService.findReviewById(reviewId)
-        val isSatisfied = foundReview?.deletedAt != null
+        val isSatisfied = foundReview != null && foundReview.deletedAt == null
 
         return CheckExistShopReviewResponse.newBuilder()
             .setResult(isSatisfied)

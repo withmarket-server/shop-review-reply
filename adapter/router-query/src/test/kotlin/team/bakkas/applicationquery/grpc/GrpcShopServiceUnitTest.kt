@@ -19,6 +19,7 @@ import team.bakkas.dynamo.shop.vo.category.DetailCategory
 import team.bakkas.dynamo.shop.vo.sale.Days
 import team.bakkas.dynamo.shop.vo.sale.Status
 import team.bakkas.grpcIfs.v1.shop.CheckExistShopRequest
+import java.time.LocalDateTime
 import java.time.LocalTime
 
 // gRPC shop service에 대한 단위테스트
@@ -75,6 +76,30 @@ internal class GrpcShopServiceUnitTest {
         coVerify(exactly = 1) { shopQueryService.findShopById(shopId) }
         with(response) {
             assertEquals(this.result, true)
+        }
+    }
+
+    @Test
+    @DisplayName("[isExistShop] 3. Shop이 삭제되어있는 경우")
+    fun findForDeletedShop(): Unit = runBlocking {
+        // given
+        val shopId = "shopId"
+        val shopName = "shopName"
+        val request = CheckExistShopRequest.newBuilder()
+            .setShopId(shopId)
+            .build()
+
+        coEvery { shopQueryService.findShopById(shopId) } returns
+                generateFakeShop(shopId, shopName).apply { deletedAt = LocalDateTime.now() }
+
+        // when
+        val response = grpcShopService.isExistShop(request)
+
+        // then
+        coVerify(exactly = 1) { grpcShopService.isExistShop(request) }
+        coVerify(exactly = 1) { shopQueryService.findShopById(shopId) }
+        with(response) {
+            assertEquals(this.result, false)
         }
     }
 

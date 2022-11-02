@@ -28,7 +28,7 @@ class ShopReviewQueryHandler(
      * @throws RequestParamLostException
      * @return ServerResponse
      */
-    suspend fun findReviewByIdAndTitle(request: ServerRequest): ServerResponse = coroutineScope {
+    suspend fun findReviewById(request: ServerRequest): ServerResponse = coroutineScope {
         // id와 title을 request로부터 받아오고, 존재하지 않으면 바로 에러 처리를 수행한다
         val reviewId = request.queryParamOrNull("id") ?: throw RequestParamLostException("reviewId is lost!!")
 

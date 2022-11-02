@@ -31,6 +31,10 @@ class ShopQueryHandler(
         // shop이 발견되지 않으면 ShopNotFoundException을 일으킨다
         val shop = shopQueryService.findShopById(shopId) ?: throw ShopNotFoundException("Shop is not found!!")
 
+        if(shop.deletedAt != null) {
+            throw ShopNotFoundException("Shop is not found!!")
+        }
+
         return@coroutineScope ok()
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValueAndAwait(ResultFactory.getSingleResult(shop.toSimpleResponse()))

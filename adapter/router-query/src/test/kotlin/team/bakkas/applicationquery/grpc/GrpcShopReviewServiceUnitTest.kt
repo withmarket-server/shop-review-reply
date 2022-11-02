@@ -74,6 +74,30 @@ internal class GrpcShopReviewServiceUnitTest {
         assertEquals(response.result, true)
     }
 
+    @Test
+    @DisplayName("[isExistShopReview] Review가 삭제된 경우 실패")
+    fun findForDeletedReview(): Unit = runBlocking {
+        // given
+        val reviewId = "1"
+        val reviewTitle = "review1"
+        val shopId = "1"
+        val shopName = "shop1"
+        val request = CheckExistShopReviewRequest.newBuilder()
+            .setReviewId(reviewId)
+            .build()
+
+        coEvery { shopReviewQueryService.findReviewById(reviewId) } returns
+                getMockReview(reviewId, reviewTitle, shopId, shopName).apply { deletedAt = LocalDateTime.now() }
+
+        // when
+        val response = grpcShopReviewService.isExistShopReview(request)
+
+        // then
+        coVerify(exactly = 1) { grpcShopReviewService.isExistShopReview(request) }
+        coVerify(exactly = 1) { shopReviewQueryService.findReviewById(reviewId) }
+        assertEquals(response.result, false)
+    }
+
     // 가짜 review를 반환하는 메소드
     private fun getMockReview(reviewId: String, reviewTitle: String, shopId: String, shopName: String) =
         ShopReview(
