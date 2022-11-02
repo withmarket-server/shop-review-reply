@@ -1,5 +1,6 @@
 package team.bakkas.applicationcommon.advice
 
+import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.web.WebProperties
 import org.springframework.boot.autoconfigure.web.reactive.error.AbstractErrorWebExceptionHandler
 import org.springframework.boot.web.error.ErrorAttributeOptions
@@ -29,6 +30,11 @@ class GlobalExceptionHandler(
 ) : AbstractErrorWebExceptionHandler(
     errorAttributes, WebProperties.Resources(), applicationContext
 ) {
+
+    companion object {
+        val logger = LoggerFactory.getLogger(this::class.java)
+    }
+
     // component 생성시 기본적으로 writer, reader를 설정해준다
     init {
         super.setMessageWriters(serverCodecConfigurer.writers)
@@ -46,6 +52,9 @@ class GlobalExceptionHandler(
     private fun renderErrorResponse(request: ServerRequest): Mono<ServerResponse> {
         // exception을 request로부터 가져온다
         val throwable = getError(request)
+
+        logger.error(throwable.toString())
+
         val errorPropertiesMap = errorAttributes.getErrorAttributes(request, ErrorAttributeOptions.defaults())
 
         val responseBody = when (throwable) {

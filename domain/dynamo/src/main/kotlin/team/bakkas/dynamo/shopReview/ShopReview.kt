@@ -27,7 +27,7 @@ class ShopReview(
 ) : Serializable, BaseTimeEntity() {
 
     companion object {
-        val shopSecondaryIndexName = "shop_id-shop_name-index"
+        val shopSecondaryIndexName = "shop_id-index"
 
         val tableSchema = TableSchema.builder(ShopReview::class.java)
             .newItemSupplier(::ShopReview)

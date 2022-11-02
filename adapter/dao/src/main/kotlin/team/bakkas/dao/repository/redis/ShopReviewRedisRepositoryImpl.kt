@@ -59,7 +59,7 @@ class ShopReviewRedisRepositoryImpl(
                 val tokenizer = StringTokenizer(key, ":")
                 tokenizer.nextToken().equals("shopReview")
             }
-            .map { findReviewById(it).awaitSingle() }
+            .map { shopReviewReactiveRedisTemplate.opsForValue().get(it).awaitSingle() }
             .filter { it.shopId == shopId }
     }
 }

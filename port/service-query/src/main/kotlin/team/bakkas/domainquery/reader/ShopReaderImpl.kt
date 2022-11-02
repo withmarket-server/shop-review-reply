@@ -36,12 +36,14 @@ class ShopReaderImpl(
 
         // Redis에서 key에 해당하는 값을 찾지 못한경우 alternativeShopMono를 이용해 Dynamo에서 찾아온다
         // Dynamo에서 찾아오는데 성공하는 경우 동시에 Redis에 캐싱한다
-        return shopRedisRepository.findShopById(key)
+        return shopRedisRepository.findShopByKey(key)
             .switchIfEmpty(alternativeShopMono)
     }
 
     // Redis로부터 모든 Shop을 가져오는 메소드
-    override fun getAllShops(): Flow<Shop> = shopRedisRepository.getAllShops()
+    override fun getAllShops(): Flow<Shop> {
+        return shopRedisRepository.getAllShops()
+    }
 
     // cache hit 방식으로 모든 shop을 가져오는 메소드
     override fun getAllShopsWithCaching(): Flow<Shop> {

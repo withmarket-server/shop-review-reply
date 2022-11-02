@@ -3,9 +3,11 @@ package team.bakkas.dao.repository.dynamo
 import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.reactive.asFlow
+import kotlinx.coroutines.reactive.awaitSingle
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.beans.factory.annotation.Autowired
@@ -19,6 +21,7 @@ import software.amazon.awssdk.enhanced.dynamodb.TableSchema
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 import team.bakkas.dynamo.shopReview.ShopReview
 import java.time.LocalDateTime
+import java.util.*
 
 /** ShopReviewRepository에 대한 Test Class.
  * @author Brian
@@ -33,6 +36,18 @@ internal class ShopReviewDynamoRepositoryTest @Autowired constructor(
     // 테이블 정의
     val asyncTable = dynamoDbEnhancedAsyncClient.table("shop_review", TableSchema.fromBean(ShopReview::class.java))
 
+    @Test
+    @DisplayName("리뷰 작성 테스트")
+    fun createReviewTest(): Unit = runBlocking {
+        val reviewId = UUID.randomUUID().toString()
+        val reviewTitle = "인쇄기가 너무 좋네요!!"
+        val shopId = "90223871-8cd0-416f-9a2b-2df4ead38c37"
+        val review = getMockReview(reviewId, reviewTitle, shopId)
+
+        // when
+        shopReviewDynamoRepository.createReviewAsync(review).awaitSingle()
+    }
+
 
     // 키를 생성하는 메소드
     private fun generateKey(reviewId: String): Key = Key.builder()
@@ -40,13 +55,13 @@ internal class ShopReviewDynamoRepositoryTest @Autowired constructor(
         .build()
 
     // 리뷰를 하나 생성하는 메소드
-    private fun getMockReview(reviewId: String, reviewTitle: String, shopId: String, shopName: String) =
+    private fun getMockReview(reviewId: String, reviewTitle: String, shopId: String) =
         ShopReview(
             reviewId = reviewId,
             reviewTitle = reviewTitle,
             shopId = shopId,
             reviewContent = "매우 불만족.",
-            reviewScore = 1.0,
+            reviewScore = 9.0,
             reviewPhotoList = listOf()
         )
 }

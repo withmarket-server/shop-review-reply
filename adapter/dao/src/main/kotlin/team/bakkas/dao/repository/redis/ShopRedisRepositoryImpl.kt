@@ -30,14 +30,14 @@ class ShopRedisRepositoryImpl(
     }
 
     // redis에 저장된 shop을 가져오는 메소드
-    override fun findShopById(shopId: String): Mono<Shop> =
-        shopReactiveRedisTemplate.opsForValue().get(RedisUtils.generateShopRedisKey(shopId))
+    override fun findShopByKey(shopKey: String): Mono<Shop> =
+        shopReactiveRedisTemplate.opsForValue().get(shopKey)
 
     // DynamoDB에 저장된 모든 shop을 가져오는 메소드
     override fun getAllShops(): Flow<Shop> {
         return shopReactiveRedisTemplate.scanAsFlow()
             .filter { key -> StringTokenizer(key, ":").nextToken().equals("shop") }
-            .map { findShopById(it).awaitSingle() }
+            .map { findShopByKey(it).awaitSingle() }
     }
 
     // shop을 삭제하는 메소드
@@ -50,7 +50,7 @@ class ShopRedisRepositoryImpl(
     override fun softDeleteShop(shopId: String): Mono<Shop> {
         val shopKey = RedisUtils.generateShopRedisKey(shopId)
 
-        return findShopById(shopKey) // shopId, shopName을 기반으로 shop을 찾아온 다음에
+        return findShopByKey(shopKey) // shopId, shopName을 기반으로 shop을 찾아온 다음에
             .map { it.softDelete() } // 해당 shop을 soft delete를 수행하고
             .flatMap { cacheShop(it) } // 해당 shop을 다시 redis에 저장한다
     }

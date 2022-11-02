@@ -3,6 +3,7 @@ package team.bakkas.dao.repository.dynamo
 import kotlinx.coroutines.*
 import kotlinx.coroutines.reactor.awaitSingle
 import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.beans.factory.annotation.Autowired
@@ -32,6 +33,17 @@ internal class ShopDynamoRepositoryTest @Autowired constructor(
         val createdShopMono = shopDynamoRepository.createShop(mockShop).awaitSingle()
 
         println(createdShopMono.toString())
+    }
+
+    @Test
+    @DisplayName("soft delete 테스트")
+    fun softDeleteTest(): Unit = runBlocking {
+        val shopId = "90223871-8cd0-416f-9a2b-2df4ead38c37"
+
+        val shop = shopDynamoRepository.softDeleteShop(shopId).awaitSingle()
+
+        println(shop.shopId)
+        println(shop.deletedAt)
     }
 
     fun generateKey(shopId: String, shopName: String) = Key.builder()

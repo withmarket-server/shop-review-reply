@@ -2,6 +2,7 @@ package team.bakkas.applicationkafka.eventListeners
 
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.stereotype.Component
+import team.bakkas.clientcommand.shop.ShopCommand
 import team.bakkas.dynamo.shop.Shop
 import team.bakkas.eventinterface.kafka.KafkaConsumerGroups
 import team.bakkas.eventinterface.kafka.KafkaTopics
@@ -29,9 +30,9 @@ class ShopEventListener(
         topics = [KafkaTopics.shopDeleteTopic],
         groupId = KafkaConsumerGroups.shopGroup
     )
-    fun deleteShop(shopId: String) {
-        shopCommandService.softDeleteShop(shopId)
-            .doOnSuccess { shopReviewCommandService.softDeleteAllReviewsOfShop(shopId).subscribe() }
+    fun deleteShop(deletedEvent: ShopCommand.DeletedEvent) {
+        shopCommandService.softDeleteShop(deletedEvent.shopId)
+            .doOnSuccess { shopReviewCommandService.softDeleteAllReviewsOfShop(deletedEvent.shopId).subscribe() }
             .subscribe()
     }
 }

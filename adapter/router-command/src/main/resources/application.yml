@@ -3,4 +3,4 @@ server:
 
 spring:
   profiles:
-    active: serverDynamo, serverCache, serverProducer
+    active: localDynamo, localCache, localProducer
