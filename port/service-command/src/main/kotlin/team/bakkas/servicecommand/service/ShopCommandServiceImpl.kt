@@ -38,7 +38,7 @@ class ShopCommandServiceImpl(
     @Transactional
     override fun softDeleteShop(shopId: String): Mono<Shop> {
         return shopDynamoRepository.softDeleteShop(shopId) // dynamoDB의 data를 soft delete 처리하고
-            .doOnSuccess { shopRedisRepository.softDeleteShop(shopId).subscribe() } // Redis의 데이터도 soft delete 처리한다
+            .doOnSuccess { shopRedisRepository.deleteShop(shopId).subscribe() } // Redis의 데이터는 날려버린다
     }
 
     // Shop에 review 생성에 의해 생긴 변화를 반영해서 다시 저장해주는 메소드
