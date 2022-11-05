@@ -141,7 +141,8 @@ internal class ShopCommandServiceUnitTest {
         shopDetailCategory = DetailCategory.CAFE_BREAD,
         mainImageUrl = "fake-image",
         representativeImageUrlList = listOf("fake-image-1", "fake-image-2"),
-        deliveryTipPerDistanceList = listOf(DeliveryTipPerDistance(3.0, 2000))
+        deliveryTipPerDistanceList = listOf(DeliveryTipPerDistance(3.0, 2000)),
+        businessNumber = "3333-3333-3333"
     )
 
     private fun ShopCommand.CreateRequest.toEntity() = Shop(
@@ -156,6 +157,7 @@ internal class ShopCommandServiceUnitTest {
         deliveryTipPerDistanceList = deliveryTipPerDistanceList,
         totalScore = 0.0,
         reviewNumber = 0,
-        shopDescription = shopDescription
+        shopDescription = shopDescription,
+        businessNumber = businessNumber
     )
 }

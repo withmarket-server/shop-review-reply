@@ -18,6 +18,7 @@ import java.util.*
 class Shop(
     var shopId: String = UUID.randomUUID().toString(), // PK
     var shopName: String = "",
+    var businessNumber: String = "", // 사업자 등록번호
     var salesInfo: SalesInfo = SalesInfo(), // 영업 관련 정보
     var addressInfo: AddressInfo = AddressInfo(), // 주소 정보
     var latLon: LatLon = LatLon(), // 위도, 경도 정보
@@ -42,6 +43,10 @@ class Shop(
             .addAttribute(String::class.java) {
                 it.name("shop_name").getter(Shop::shopName::get)
                     .setter(Shop::shopName::set)
+            }
+            .addAttribute(String::class.java) {
+                it.name("business_number").getter(Shop::businessNumber::get)
+                    .setter(Shop::businessNumber::set)
             }
             .addAttribute(SalesInfo.enhancedType) {
                 it.name("sales_info").getter(Shop::salesInfo::get)

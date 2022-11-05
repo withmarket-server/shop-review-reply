@@ -143,10 +143,8 @@ internal class ShopReviewCommandHandlerUnitTest {
     fun deleteReviewTest1(): Unit = runBlocking {
         // given
         val id = ""
-        val title = "mock title"
         val request = MockServerRequest.builder()
             .queryParam("id", id)
-            .queryParam("title", title)
             .build()
 
         // then
@@ -154,44 +152,12 @@ internal class ShopReviewCommandHandlerUnitTest {
     }
 
     @Test
-    @DisplayName("[deleteReview] 2. reviewTitle이 비어서 들어오는 경우 RequestParamLostException을 일으키는 테스트")
-    fun deleteReviewTest2(): Unit = runBlocking {
-        // given
-        val id = "fake id"
-        val title = ""
-        val request = MockServerRequest.builder()
-            .queryParam("id", id)
-            .queryParam("title", title)
-            .build()
-
-        // then
-        shouldThrow<RequestParamLostException> { shopReviewCommandHandler.deleteReview(request) }
-    }
-
-    @Test
-    @DisplayName("[deleteReview] 3. reviewId, reviewTitle이 모두 비어서 들어오는 경우 RequestParamLostException을 일으키는 테스트")
-    fun deleteReviewTest3(): Unit = runBlocking {
-        // given
-        val id = ""
-        val title = ""
-        val request = MockServerRequest.builder()
-            .queryParam("id", id)
-            .queryParam("title", title)
-            .build()
-
-        // then
-        shouldThrow<RequestParamLostException> { shopReviewCommandHandler.deleteReview(request) }
-    }
-
-    @Test
-    @DisplayName("[deleteReview] 4. review가 존재하지 않는 경우 ShopReviewNotFoundException을 일으키는 테스트")
+    @DisplayName("[deleteReview] 2. review가 존재하지 않는 경우 ShopReviewNotFoundException을 일으키는 테스트")
     fun deleteReviewTest4(): Unit = runBlocking {
         // given
         val id = "fake id"
-        val title = "fake title"
         val request = MockServerRequest.builder()
             .queryParam("id", id)
-            .queryParam("title", title)
             .build()
 
         // id, title에 대응하는 shopReview는 없다고 가정한다

@@ -205,14 +205,15 @@ internal class ShopCommandHandlerUnitTest {
         lotNumberAddress = "경산시 가짜동",
         roadNameAddress = "경산시 대학로",
         detailAddress = null,
-        latitude = 128.7,
-        longitude = 35.8,
+        longitude = 128.7,
+        latitude = 35.8,
         isBranch = false,
         shopDescription = "테스트용 가게입니다",
         shopCategory = Category.FOOD_BEVERAGE,
         shopDetailCategory = DetailCategory.CAFE_BREAD,
         mainImageUrl = "fake-image",
         representativeImageUrlList = listOf("fake-image-1", "fake-image-2"),
-        deliveryTipPerDistanceList = listOf(DeliveryTipPerDistance(3.0, 2000))
+        deliveryTipPerDistanceList = listOf(DeliveryTipPerDistance(3.0, 2000)),
+        businessNumber = "3333-3333-3333"
     )
 }

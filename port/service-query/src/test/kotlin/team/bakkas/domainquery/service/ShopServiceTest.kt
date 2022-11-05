@@ -152,6 +152,7 @@ internal class ShopServiceTest {
         categoryInfo = CategoryInfo(shopCategory = Category.ETC, shopDetailCategory = DetailCategory.ETC_ALL),
         totalScore = 0.0,
         reviewNumber = 0,
-        shopDescription = "포오오스 마트!"
+        shopDescription = "포오오스 마트!",
+        businessNumber = "123123-33123-33123"
     )
 }

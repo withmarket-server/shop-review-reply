@@ -149,6 +149,7 @@ internal class ShopQueryHandlerUnitTest {
         deliveryTipPerDistanceList = listOf(DeliveryTipPerDistance(3.0, 3000)),
         totalScore = 0.0,
         reviewNumber = 0,
-        shopDescription = "shopDescription"
+        shopDescription = "shopDescription",
+        businessNumber = "3333-3333-3333"
     )
 }
