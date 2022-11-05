@@ -1,13 +1,8 @@
 package team.bakkas.servicecommand.service
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.reactor.awaitSingle
-import kotlinx.coroutines.reactor.awaitSingleOrNull
-import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Mono
-import team.bakkas.common.utils.RedisUtils
 import team.bakkas.dynamo.shop.Shop
 import team.bakkas.dynamo.shop.usecases.applyReviewCreate
 import team.bakkas.dynamo.shop.usecases.applyReviewDelete
@@ -34,22 +29,22 @@ class ShopCommandServiceImpl(
     }
 
     @Transactional
-    override fun deleteShop(shopId: String, shopName: String): Mono<Shop> {
-        return shopDynamoRepository.deleteShop(shopId, shopName) // shop을 dynamo에서 삭제시키고
-            .doOnSuccess { shopRedisRepository.deleteShop(shopId, shopName).subscribe() } // 삭제에 성공하면 redis에 있는 shop도 삭제
+    override fun deleteShop(shopId: String): Mono<Shop> {
+        return shopDynamoRepository.deleteShop(shopId) // shop을 dynamo에서 삭제시키고
+            .doOnSuccess { shopRedisRepository.deleteShop(shopId).subscribe() } // 삭제에 성공하면 redis에 있는 shop도 삭제
     }
 
     // Shop을 soft delete하는 메소드
     @Transactional
-    override fun softDeleteShop(shopId: String, shopName: String): Mono<Shop> {
-        return shopDynamoRepository.softDeleteShop(shopId, shopName)
-            .doOnSuccess { shopRedisRepository.softDeleteShop(shopId, shopName).subscribe() }
+    override fun softDeleteShop(shopId: String): Mono<Shop> {
+        return shopDynamoRepository.softDeleteShop(shopId) // dynamoDB의 data를 soft delete 처리하고
+            .doOnSuccess { shopRedisRepository.deleteShop(shopId).subscribe() } // Redis의 데이터는 날려버린다
     }
 
     // Shop에 review 생성에 의해 생긴 변화를 반영해서 다시 저장해주는 메소드
     @Transactional
-    override fun applyCreateReview(shopId: String, shopName: String, reviewScore: Double): Mono<Shop> {
-        return shopDynamoRepository.findShopByIdAndName(shopId, shopName) // shopId, shopName을 이용해서 shop을 찾아내고
+    override fun applyCreateReview(shopId: String, reviewScore: Double): Mono<Shop> {
+        return shopDynamoRepository.findShopById(shopId) // shopId, shopName을 이용해서 shop을 찾아내고
             .map { it.applyReviewCreate(reviewScore) } // shop에 reviewScore를 반영해서 변화시키고
             .flatMap { shopDynamoRepository.createShop(it) } // 다시 저장한다
             .doOnSuccess { shopRedisRepository.cacheShop(it).subscribe() } // 저장에 성공하면 동시에 redis에 캐싱을 수행한다
@@ -57,8 +52,8 @@ class ShopCommandServiceImpl(
 
     // Shop에 review 삭제에 의해 생긴 변화를 반영해서 다시 저장해주는 메소드
     @Transactional
-    override fun applyDeleteReview(shopId: String, shopName: String, reviewScore: Double): Mono<Shop> {
-        return shopDynamoRepository.findShopByIdAndName(shopId, shopName) // shopId, shopName을 기반으로 shop을 찾아내고
+    override fun applyDeleteReview(shopId: String, reviewScore: Double): Mono<Shop> {
+        return shopDynamoRepository.findShopById(shopId) // shopId, shopName을 기반으로 shop을 찾아내고
             .map { it.applyReviewDelete(reviewScore) } // reviewScore를 반영하고
             .flatMap { shopDynamoRepository.createShop(it) } // dynamo에 밀어넣고
             .doOnSuccess { shopRedisRepository.cacheShop(it).subscribe() } // redis에 다시 캐싱한다

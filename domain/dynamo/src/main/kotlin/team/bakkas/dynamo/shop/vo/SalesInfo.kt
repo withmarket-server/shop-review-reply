@@ -14,7 +14,7 @@ import java.time.LocalTime
  */
 @DynamoDbBean
 data class SalesInfo(
-    @get:DynamoDbAttribute("is_open")
+    @get:DynamoDbAttribute("status")
     var status: Status = Status.CLOSE,
     @get:DynamoDbAttribute("open_time")
     var openTime: LocalTime = LocalTime.now(),

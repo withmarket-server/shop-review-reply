@@ -15,6 +15,7 @@ sealed class ShopCommand {
     @ShopCreatable
     data class CreateRequest(
         @JsonProperty("shop_name") var shopName: String,
+        @JsonProperty("business_number") var businessNumber: String,
         @JsonProperty("open_time") var openTime: LocalTime,
         @JsonProperty("close_time") var closeTime: LocalTime,
         @JsonProperty("rest_day_list") var restDayList: List<Days>,
@@ -26,20 +27,19 @@ sealed class ShopCommand {
         @JsonProperty("shop_description") var shopDescription: String,
         @JsonProperty("is_branch") var isBranch: Boolean,
         @JsonProperty("branch_name") var branchName: String? = null,
-        @JsonProperty("shop_category") var shopCategory: Category,
-        @JsonProperty("shop_detail_category") var shopDetailCategory: DetailCategory,
+        @JsonProperty("category") var shopCategory: Category,
+        @JsonProperty("detail_category") var shopDetailCategory: DetailCategory,
         @JsonProperty("main_image_url") var mainImageUrl: String?,
         @JsonProperty("representative_image_url_list") var representativeImageUrlList: List<String>,
         @JsonProperty("delivery_tip_per_distance_list") var deliveryTipPerDistanceList: List<DeliveryTipPerDistance>
     )
 
     data class DeletedEvent(
-        var shopId: String,
-        var shopName: String
+        var shopId: String
     ) {
         companion object {
             // constructor
-            fun of(shopId: String, shopName: String) = DeletedEvent(shopId, shopName)
+            fun of(shopId: String) = DeletedEvent(shopId)
         }
     }
 }

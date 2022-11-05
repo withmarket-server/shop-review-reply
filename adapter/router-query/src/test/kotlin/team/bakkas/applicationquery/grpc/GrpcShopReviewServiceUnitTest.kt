@@ -37,17 +37,16 @@ internal class GrpcShopReviewServiceUnitTest {
         val reviewTitle = "review1"
         val request = CheckExistShopReviewRequest.newBuilder()
             .setReviewId(reviewId)
-            .setReviewTitle(reviewTitle)
             .build()
 
-        coEvery { shopReviewQueryService.findReviewByIdAndTitle(reviewId, reviewTitle) } returns null
+        coEvery { shopReviewQueryService.findReviewById(reviewId) } returns null
 
         // when
         val response = grpcShopReviewService.isExistShopReview(request)
 
         // then
         coVerify(exactly = 1) { grpcShopReviewService.isExistShopReview(request) }
-        coVerify(exactly = 1) { shopReviewQueryService.findReviewByIdAndTitle(reviewId, reviewTitle) }
+        coVerify(exactly = 1) { shopReviewQueryService.findReviewById(reviewId) }
         assertEquals(response.result, false)
     }
 
@@ -61,10 +60,9 @@ internal class GrpcShopReviewServiceUnitTest {
         val shopName = "shop1"
         val request = CheckExistShopReviewRequest.newBuilder()
             .setReviewId(reviewId)
-            .setReviewTitle(reviewTitle)
             .build()
 
-        coEvery { shopReviewQueryService.findReviewByIdAndTitle(reviewId, reviewTitle) } returns
+        coEvery { shopReviewQueryService.findReviewById(reviewId) } returns
                 getMockReview(reviewId, reviewTitle, shopId, shopName)
 
         // when
@@ -72,8 +70,32 @@ internal class GrpcShopReviewServiceUnitTest {
 
         // then
         coVerify(exactly = 1) { grpcShopReviewService.isExistShopReview(request) }
-        coVerify(exactly = 1) { shopReviewQueryService.findReviewByIdAndTitle(reviewId, reviewTitle) }
+        coVerify(exactly = 1) { shopReviewQueryService.findReviewById(reviewId) }
         assertEquals(response.result, true)
+    }
+
+    @Test
+    @DisplayName("[isExistShopReview] Review가 삭제된 경우 실패")
+    fun findForDeletedReview(): Unit = runBlocking {
+        // given
+        val reviewId = "1"
+        val reviewTitle = "review1"
+        val shopId = "1"
+        val shopName = "shop1"
+        val request = CheckExistShopReviewRequest.newBuilder()
+            .setReviewId(reviewId)
+            .build()
+
+        coEvery { shopReviewQueryService.findReviewById(reviewId) } returns
+                getMockReview(reviewId, reviewTitle, shopId, shopName).apply { deletedAt = LocalDateTime.now() }
+
+        // when
+        val response = grpcShopReviewService.isExistShopReview(request)
+
+        // then
+        coVerify(exactly = 1) { grpcShopReviewService.isExistShopReview(request) }
+        coVerify(exactly = 1) { shopReviewQueryService.findReviewById(reviewId) }
+        assertEquals(response.result, false)
     }
 
     // 가짜 review를 반환하는 메소드
@@ -82,11 +104,8 @@ internal class GrpcShopReviewServiceUnitTest {
             reviewId = reviewId,
             reviewTitle = reviewTitle,
             shopId = shopId,
-            shopName = shopName,
             reviewContent = "저는 아주 불만족했어요! ^^",
             reviewScore = 1.0,
-            reviewPhotoList = listOf(),
-            createdAt = LocalDateTime.now(),
-            updatedAt = null
+            reviewPhotoList = listOf()
         )
 }

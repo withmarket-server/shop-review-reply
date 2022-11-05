@@ -11,14 +11,14 @@ interface ShopReviewCommandService {
     fun createReview(shopReview: ShopReview): Mono<ShopReview>
 
     // shopReview를 삭제하는 메소드
-    fun deleteReview(reviewId: String, reviewTitle: String): Mono<ShopReview>
+    fun deleteReview(reviewId: String): Mono<ShopReview>
 
     // shopReview를 softDelete하는 메소드
-    fun softDeleteReview(reviewId: String, reviewTitle: String): Mono<ShopReview>
+    fun softDeleteReview(reviewId: String): Mono<ShopReview>
 
     // shop에 있는 모든 리뷰를 삭제시키는 메소드
-    fun deleteAllReviewsOfShop(shopId: String, shopName: String): Flux<ShopReview>
+    fun deleteAllReviewsOfShop(shopId: String): Flux<ShopReview>
 
     // shop에 있는 모든 review를 soft delete하는 메소드
-    fun softDeleteAllReviewsOfShop(shopId: String, shopName: String): Flux<ShopReview>
+    fun softDeleteAllReviewsOfShop(shopId: String): Flux<ShopReview>
 }

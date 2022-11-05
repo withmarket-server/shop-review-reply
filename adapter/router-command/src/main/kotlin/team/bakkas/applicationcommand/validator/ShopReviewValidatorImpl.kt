@@ -37,7 +37,7 @@ class ShopReviewValidatorImpl(
         validate(this, errors)
 
         // WebClient를 이용해서 해당 shop이 존재하는지 여부만 뽑아온다
-        val isShopExists: Boolean = shopGrpcClient.isExistShop(shopId, shopName).result
+        val isShopExists: Boolean = shopGrpcClient.isExistShop(shopId).result
 
         // shop이 존재하지 않는 경우 예외를 발생시킨다
         check(isShopExists) {
@@ -46,19 +46,14 @@ class ShopReviewValidatorImpl(
     }
 
     // 해당 review가 삭제 가능한지 검증하는 메소드
-    override suspend fun validateDeletable(reviewId: String, reviewTitle: String) {
+    override suspend fun validateDeletable(reviewId: String) {
         // reviewId가 비어서 들어오는 경우 예외 처리
         check(reviewId.isNotEmpty()) {
             throw RequestParamLostException("reviewId is lost!!")
         }
 
-        // reviewTitle이 비어서 들어오는 경우 예외 처리
-        check(reviewTitle.isNotEmpty()) {
-            throw RequestParamLostException("reviewTitle is lost!!")
-        }
-
         // 해당 리뷰가 실제 존재하는건지는 체크해본다
-        val reviewResultMono = shopReviewGrpcClient.isExistShopReview(reviewId, reviewTitle).result
+        val reviewResultMono = shopReviewGrpcClient.isExistShopReview(reviewId).result
 
         check(reviewResultMono) {
             throw ShopReviewNotFoundException("shop review가 존재하지 않습니다.")
@@ -70,10 +65,10 @@ class ShopReviewValidatorImpl(
     override fun validate(target: Any, errors: Errors) {
         target::class.java.annotations.map {
             // annotation에 따라서 분기한다
-            when(it) {
+            when (it) {
                 is ReviewCreatable -> rejectEmptyByFieldList(
                     errors,
-                    listOf("reviewTitle", "shopId", "shopName", "reviewContent")
+                    listOf("reviewTitle", "shopId", "reviewContent")
                 )
             }
         }

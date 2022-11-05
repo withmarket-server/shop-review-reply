@@ -28,10 +28,20 @@ class ShopValidatorImpl(
     override fun validate(target: Any, errors: Errors) {
         target::class.java.annotations.map {
             // class에 따라 검증 로직을 분기한다
-            when(it) {
+            when (it) {
                 is ShopCreatable -> rejectEmptyByFieldList(
                     errors,
-                    listOf("shopName", "openTime", "closeTime", "lotNumberAddress", "roadNameAddress", "latitude", "longitude", "shopCategory", "shopDetailCategory")
+                    listOf(
+                        "shopName",
+                        "openTime",
+                        "closeTime",
+                        "lotNumberAddress",
+                        "roadNameAddress",
+                        "latitude",
+                        "longitude",
+                        "shopCategory",
+                        "shopDetailCategory"
+                    )
                 )
             }
         }
@@ -65,22 +75,22 @@ class ShopValidatorImpl(
         }
     }
 
-    override suspend fun validateDeletable(shopId: String, shopName: String) {
+    override suspend fun validateDeletable(shopId: String) {
         // 두 파라미터가 빈 스트링으로 들어오는 것을 방지한다
-        check(shopId.isNotEmpty() && shopName.isNotEmpty()) {
+        check(shopId.isNotEmpty()) {
             throw RequestParamLostException("Empty request params!!")
         }
 
         // shopId, shopName에 대응하는 shop이 존재하는지만 검증하면 끝이다
-        check(shopGrpcClient.isExistShop(shopId, shopName).result) {
+        check(shopGrpcClient.isExistShop(shopId).result) {
             throw ShopNotFoundException("The shop does not exist!!")
         }
     }
 
     // 해당 가게가 한국에 존재하는 가게인지 검증하는 메소드
     private fun validateIsInSouthKorea(latitude: Double, longitude: Double): Boolean {
-        val latitudeSatisfied = latitude > 125.06666667 && latitude < 131.87222222
-        val longitudeSatisfied = longitude > 33.10000000 && longitude < 38.45000000
+        val longitudeSatisfied = longitude > 125.06666667 && longitude < 131.87222222
+        val latitudeSatisfied = latitude > 33.10000000 && latitude < 38.45000000
 
         return latitudeSatisfied && longitudeSatisfied
     }

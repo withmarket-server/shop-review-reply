@@ -19,6 +19,7 @@ import team.bakkas.dynamo.shop.vo.*
 import team.bakkas.dynamo.shop.vo.category.Category
 import team.bakkas.dynamo.shop.vo.category.DetailCategory
 import team.bakkas.dynamo.shop.vo.sale.Days
+import team.bakkas.dynamo.shop.vo.sale.Status
 import team.bakkas.repository.ifs.dynamo.ShopDynamoRepository
 import team.bakkas.repository.ifs.redis.ShopRedisRepository
 import java.time.LocalTime
@@ -75,15 +76,15 @@ internal class ShopCommandServiceUnitTest {
         val shopName = mockShop.shopName
         val reviewScore = 5.0
 
-        every { shopDynamoRepository.findShopByIdAndName(shopId, shopName) } returns Mono.just(mockShop)
+        every { shopDynamoRepository.findShopById(shopId) } returns Mono.just(mockShop)
         every { shopDynamoRepository.createShop(mockShop) } returns Mono.just(mockShop)
 
         // when
-        val result = shopCommandService.applyCreateReview(shopId, shopName, reviewScore).awaitSingleOrNull()
+        val result = shopCommandService.applyCreateReview(shopId, reviewScore).awaitSingleOrNull()
 
         // then
-        verify(exactly = 1) { shopCommandService.applyCreateReview(shopId, shopName, reviewScore) }
-        verify(exactly = 1) { shopDynamoRepository.findShopByIdAndName(shopId, shopName) }
+        verify(exactly = 1) { shopCommandService.applyCreateReview(shopId, reviewScore) }
+        verify(exactly = 1) { shopDynamoRepository.findShopById(shopId) }
         verify(exactly = 1) { shopDynamoRepository.createShop(mockShop) }
         verify(exactly = 1) { shopRedisRepository.cacheShop(mockShop) }
         assertNotNull(result)
@@ -105,15 +106,15 @@ internal class ShopCommandServiceUnitTest {
         val shopId = mockShop.shopId
         val shopName = mockShop.shopName
 
-        every { shopDynamoRepository.findShopByIdAndName(shopId, shopName) } returns Mono.just(mockShop)
+        every { shopDynamoRepository.findShopById(shopId) } returns Mono.just(mockShop)
         every { shopDynamoRepository.createShop(mockShop) } returns Mono.just(mockShop)
 
         // when
-        val result = shopCommandService.applyDeleteReview(shopId, shopName, reviewScore).awaitSingleOrNull()
+        val result = shopCommandService.applyDeleteReview(shopId, reviewScore).awaitSingleOrNull()
 
         // then
-        verify(exactly = 1) { shopCommandService.applyDeleteReview(shopId, shopName, reviewScore) }
-        verify(exactly = 1) { shopDynamoRepository.findShopByIdAndName(shopId, shopName) }
+        verify(exactly = 1) { shopCommandService.applyDeleteReview(shopId, reviewScore) }
+        verify(exactly = 1) { shopDynamoRepository.findShopById(shopId) }
         verify(exactly = 1) { shopDynamoRepository.createShop(mockShop) }
         verify(exactly = 1) { shopRedisRepository.cacheShop(mockShop) }
         assertNotNull(result)
@@ -140,13 +141,14 @@ internal class ShopCommandServiceUnitTest {
         shopDetailCategory = DetailCategory.CAFE_BREAD,
         mainImageUrl = "fake-image",
         representativeImageUrlList = listOf("fake-image-1", "fake-image-2"),
-        deliveryTipPerDistanceList = listOf(DeliveryTipPerDistance(3.0, 2000))
+        deliveryTipPerDistanceList = listOf(DeliveryTipPerDistance(3.0, 2000)),
+        businessNumber = "3333-3333-3333"
     )
 
     private fun ShopCommand.CreateRequest.toEntity() = Shop(
         shopId = UUID.randomUUID().toString(),
         shopName = shopName,
-        salesInfo = SalesInfo(status = false, openTime = openTime, closeTime = closeTime, restDayList = restDayList),
+        salesInfo = SalesInfo(status = Status.CLOSE, openTime = openTime, closeTime = closeTime, restDayList = restDayList),
         addressInfo = AddressInfo(lotNumberAddress, roadNameAddress),
         latLon = LatLon(latitude, longitude),
         shopImageInfo = ShopImageInfo(mainImageUrl, representativeImageUrlList),
@@ -155,6 +157,7 @@ internal class ShopCommandServiceUnitTest {
         deliveryTipPerDistanceList = deliveryTipPerDistanceList,
         totalScore = 0.0,
         reviewNumber = 0,
-        shopDescription = shopDescription
+        shopDescription = shopDescription,
+        businessNumber = businessNumber
     )
 }

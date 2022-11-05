@@ -16,8 +16,8 @@ interface ShopRedisRepository {
     fun getAllShops(): Flow<Shop>
 
     // shop을 삭제하는 메소드
-    fun deleteShop(shopId: String, shopName: String): Mono<Boolean>
+    fun deleteShop(shopId: String): Mono<Boolean>
 
     // shop을 soft delete하는 메소드
-    fun softDeleteShop(shopId: String, shopName: String): Mono<Shop>
+    fun softDeleteShop(shopId: String): Mono<Shop>
 }

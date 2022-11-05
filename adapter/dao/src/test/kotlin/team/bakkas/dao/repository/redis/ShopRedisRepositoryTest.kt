@@ -1,8 +1,8 @@
 package team.bakkas.dao.repository.redis
 
 import io.kotest.common.runBlocking
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.reactor.awaitSingle
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -18,24 +18,24 @@ internal class ShopRedisRepositoryTest @Autowired constructor(
 ) {
 
     @Test
-    @DisplayName("[cacheShop] shop cache 테스트")
-    fun cacheShopTest(): Unit = runBlocking {
-        // given
-        val shopId = "c5b08252-3bf4-4de8-bba5-8625cf394937"
-        val shopName = "포스마트"
-        val targetShop = shopDynamoRepository.findShopByIdAndName(shopId, shopName).awaitSingle()
+    @DisplayName("모든 shop을 찾아오는 테스트")
+    fun getAllShopsTest(): Unit = runBlocking {
+        val shopList = shopRedisRepository.getAllShops().toList()
 
-        // when
-        shopRedisRepository.cacheShop(targetShop).awaitSingle()
-
-        // then
-        val shopKey = RedisUtils.generateShopRedisKey(shopId, shopName)
-        val cachedShop = shopRedisRepository.findShopByKey(shopKey).awaitSingle()
-
-        with(cachedShop) {
-            println(this.shopId)
-            println(this.shopName)
-            println(this.addressInfo.roadNameAddress)
+        shopList.forEach {
+            println(it.shopId)
+            println(it.shopName)
         }
+    }
+
+    @Test
+    @DisplayName("가게를 redis에서 soft delete하는 테스트")
+    fun softDeleteTest(): Unit = runBlocking {
+        val shopId = "90223871-8cd0-416f-9a2b-2df4ead38c37"
+
+        val shop = shopRedisRepository.softDeleteShop(shopId).awaitSingle()
+
+        println(shop.shopId)
+        println(shop.deletedAt)
     }
 }

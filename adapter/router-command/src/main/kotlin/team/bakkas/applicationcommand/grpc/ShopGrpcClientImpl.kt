@@ -26,10 +26,9 @@ class ShopGrpcClientImpl : ShopGrpcClient {
      * @param shopName
      * @return CheckExistShopResponse
      */
-    override suspend fun isExistShop(shopId: String, shopName: String): CheckExistShopResponse {
+    override suspend fun isExistShop(shopId: String): CheckExistShopResponse {
         val request = CheckExistShopRequest.newBuilder()
             .setShopId(shopId)
-            .setShopName(shopName)
             .build()
 
         return shopStub.isExistShop(request)

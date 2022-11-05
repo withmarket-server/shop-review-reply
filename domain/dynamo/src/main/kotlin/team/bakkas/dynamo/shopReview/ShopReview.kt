@@ -21,14 +21,13 @@ class ShopReview(
     var reviewId: String = UUID.randomUUID().toString(),
     var reviewTitle: String = "",
     var shopId: String = "",
-    var shopName: String = "",
     var reviewContent: String = "",
     var reviewScore: Double = 0.0,
     var reviewPhotoList: List<String> = listOf()
 ) : Serializable, BaseTimeEntity() {
 
     companion object {
-        val shopSecondaryIndexName = "shop_id-shop_name-index"
+        val shopSecondaryIndexName = "shop_id-index"
 
         val tableSchema = TableSchema.builder(ShopReview::class.java)
             .newItemSupplier(::ShopReview)
@@ -40,17 +39,11 @@ class ShopReview(
             .addAttribute(String::class.java) {
                 it.name("review_title").getter(ShopReview::reviewTitle::get)
                     .setter(ShopReview::reviewTitle::set)
-                    .tags(StaticAttributeTags.primarySortKey())
             }
             .addAttribute(String::class.java) {
                 it.name("shop_id").getter(ShopReview::shopId::get)
                     .setter(ShopReview::shopId::set)
                     .tags(StaticAttributeTags.secondaryPartitionKey(shopSecondaryIndexName))
-            }
-            .addAttribute(String::class.java) {
-                it.name("shop_name").getter(ShopReview::shopName::get)
-                    .setter(ShopReview::shopName::set)
-                    .tags(StaticAttributeTags.secondarySortKey(shopSecondaryIndexName))
             }
             .addAttribute(String::class.java) {
                 it.name("review_content").getter(ShopReview::reviewContent::get)

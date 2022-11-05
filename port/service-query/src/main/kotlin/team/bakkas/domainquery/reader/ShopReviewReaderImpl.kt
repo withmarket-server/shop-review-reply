@@ -23,17 +23,16 @@ class ShopReviewReaderImpl(
 
     /** Cache hit 방식으로 ShopReview를 찾아오는 메소드
      * @param reviewId
-     * @param reviewTitle
      * @return Mono<ShopReview?>
      */
-    override fun findReviewByIdAndTitle(reviewId: String, reviewTitle: String): Mono<ShopReview> {
-        val key = RedisUtils.generateReviewRedisKey(reviewId, reviewTitle)
-        val alternativeMono = shopReviewDynamoRepository.findReviewByIdAndTitle(reviewId, reviewTitle)
+    override fun findReviewById(reviewId: String): Mono<ShopReview> {
+        val key = RedisUtils.generateReviewRedisKey(reviewId)
+        val alternativeMono = shopReviewDynamoRepository.findReviewByIdAndTitle(reviewId)
             .single()
             .doOnSuccess { shopReviewRedisRepository.cacheReview(it).subscribe() }
             .onErrorResume { Mono.empty() }
 
-        return shopReviewRedisRepository.findReviewByKey(key)
+        return shopReviewRedisRepository.findReviewById(key)
             .switchIfEmpty(alternativeMono)
     }
 
@@ -42,16 +41,15 @@ class ShopReviewReaderImpl(
      * @param shopName
      * @return flow consisted with review of given shop
      */
-    override fun getReviewsByShopKey(shopId: String, shopName: String): Flow<ShopReview> =
-        shopReviewRedisRepository.getShopReviewFlowByShopIdAndName(shopId, shopName)
+    override fun getReviewsByShopId(shopId: String): Flow<ShopReview> =
+        shopReviewRedisRepository.getShopReviewsByShopId(shopId)
 
-    /** review list에 대한 flow를 반환해주는 메소드
+    /** review list에 대한 flow를 반환해주는 메소드. Dynamo에서 먼저 가져와서 그걸로 review를 가져온다
      * @param shopId
-     * @param shopName
      * @return flow consisted with review of given shop
      */
-    override fun getReviewsOfShopWithCaching(shopId: String, shopName: String): Flow<ShopReview> {
-        return shopReviewDynamoRepository.getAllShopsByShopIdAndName(shopId, shopName)
-            .map { findReviewByIdAndTitle(it.reviewId, it.reviewTitle).awaitSingle() }
+    override fun getReviewsOfShopWithCaching(shopId: String): Flow<ShopReview> {
+        return shopReviewDynamoRepository.getAllShopsByShopId(shopId)
+            .map { findReviewById(it.reviewId).awaitSingle() }
     }
 }

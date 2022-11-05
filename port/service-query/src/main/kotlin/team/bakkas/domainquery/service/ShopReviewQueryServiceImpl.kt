@@ -23,17 +23,17 @@ class ShopReviewQueryServiceImpl(
      * @return ShopReview
      */
     @Transactional(readOnly = true)
-    override suspend fun findReviewByIdAndTitle(reviewId: String, reviewTitle: String): ShopReview? =
+    override suspend fun findReviewById(reviewId: String): ShopReview? =
         withContext(Dispatchers.IO) {
-            val reviewMono = shopReviewReader.findReviewByIdAndTitle(reviewId, reviewTitle)
+            val reviewMono = shopReviewReader.findReviewById(reviewId)
 
             return@withContext reviewMono.awaitSingleOrNull()
         }
 
     @Transactional(readOnly = true)
-    override suspend fun getReviewListByShop(shopId: String, shopName: String): List<ShopReview> =
+    override suspend fun getReviewsByShopId(shopId: String): List<ShopReview> =
         withContext(Dispatchers.IO) {
-            val reviewFlow = shopReviewReader.getReviewsByShopKey(shopId, shopName)
+            val reviewFlow = shopReviewReader.getReviewsByShopId(shopId)
 
             val reviewList = reviewFlow.toList()
 

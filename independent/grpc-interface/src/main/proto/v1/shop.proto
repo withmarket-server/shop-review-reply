@@ -13,7 +13,6 @@ service ShopService {
 
 message CheckExistShopRequest {
   string shopId = 1;
-  string shopName = 2;
 }
 
 message CheckExistShopResponse {

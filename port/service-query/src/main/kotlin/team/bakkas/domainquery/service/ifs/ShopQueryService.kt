@@ -4,7 +4,7 @@ import team.bakkas.dynamo.shop.Shop
 
 interface ShopQueryService {
 
-    suspend fun findShopByIdAndName(shopId: String, shopName: String): Shop?
+    suspend fun findShopById(shopId: String): Shop?
 
     suspend fun getAllShopList(): List<Shop>
 }

@@ -26,8 +26,8 @@ class ShopQueryServiceImpl(
      * @throws ShopNotFoundException
      */
     @Transactional(readOnly = true)
-    override suspend fun findShopByIdAndName(shopId: String, shopName: String): Shop? = withContext(Dispatchers.IO) {
-        val shopMono = shopReader.findShopByIdAndName(shopId, shopName)
+    override suspend fun findShopById(shopId: String): Shop? = withContext(Dispatchers.IO) {
+        val shopMono = shopReader.findShopById(shopId)
         return@withContext shopMono.awaitSingleOrNull()
     }
 
