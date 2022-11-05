@@ -143,8 +143,10 @@ internal class ShopReviewCommandHandlerUnitTest {
     fun deleteReviewTest1(): Unit = runBlocking {
         // given
         val id = ""
+        val shopId = "shop-id"
         val request = MockServerRequest.builder()
             .queryParam("id", id)
+            .queryParam("shop-id", shopId)
             .build()
 
         // then
@@ -152,12 +154,57 @@ internal class ShopReviewCommandHandlerUnitTest {
     }
 
     @Test
-    @DisplayName("[deleteReview] 2. review가 존재하지 않는 경우 ShopReviewNotFoundException을 일으키는 테스트")
+    @DisplayName("[deleteReview] 2. shopId가 비어서 들어오는 경우 실패하는 테스트")
+    fun deleteReviewTest2(): Unit = runBlocking {
+        // given
+        val id = "review-id"
+        val shopId = ""
+        val request = MockServerRequest.builder()
+            .queryParam("id", id)
+            .queryParam("shop-id", shopId)
+            .build()
+
+        // then
+        shouldThrow<RequestParamLostException> { shopReviewCommandHandler.deleteReview(request) }
+    }
+
+    @Test
+    @DisplayName("[deleteReview] 3. shop이 존재하지 않는 경우 ShopNotFoundException을 일으키는 테스트")
+    fun deleteReviewTest3(): Unit = runBlocking {
+        // given
+        val id = "review-id"
+        val shopId = "shop-id"
+        val request = MockServerRequest.builder()
+            .queryParam("id", id)
+            .queryParam("shop-id", shopId)
+            .build()
+
+        coEvery { shopReviewGrpcClient.isExistShopReview(id) } returns
+                CheckExistShopReviewResponse.newBuilder()
+                    .setResult(true)
+                    .build()
+
+        coEvery { shopGrpcClient.isExistShop(shopId) } returns CheckExistShopResponse.newBuilder()
+            .setResult(false)
+            .build()
+
+        // then
+        shouldThrow<ShopNotFoundException> { shopReviewCommandHandler.deleteReview(request) }
+    }
+
+    @Test
+    @DisplayName("[deleteReview] 4. review가 존재하지 않는 경우 ShopReviewNotFoundException을 일으키는 테스트")
     fun deleteReviewTest4(): Unit = runBlocking {
         // given
         val id = "fake id"
+        val shopId = "shop-id"
         val request = MockServerRequest.builder()
             .queryParam("id", id)
+            .queryParam("shop-id", shopId)
+            .build()
+
+        coEvery { shopGrpcClient.isExistShop(shopId) } returns CheckExistShopResponse.newBuilder()
+            .setResult(true)
             .build()
 
         // id, title에 대응하는 shopReview는 없다고 가정한다

@@ -3,7 +3,6 @@ package team.bakkas.applicationcommand.validator
 import org.springframework.stereotype.Component
 import org.springframework.validation.BeanPropertyBindingResult
 import org.springframework.validation.Errors
-import org.springframework.validation.ValidationUtils
 import team.bakkas.applicationcommand.grpc.ifs.ShopGrpcClient
 import team.bakkas.applicationcommand.grpc.ifs.ShopReviewGrpcClient
 import team.bakkas.clientcommand.shopReview.ShopReviewCommand
@@ -14,7 +13,6 @@ import team.bakkas.common.exceptions.RequestParamLostException
 import team.bakkas.common.exceptions.shop.ShopNotFoundException
 import team.bakkas.common.exceptions.shopReview.ShopReviewNotFoundException
 import team.bakkas.servicecommand.validator.ShopReviewValidator
-import team.bakkas.dynamo.shopReview.ShopReview
 
 /** Shop Review에 대한 검증을 수행하는 Validator class
  * @param shopGrpcClient
@@ -46,17 +44,29 @@ class ShopReviewValidatorImpl(
     }
 
     // 해당 review가 삭제 가능한지 검증하는 메소드
-    override suspend fun validateDeletable(reviewId: String) {
+    override suspend fun validateDeletable(reviewId: String, shopId: String) {
         // reviewId가 비어서 들어오는 경우 예외 처리
         check(reviewId.isNotEmpty()) {
             throw RequestParamLostException("reviewId is lost!!")
         }
 
-        // 해당 리뷰가 실제 존재하는건지는 체크해본다
-        val reviewResultMono = shopReviewGrpcClient.isExistShopReview(reviewId).result
+        // shopId가 비어서 들어오는지 검증
+        check(shopId.isNotEmpty()) {
+            throw RequestParamLostException("shopId is lost!!")
+        }
 
-        check(reviewResultMono) {
+        // 해당 리뷰가 실제 존재하는건지는 체크해본다
+        val reviewResult = shopReviewGrpcClient.isExistShopReview(reviewId).result
+
+        check(reviewResult) {
             throw ShopReviewNotFoundException("shop review가 존재하지 않습니다.")
+        }
+
+        // 해당 shop이 실제 존재하는건지 체크해본다
+        val shopResult = shopGrpcClient.isExistShop(shopId).result
+
+        check(shopResult) {
+            throw ShopNotFoundException("shop이 존재하지 않습니다.")
         }
     }
 

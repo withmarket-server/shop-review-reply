@@ -25,7 +25,8 @@ include(
     "adapter:kafka-consumer",
     "adapter:router-command",
     "adapter:router-query",
-    "adapter:router-common"
+    "adapter:router-common",
+    "adapter:elasticsearch"
 )
 
 include(

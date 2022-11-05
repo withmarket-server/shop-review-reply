@@ -56,11 +56,12 @@ class ShopReviewCommandHandler(
     // shopReview를 삭제하는 메소드
     suspend fun deleteReview(request: ServerRequest): ServerResponse = coroutineScope {
         val reviewId = request.queryParamOrNull("id") ?: throw RequestParamLostException("reviewId is lost")
+        val shopId = request.queryParamOrNull("shop-id") ?: throw RequestParamLostException("shopId is lost")
 
         // 해당 review가 삭제 가능한지 검증
-        shopReviewValidator.validateDeletable(reviewId)
+        shopReviewValidator.validateDeletable(reviewId, shopId)
 
-        val deletedEvent = ShopReviewCommand.DeletedEvent.of(reviewId)
+        val deletedEvent = ShopReviewCommand.DeletedEvent.of(reviewId, shopId)
 
         // Kafka에 삭제 이벤트를 발행하여 Kafka 내부에서 삭제를 처리한다
         shopReviewEventProducer.propagateDeletedEvent(deletedEvent)

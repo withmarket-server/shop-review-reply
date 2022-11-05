@@ -9,5 +9,5 @@ abstract class ShopReviewValidator: Validator, CommonValidator() {
     abstract suspend fun validateCreatable(request: ShopReviewCommand.CreateRequest)
 
     // 해당 리뷰가 삭제 가능한지 검증하는 메소드
-    abstract suspend fun validateDeletable(reviewId: String)
+    abstract suspend fun validateDeletable(reviewId: String, shopId: String)
 }
