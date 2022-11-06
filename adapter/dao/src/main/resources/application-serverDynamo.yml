@@ -10,3 +10,6 @@ spring:
 
 encrypt:
   key: EjelT7fFw6T4LHQEuwtU
+
+cluster:
+  grpc-host: query
