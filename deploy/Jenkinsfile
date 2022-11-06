@@ -12,11 +12,14 @@ pipeline {
 
         ECS_CLUSTER_NAME = "withmarket-main-cluster"
 
+        COMMAND_SERVICE_NAME = "shop-command"
+        QUERY_SERVICE_NAME = "shop-query"
+
         AWS_CREDENTIALS = "jenkins_deploy_user_credentials"
     }
-    
+
     stages {
-        stage("========== Test the project ==========") {
+        stage("Test the project") {
             steps {
                 dir("${env.WORKSPACE}") {
                     sh 'chmod 755 ./gradlew'
@@ -35,7 +38,7 @@ pipeline {
             }
         }
 
-        stage("========== Build the command application ==========") {
+        stage("Build the command application") {
             steps {
                 dir("${env.WORKSPACE}") {
                     sh 'cd adapter/router-command'
@@ -55,7 +58,7 @@ pipeline {
             }
         }
 
-        stage("========== Build the query application ==========") {
+        stage("Build the query application") {
             steps {
                 dir("${env.WORKSPACE}") {
                     sh 'cd adapter/router-query'
@@ -75,7 +78,7 @@ pipeline {
             }
         }
 
-        stage("========== Build the listener application ==========") {
+        stage("Build the listener application") {
             steps {
                 dir("${env.WORKSPACE}") {
                     sh 'cd adapter/kafka-consumer'
@@ -95,7 +98,7 @@ pipeline {
             }
         }
 
-        stage("========== Build docker image of command application ==========") {
+        stage("Build docker image of command application") {
             steps {
                 dir("${env.WORKSPACE}") {
                     sh 'cd adapter/router-command && docker build -t ${COMMAND_APP_NAME} .'
@@ -114,7 +117,7 @@ pipeline {
             }
         }
 
-        stage("========== Build docker image of query application ==========") {
+        stage("Build docker image of query application") {
             steps {
                 dir("${env.WORKSPACE}") {
                     sh 'cd adapter/router-query && docker build -t ${QUERY_APP_NAME} .'
@@ -133,7 +136,7 @@ pipeline {
             }
         }
 
-        stage("========== Build docker image of kafka consumer application ==========") {
+        stage("Build docker image of kafka consumer application") {
             steps {
                 dir("${env.WORKSPACE}") {
                     sh 'cd adapter/kafka-consumer && docker build -t ${KAFKA_CONSUMER_APP_NAME} .'
@@ -152,7 +155,7 @@ pipeline {
             }
         }
 
-        stage("========== ECR Upload(command application) ==========") {
+        stage("ECR Upload(command application)") {
             steps {
                 script {
                     try {
@@ -177,10 +180,11 @@ pipeline {
             }
         }
 
-        stage("========== ECR Upload(query application) ==========") {
+        stage("ECR Upload(query application)") {
             steps {
                 script {
                     try {
+                        sh "aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin ${QUERY_ECR_REPO}"
                         sh 'docker push ${QUERY_ECR_REPO}:latest'
                     }catch(error) {
                         print(error)
@@ -199,10 +203,11 @@ pipeline {
             }
         }
 
-        stage("========== ECR Upload(kafka consumer application) ==========") {
+        stage("ECR Upload(kafka consumer application)") {
             steps {
                 script {
                     try {
+                        sh "aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin ${KAFKA_CONSUMER_ECR_REPO}"
                         sh 'docker push ${KAFKA_CONSUMER_ECR_REPO}:latest'
                     }catch(error) {
                         print(error)
@@ -217,6 +222,58 @@ pipeline {
                 }
                 failure {
                     echo "The ECR Upload(kafka consumer) stage is fail."
+                }
+            }
+        }
+
+        stage("Deploy command app to fargate") {
+            steps {
+                script {
+                    try {
+                        withAWS(credentials: "${AWS_CREDENTIALS}", role: 'arn:aws:iam::326991552997:role/jenkins_deploy_role', roleAccount: "326991552997", externalId: "18k7102dy@gmail.com") {
+                            sh "aws ecs update-service --region ap-northeast-2 --cluster ${ECS_CLUSTER_NAME} --service ${COMMAND_SERVICE_NAME} --force-new-deployment"
+                        }
+                    }catch(error) {
+                        print(error)
+                        echo 'Remove Deploy Files'
+                        sh "sudo rm -rf /var/lib/jenkins/workspace/${env.JOB_NAME}/*"
+                        currentBuild.result = 'FAILURE'
+                    }
+                }
+            }
+
+            post {
+                success {
+                    echo "The Fargate deploy stage is done successfully."
+                }
+                failure {
+                    echo "The Fargate deploy stage is fail."
+                }
+            }
+        }
+
+        stage("Deploy query app to fargate") {
+            steps {
+                script {
+                    try {
+                        withAWS(credentials: "${AWS_CREDENTIALS}", role: 'arn:aws:iam::326991552997:role/jenkins_deploy_role', roleAccount: "326991552997", externalId: "18k7102dy@gmail.com") {
+                            sh "aws ecs update-service --region ap-northeast-2 --cluster ${ECS_CLUSTER_NAME} --service ${QUERY_SERVICE_NAME} --force-new-deployment"
+                        }
+                    }catch(error) {
+                        print(error)
+                        echo 'Remove Deploy Files'
+                        sh "sudo rm -rf /var/lib/jenkins/workspace/${env.JOB_NAME}/*"
+                        currentBuild.result = 'FAILURE'
+                    }
+                }
+            }
+
+            post {
+                success {
+                    echo "The Fargate deploy stage is done successfully."
+                }
+                failure {
+                    echo "The Fargate deploy stage is fail."
                 }
             }
         }
