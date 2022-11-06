@@ -13,7 +13,7 @@ interface ShopReviewRedisRepository {
     fun findReviewById(reviewId: String): Mono<ShopReview>
 
     // review를 삭제하는 메소드
-    fun deleteReview(shopReview: ShopReview): Mono<ShopReview>
+    fun deleteReview(reviewId: String): Mono<Boolean>
 
     // review를 soft delete하는 메소드
     fun softDeleteReview(reviewId: String): Mono<ShopReview>

@@ -1,6 +1,7 @@
 package team.bakkas.dao.repository.dynamo
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.reactive.asFlow
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
@@ -37,12 +38,14 @@ class ShopDynamoRepositoryImpl(
     override fun findShopById(shopId: String): Mono<Shop> {
         val shopKey = generateKey(shopId)
         return Mono.fromFuture(asyncTable.getItem(shopKey))
+            .filter { it.deletedAt == null }
     }
 
     // 모든 Shop에 대한 flow를 반환해주는 메소드
     override fun getAllShops(): Flow<Shop> {
         val shopPublisher = asyncTable.scan().items()
         return shopPublisher.asFlow()
+            .filter { it.deletedAt == null }
     }
 
     // shop을 하나 생성해주는 메소드

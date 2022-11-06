@@ -30,7 +30,7 @@ class ShopReviewCommandServiceImpl(
         val redisKey = RedisUtils.generateReviewRedisKey(reviewId)
         val redisMono = shopReviewRedisRepository.findReviewById(redisKey)
             .switchIfEmpty(Mono.empty())
-            .flatMap { shopReviewRedisRepository.deleteReview(it) }
+            .flatMap { shopReviewRedisRepository.deleteReview(it.reviewId) }
 
         // 검증이 끝나면 review 삭제
         return shopReviewDynamoRepository.deleteReviewAsync(reviewId) // 우선 dynamo에서 review를 제거하고
@@ -44,10 +44,10 @@ class ShopReviewCommandServiceImpl(
      */
     @Transactional
     override fun deleteAllReviewsOfShop(shopId: String): Flux<ShopReview> {
-        return shopReviewDynamoRepository.getAllShopsByShopId(shopId)
+        return shopReviewDynamoRepository.getAllReviewsByShopId(shopId)
             .asFlux()
             .flatMap { shopReviewDynamoRepository.deleteReviewAsync(it.reviewId) }
-            .doOnNext { shopReviewRedisRepository.deleteReview(it).subscribe() }
+            .doOnNext { shopReviewRedisRepository.deleteReview(it.reviewId).subscribe() }
     }
 
     // review를 soft delete하는 메소드
@@ -55,15 +55,15 @@ class ShopReviewCommandServiceImpl(
     override fun softDeleteReview(reviewId: String): Mono<ShopReview> {
 
         return shopReviewDynamoRepository.softDeleteReview(reviewId)
-            .doOnSuccess { shopReviewRedisRepository.softDeleteReview(reviewId).subscribe() }
+            .doOnSuccess { shopReviewRedisRepository.deleteReview(reviewId).subscribe() }
     }
 
     // shop의 모든 review를 soft delete하는 메소드
     @Transactional
     override fun softDeleteAllReviewsOfShop(shopId: String): Flux<ShopReview> {
-        return shopReviewDynamoRepository.getAllShopsByShopId(shopId) // shopId, shopName에 대응하는 shop의 모든 review를 가져와서
+        return shopReviewDynamoRepository.getAllReviewsByShopId(shopId) // shopId, shopName에 대응하는 shop의 모든 review를 가져와서
             .asFlux()
             .flatMap { shopReviewDynamoRepository.softDeleteReview(it.reviewId) } // Dynamo에 있는 데이터는 모두 soft delete 처리하고
-            .doOnNext { shopReviewRedisRepository.deleteReview(it).subscribe() } // Redis에서는 지워버린다
+            .doOnNext { shopReviewRedisRepository.deleteReview(it.reviewId).subscribe() } // Redis에서는 지워버린다
     }
 }

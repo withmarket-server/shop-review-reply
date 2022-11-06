@@ -49,7 +49,7 @@ class ShopReviewReaderImpl(
      * @return flow consisted with review of given shop
      */
     override fun getReviewsOfShopWithCaching(shopId: String): Flow<ShopReview> {
-        return shopReviewDynamoRepository.getAllShopsByShopId(shopId)
+        return shopReviewDynamoRepository.getAllReviewsByShopId(shopId)
             .map { findReviewById(it.reviewId).awaitSingle() }
     }
 }

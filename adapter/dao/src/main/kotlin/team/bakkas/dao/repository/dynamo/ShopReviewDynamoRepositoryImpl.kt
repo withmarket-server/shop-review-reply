@@ -1,6 +1,7 @@
 package team.bakkas.dao.repository.dynamo
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.reactive.asFlow
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
@@ -8,7 +9,6 @@ import software.amazon.awssdk.enhanced.dynamodb.DynamoDbAsyncTable
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedAsyncClient
 import software.amazon.awssdk.enhanced.dynamodb.Expression
 import software.amazon.awssdk.enhanced.dynamodb.Key
-import software.amazon.awssdk.enhanced.dynamodb.TableSchema
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 import team.bakkas.dynamo.shopReview.ShopReview
 import team.bakkas.dynamo.shopReview.usecases.softDelete
@@ -46,10 +46,11 @@ class ShopReviewDynamoRepositoryImpl(
      * @param shopName
      * @return Flow consisted with review of given shop
      */
-    override fun getAllShopsByShopId(shopId: String): Flow<ShopReview> {
+    override fun getAllReviewsByShopId(shopId: String): Flow<ShopReview> {
         return asyncTable.scan { it.filterExpression(generateShopExpression(shopId)) }
             .items()
             .asFlow()
+            .filter { it.deletedAt == null } // 삭제된적이 없는 리뷰들만 가져온다
     }
 
     // review를 하나 생성하는 메소드

@@ -44,7 +44,7 @@ class ShopReviewEventHandler(
     fun deleteShopReview(deletedEvent: ShopReviewCommand.DeletedEvent) = with(deletedEvent) {
         shopReviewCommandService.softDeleteReview(reviewId) // 우선 review부터 삭제해주고
             .doOnNext { shopCommandService.applyDeleteReview(it.shopId, it.reviewScore).subscribe() }
-            .doOnNext { applyDeleteReivewToES(it.shopId, it.reviewScore).subscribe() }
+            .doOnNext { applyDeleteReviewToES(it.shopId, it.reviewScore).subscribe() }
             .subscribe()
     }
 
@@ -56,7 +56,7 @@ class ShopReviewEventHandler(
     }
 
     // Elasticsearch의 document에 review 삭제를 반영하는 메소드
-    private fun applyDeleteReivewToES(shopId: String, reviewScore: Double): Mono<SearchShop> {
+    private fun applyDeleteReviewToES(shopId: String, reviewScore: Double): Mono<SearchShop> {
         return shopSearchRepository.findById(shopId)
             .map { it.applyDeleteReview(reviewScore) }
             .flatMap { shopSearchRepository.save(it) }
