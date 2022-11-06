@@ -244,10 +244,10 @@ pipeline {
 
             post {
                 success {
-                    echo "The Fargate deploy stage is done successfully."
+                    echo "The command app Fargate deploy stage is done successfully."
                 }
                 failure {
-                    echo "The Fargate deploy stage is fail."
+                    echo "The command app Fargate deploy stage is fail."
                 }
             }
         }
@@ -270,10 +270,10 @@ pipeline {
 
             post {
                 success {
-                    echo "The Fargate deploy stage is done successfully."
+                    echo "The query app Fargate deploy stage is done successfully."
                 }
                 failure {
-                    echo "The Fargate deploy stage is fail."
+                    echo "The query app Fargate deploy stage is fail."
                 }
             }
         }
