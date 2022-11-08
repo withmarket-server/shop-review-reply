@@ -12,6 +12,7 @@ import org.springframework.web.reactive.function.server.ServerResponse.ok
 import team.bakkas.applicationquery.extensions.toSimpleResponse
 import team.bakkas.applicationquery.grpc.client.GrpcShopSearchClient
 import team.bakkas.common.ResultFactory
+import team.bakkas.common.exceptions.RequestFieldException
 import team.bakkas.common.exceptions.RequestParamLostException
 import team.bakkas.common.exceptions.shop.CategoryNotFoundException
 import team.bakkas.common.exceptions.shop.DetailCategoryNotFoundException
@@ -108,7 +109,8 @@ class ShopQueryHandler(
 
     // detail-category 기반의 반경 검색
     suspend fun searchByDetailCategoryWithIn(request: ServerRequest): ServerResponse = coroutineScope {
-        val detailCategory = request.queryParamOrNull("detail-category") ?: throw RequestParamLostException("category is lost")
+        val detailCategory =
+            request.queryParamOrNull("detail-category") ?: throw RequestParamLostException("category is lost")
         val latitude = request.queryParamOrNull("latitude") ?: throw RequestParamLostException("latitude is lost")
         val longitude = request.queryParamOrNull("longitude") ?: throw RequestParamLostException("longitude is lost")
         val distance = request.queryParamOrNull("distance") ?: throw RequestParamLostException("distance is lost")
@@ -117,12 +119,51 @@ class ShopQueryHandler(
         val size = request.queryParamOrNull("size") ?: throw RequestParamLostException("size is lost")
 
         // Check the given detailCategory is valid
-        if(detailCategory !in DetailCategory.values().map { it.toString() }) {
+        if (detailCategory !in DetailCategory.values().map { it.toString() }) {
             throw DetailCategoryNotFoundException("detail-category is lost")
         }
 
         val satisfiedShopIdFlow = grpcShopSearchClient.searchDetailCategoryWithIn(
             detailCategory,
+            latitude.toDouble(),
+            longitude.toDouble(),
+            distance.toDouble(),
+            unit,
+            page.toInt(),
+            size.toInt()
+        ).idsList.asFlow()
+
+        val shopResponseList = satisfiedShopIdFlow
+            .map { shopQueryService.findShopById(it)!! }
+            .map { it.toSimpleResponse() }
+            .toList()
+
+        check(shopResponseList.isNotEmpty()) {
+            throw ShopNotFoundException("Shop is not found!!")
+        }
+
+        return@coroutineScope ok()
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValueAndAwait(ResultFactory.getMultipleResult(shopResponseList))
+    }
+
+    // 가게 이름 기반으로 검색
+    suspend fun searchByShopNameWithIn(request: ServerRequest): ServerResponse = coroutineScope {
+        val shopName = request.queryParamOrNull("shop-name") ?: throw RequestParamLostException("shop-name is lost")
+        val latitude = request.queryParamOrNull("latitude") ?: throw RequestParamLostException("latitude is lost")
+        val longitude = request.queryParamOrNull("longitude") ?: throw RequestParamLostException("longitude is lost")
+        val distance = request.queryParamOrNull("distance") ?: throw RequestParamLostException("distance is lost")
+        val unit = request.queryParamOrNull("unit") ?: throw RequestParamLostException("unit is lost")
+        val page = request.queryParamOrNull("page") ?: throw RequestParamLostException("page is lost")
+        val size = request.queryParamOrNull("size") ?: throw RequestParamLostException("size is lost")
+
+        // 2글자 이상으로만 검색을 허용
+        check(shopName.length >= 2) {
+            throw RequestParamLostException("두 글자 이상으로만 검색을 허용합니다.")
+        }
+
+        val satisfiedShopIdFlow = grpcShopSearchClient.searchShopNameWithIn(
+            shopName,
             latitude.toDouble(),
             longitude.toDouble(),
             distance.toDouble(),
