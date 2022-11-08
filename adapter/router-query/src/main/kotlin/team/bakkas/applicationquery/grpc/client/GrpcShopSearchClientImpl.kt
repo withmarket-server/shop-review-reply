@@ -2,20 +2,114 @@ package team.bakkas.applicationquery.grpc.client
 
 import io.grpc.ManagedChannelBuilder
 import org.springframework.beans.factory.annotation.Value
-import team.bakkas.shop.search.ShopSearchGrpc
-import team.bakkas.shop.search.ShopSearchGrpc.ShopSearchFutureStub
+import org.springframework.stereotype.Component
+import team.bakkas.dynamo.shop.vo.category.Category
+import team.bakkas.dynamo.shop.vo.category.DetailCategory
+import team.bakkas.shop.search.SearchCategoryGrpcRequest
+import team.bakkas.shop.search.SearchDetailCategoryGrpcRequest
+import team.bakkas.shop.search.SearchResponse
+import team.bakkas.shop.search.SearchShopNameGrpcRequest
+import team.bakkas.shop.search.SearchWithInGrpcRequest
+import team.bakkas.shop.search.ShopSearchGrpcKt
 
 /**
- * @author Doyeop Kim
- * @since 2022/11/08
+ * @author Brian
+ * @since 2022/11/09
  */
+@Component
 class GrpcShopSearchClientImpl(
     @Value("\${grpc.shop-search}") private val channelHost: String
-) : GrpcShopSearchClient {
+): GrpcShopSearchClient {
 
-    private val channel = ManagedChannelBuilder.forAddress(channelHost, 9090)
+    private val channel = ManagedChannelBuilder.forAddress(channelHost, 10200)
         .usePlaintext()
         .build()
 
-    private val shopSearchStub =
+    private val searchStub = ShopSearchGrpcKt.ShopSearchCoroutineStub(channel)
+
+    override suspend fun searchCategoryWIthIn(
+        category: Category,
+        latitude: Double,
+        longitude: Double,
+        distance: Double,
+        unit: String,
+        page: Int,
+        size: Int
+    ): SearchResponse {
+        val request = SearchCategoryGrpcRequest.newBuilder()
+            .setCategory(category.toString())
+            .setLatitude(latitude)
+            .setLongitude(longitude)
+            .setDistance(distance)
+            .setUnit(unit)
+            .setPage(page)
+            .setSize(size)
+            .build()
+
+        return searchStub.searchCategoryWithIn(request)
+    }
+
+    override suspend fun searchDetailCategoryWithIn(
+        detailCategory: DetailCategory,
+        latitude: Double,
+        longitude: Double,
+        distance: Double,
+        unit: String,
+        page: Int,
+        size: Int
+    ): SearchResponse {
+        val request = SearchDetailCategoryGrpcRequest.newBuilder()
+            .setDetailCategory(detailCategory.toString())
+            .setLatitude(latitude)
+            .setLongitude(longitude)
+            .setDistance(distance)
+            .setUnit(unit)
+            .setPage(page)
+            .setSize(size)
+            .build()
+
+        return searchStub.searchDetailCategoryWithIn(request)
+    }
+
+    override suspend fun searchShopNameWithIn(
+        shopName: String,
+        latitude: Double,
+        longitude: Double,
+        distance: Double,
+        unit: String,
+        page: Int,
+        size: Int
+    ): SearchResponse {
+        val request = SearchShopNameGrpcRequest.newBuilder()
+            .setShopName(shopName)
+            .setLatitude(latitude)
+            .setLongitude(longitude)
+            .setDistance(distance)
+            .setUnit(unit)
+            .setPage(page)
+            .setSize(size)
+            .build()
+
+        return searchStub.searchShopNameWithIn(request)
+    }
+
+    override suspend fun searchWithIn(
+        latitude: Double,
+        longitude: Double,
+        distance: Double,
+        unit: String,
+        page: Int,
+        size: Int
+    ): SearchResponse {
+        val request = SearchWithInGrpcRequest.newBuilder()
+            .setLatitude(latitude)
+            .setLongitude(longitude)
+            .setDistance(distance)
+            .setUnit(unit)
+            .setPage(page)
+            .setSize(size)
+            .build()
+
+        return searchStub.searchWithIn(request)
+    }
 }

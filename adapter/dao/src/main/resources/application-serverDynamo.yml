@@ -13,3 +13,4 @@ encrypt:
 
 grpc:
   shop-query: query.shop
+  shop-search: search.shop

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.*
 import org.springframework.web.reactive.function.server.ServerResponse.ok
 import team.bakkas.applicationquery.extensions.toSimpleResponse
+import team.bakkas.applicationquery.grpc.client.GrpcShopSearchClient
 import team.bakkas.common.ResultFactory
 import team.bakkas.common.exceptions.RequestParamLostException
 import team.bakkas.common.exceptions.shop.ShopNotFoundException
@@ -16,7 +17,8 @@ import team.bakkas.domainquery.service.ifs.ShopQueryService
  */
 @Component
 class ShopQueryHandler(
-    private val shopQueryService: ShopQueryService
+    private val shopQueryService: ShopQueryService,
+    private val grpcShopSearchClient: GrpcShopSearchClient
 ) {
 
     // shopId와 shopName을 기반으로 shop에 대한 response를 반환해주는 메소드
@@ -56,4 +58,7 @@ class ShopQueryHandler(
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValueAndAwait(ResultFactory.getMultipleResult(shopResponseList))
     }
+
+    // TODO 반경 검색, 카테고리별 검색, 세부 카테고리별 검색, 가게 이름 기반 검색 구현
+
 }

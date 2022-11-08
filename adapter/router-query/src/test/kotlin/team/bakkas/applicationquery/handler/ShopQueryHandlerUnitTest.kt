@@ -15,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.http.HttpStatus
 import org.springframework.mock.web.reactive.function.server.MockServerRequest
 import reactor.core.publisher.Mono
+import team.bakkas.applicationquery.grpc.client.GrpcShopSearchClient
 import team.bakkas.common.exceptions.RequestParamLostException
 import team.bakkas.common.exceptions.shop.ShopNotFoundException
 import team.bakkas.domainquery.service.ifs.ShopQueryService
@@ -32,10 +33,13 @@ internal class ShopQueryHandlerUnitTest {
 
     private lateinit var shopQueryService: ShopQueryService
 
+    private lateinit var grpcShopSearchClient: GrpcShopSearchClient
+
     @BeforeEach
     fun setUp() {
         shopQueryService = mockk(relaxed = true)
-        shopQueryHandler = spyk(ShopQueryHandler(shopQueryService))
+        grpcShopSearchClient = mockk(relaxed = true)
+        shopQueryHandler = spyk(ShopQueryHandler(shopQueryService, grpcShopSearchClient))
     }
 
     @Test
