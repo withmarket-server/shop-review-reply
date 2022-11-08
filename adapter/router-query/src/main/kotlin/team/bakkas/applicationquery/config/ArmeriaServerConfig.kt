@@ -9,8 +9,8 @@ import com.linecorp.armeria.server.logging.LoggingService
 import com.linecorp.armeria.spring.ArmeriaServerConfigurator
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import team.bakkas.applicationquery.grpc.GrpcShopReviewService
-import team.bakkas.applicationquery.grpc.GrpcShopService
+import team.bakkas.applicationquery.grpc.server.GrpcShopReviewService
+import team.bakkas.applicationquery.grpc.server.GrpcShopService
 import java.nio.charset.StandardCharsets
 
 /** gRPC 활용을 위해 armeria 서버 설정을 하는 configuration class

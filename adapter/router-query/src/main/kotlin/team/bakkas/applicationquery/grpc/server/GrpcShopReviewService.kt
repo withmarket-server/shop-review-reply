@@ -1,4 +1,4 @@
-package team.bakkas.applicationquery.grpc
+package team.bakkas.applicationquery.grpc.server
 
 import org.springframework.stereotype.Service
 import team.bakkas.domainquery.service.ifs.ShopReviewQueryService

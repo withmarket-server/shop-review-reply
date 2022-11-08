@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import team.bakkas.applicationquery.grpc.server.GrpcShopReviewService
 import team.bakkas.domainquery.service.ifs.ShopReviewQueryService
 import team.bakkas.dynamo.shopReview.ShopReview
 import team.bakkas.grpcIfs.v1.shopReview.CheckExistShopReviewRequest
