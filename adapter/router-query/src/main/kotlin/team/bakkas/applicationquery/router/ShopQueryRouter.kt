@@ -16,6 +16,7 @@ class ShopQueryRouter(
             GET("/simple", shopHandler::findById)
             GET("/simple/list", shopHandler::getAllShops)
             GET("/simple/list/category", shopHandler::searchByCategoryWithIn) // category 반경 검색
+            GET("/simple/list/detail-category", shopHandler::searchByDetailCategoryWithIn) // detailCategory 반경 검색
         }
     }
 }
