@@ -17,6 +17,7 @@ import org.springframework.mock.web.reactive.function.server.MockServerRequest
 import reactor.core.publisher.Mono
 import team.bakkas.applicationquery.grpc.client.GrpcShopSearchClient
 import team.bakkas.common.exceptions.RequestParamLostException
+import team.bakkas.common.exceptions.shop.CategoryNotFoundException
 import team.bakkas.common.exceptions.shop.ShopNotFoundException
 import team.bakkas.domainquery.service.ifs.ShopQueryService
 import team.bakkas.dynamo.shop.Shop
@@ -25,6 +26,7 @@ import team.bakkas.dynamo.shop.vo.category.Category
 import team.bakkas.dynamo.shop.vo.category.DetailCategory
 import team.bakkas.dynamo.shop.vo.sale.Days
 import team.bakkas.dynamo.shop.vo.sale.Status
+import team.bakkas.shop.search.SearchResponse
 import java.time.LocalTime
 
 @ExtendWith(MockKExtension::class)
@@ -127,6 +129,74 @@ internal class ShopQueryHandlerUnitTest {
         coVerify(exactly = 1) { shopQueryHandler.getAllShops(request) }
         coVerify(exactly = 1) { shopQueryService.getAllShopList() }
         assertEquals(result.statusCode(), HttpStatus.OK)
+    }
+
+    @Test
+    @DisplayName("[searchByCategoryWithIn] 1. 존재하지도 않는 카테고리로 들어오는 경우 테스트")
+    fun searchByCategoryWithInTest1(): Unit = runBlocking {
+        // given
+        val category = "FOOD_VEBERAGE"
+        val latitude = "0.0"
+        val longitude = "0.0"
+        val distance = "0.0"
+        val unit = "km"
+        val page = "0"
+        val size = "100"
+
+        val request = MockServerRequest.builder()
+            .queryParam("category", category)
+            .queryParam("latitude", latitude)
+            .queryParam("longitude", longitude)
+            .queryParam("distance", distance)
+            .queryParam("unit", unit)
+            .queryParam("page", page)
+            .queryParam("size", size)
+            .build()
+
+        // then
+        shouldThrow<CategoryNotFoundException> { shopQueryHandler.searchByCategoryWithIn(request) }
+    }
+
+    @Test
+    @DisplayName("[searchByCategoryWithIn] 2. shop이 하나도 존재하지 않는 경우")
+    fun searchByCategoryWithInTest2(): Unit = runBlocking {
+        // given
+        val category = "FOOD_BEVERAGE"
+        val latitude = "0.0"
+        val longitude = "0.0"
+        val distance = "0.0"
+        val unit = "km"
+        val page = "0"
+        val size = "100"
+
+        val request = MockServerRequest.builder()
+            .queryParam("category", category)
+            .queryParam("latitude", latitude)
+            .queryParam("longitude", longitude)
+            .queryParam("distance", distance)
+            .queryParam("unit", unit)
+            .queryParam("page", page)
+            .queryParam("size", size)
+            .build()
+
+        // 비어있는 리스트를 반환
+        coEvery {
+            grpcShopSearchClient.searchCategoryWIthIn(
+                category,
+                latitude.toDouble(),
+                longitude.toDouble(),
+                distance.toDouble(),
+                unit,
+                page.toInt(),
+                size.toInt()
+            )
+        } returns
+                SearchResponse.newBuilder()
+                    .addAllIds(listOf())
+                    .build()
+
+        // then
+        shouldThrow<ShopNotFoundException> { shopQueryHandler.searchByCategoryWithIn(request) }
     }
 
     // MockServerRequest를 생성하는 메소드

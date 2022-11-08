@@ -12,7 +12,7 @@ interface GrpcShopSearchClient {
 
     // 반경 내 카테고리 검색 메소드
     suspend fun searchCategoryWIthIn(
-        category: Category,
+        category: String,
         latitude: Double,
         longitude: Double,
         distance: Double,
@@ -23,7 +23,7 @@ interface GrpcShopSearchClient {
 
     // 반경 내 세부 카테고리 검색 메소드
     suspend fun searchDetailCategoryWithIn(
-        detailCategory: DetailCategory,
+        detailCategory: String,
         latitude: Double,
         longitude: Double,
         distance: Double,

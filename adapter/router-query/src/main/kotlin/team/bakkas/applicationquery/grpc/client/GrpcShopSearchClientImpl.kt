@@ -3,14 +3,7 @@ package team.bakkas.applicationquery.grpc.client
 import io.grpc.ManagedChannelBuilder
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
-import team.bakkas.dynamo.shop.vo.category.Category
-import team.bakkas.dynamo.shop.vo.category.DetailCategory
-import team.bakkas.shop.search.SearchCategoryGrpcRequest
-import team.bakkas.shop.search.SearchDetailCategoryGrpcRequest
-import team.bakkas.shop.search.SearchResponse
-import team.bakkas.shop.search.SearchShopNameGrpcRequest
-import team.bakkas.shop.search.SearchWithInGrpcRequest
-import team.bakkas.shop.search.ShopSearchGrpcKt
+import team.bakkas.shop.search.*
 
 /**
  * @author Brian
@@ -28,7 +21,7 @@ class GrpcShopSearchClientImpl(
     private val searchStub = ShopSearchGrpcKt.ShopSearchCoroutineStub(channel)
 
     override suspend fun searchCategoryWIthIn(
-        category: Category,
+        category: String,
         latitude: Double,
         longitude: Double,
         distance: Double,
@@ -37,7 +30,7 @@ class GrpcShopSearchClientImpl(
         size: Int
     ): SearchResponse {
         val request = SearchCategoryGrpcRequest.newBuilder()
-            .setCategory(category.toString())
+            .setCategory(category)
             .setLatitude(latitude)
             .setLongitude(longitude)
             .setDistance(distance)
@@ -50,7 +43,7 @@ class GrpcShopSearchClientImpl(
     }
 
     override suspend fun searchDetailCategoryWithIn(
-        detailCategory: DetailCategory,
+        detailCategory: String,
         latitude: Double,
         longitude: Double,
         distance: Double,
@@ -59,7 +52,7 @@ class GrpcShopSearchClientImpl(
         size: Int
     ): SearchResponse {
         val request = SearchDetailCategoryGrpcRequest.newBuilder()
-            .setDetailCategory(detailCategory.toString())
+            .setDetailCategory(detailCategory)
             .setLatitude(latitude)
             .setLongitude(longitude)
             .setDistance(distance)

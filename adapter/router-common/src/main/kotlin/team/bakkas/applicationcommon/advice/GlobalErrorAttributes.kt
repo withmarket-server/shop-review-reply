@@ -12,6 +12,7 @@ import team.bakkas.common.exceptions.RequestParamLostException
 import team.bakkas.common.exceptions.shop.ShopBranchInfoInvalidException
 import team.bakkas.common.exceptions.shopReview.ShopReviewListInvalidException
 import team.bakkas.common.error.ErrorCode
+import team.bakkas.common.exceptions.shop.CategoryNotFoundException
 import team.bakkas.common.exceptions.shop.ShopNotFoundException
 import team.bakkas.common.exceptions.shopReview.ShopReviewNotFoundException
 
@@ -39,6 +40,11 @@ class GlobalErrorAttributes : DefaultErrorAttributes() {
                 map["default_message"] = throwable.message
                 map["error"] = ErrorCode.INVALID_INFO
                 map["error_code"] = ErrorCode.INVALID_INFO
+            }
+            is CategoryNotFoundException -> {
+                map["default_message"] = throwable.message
+                map["error"] = ErrorCode.REQUEST_PARAM_ERROR
+                map["error_code"] = ErrorCode.REQUEST_PARAM_ERROR
             }
             is ShopReviewNotFoundException -> {
                 map["default_message"] = throwable.message

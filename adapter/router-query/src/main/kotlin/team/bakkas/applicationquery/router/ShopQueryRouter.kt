@@ -12,9 +12,10 @@ class ShopQueryRouter(
 
     @Bean
     fun shopRoutes() = coRouter {
-        "/api/v2/shop/simple".nest {
-            GET("", shopHandler::findById)
-            GET("/list", shopHandler::getAllShops)
+        "/api/v2/shop".nest {
+            GET("/simple", shopHandler::findById)
+            GET("/simple/list", shopHandler::getAllShops)
+            GET("/simple/list/category", shopHandler::searchByCategoryWithIn) // category 반경 검색
         }
     }
 }
