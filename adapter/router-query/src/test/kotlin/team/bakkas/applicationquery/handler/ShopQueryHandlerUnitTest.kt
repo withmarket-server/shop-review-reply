@@ -315,13 +315,61 @@ internal class ShopQueryHandlerUnitTest {
             .queryParam("size", size)
             .build()
 
-        coEvery { grpcShopSearchClient.searchShopNameWithIn(shopName, latitude.toDouble(), longitude.toDouble(), distance.toDouble(), unit, page.toInt(), size.toInt()) } returns
+        coEvery {
+            grpcShopSearchClient.searchShopNameWithIn(
+                shopName,
+                latitude.toDouble(),
+                longitude.toDouble(),
+                distance.toDouble(),
+                unit,
+                page.toInt(),
+                size.toInt()
+            )
+        } returns
                 SearchResponse.newBuilder()
                     .addAllIds(listOf())
                     .build()
 
         // then
         shouldThrow<ShopNotFoundException> { shopQueryHandler.searchByShopNameWithIn(request) }
+    }
+
+    @Test
+    @DisplayName("[searchWithIn] 1. 반경 내에 가게가 없는 경우")
+    fun searchWithInTest1(): Unit = runBlocking {
+        // given
+        val latitude = "0.0"
+        val longitude = "0.0"
+        val distance = "0.0"
+        val unit = "km"
+        val page = "0"
+        val size = "100"
+
+        val request = MockServerRequest.builder()
+            .queryParam("latitude", latitude)
+            .queryParam("longitude", longitude)
+            .queryParam("distance", distance)
+            .queryParam("unit", unit)
+            .queryParam("page", page)
+            .queryParam("size", size)
+            .build()
+
+        coEvery {
+            grpcShopSearchClient.searchWithIn(
+                latitude.toDouble(),
+                longitude.toDouble(),
+                distance.toDouble(),
+                unit,
+                page.toInt(),
+                size.toInt()
+            )
+        } returns
+                SearchResponse.newBuilder()
+                    .addAllIds(listOf())
+                    .build()
+
+        // then
+        shouldThrow<ShopNotFoundException> { shopQueryHandler.searchWithIn(request) }
     }
 
     // MockServerRequest를 생성하는 메소드
