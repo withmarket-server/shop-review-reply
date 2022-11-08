@@ -267,6 +267,63 @@ internal class ShopQueryHandlerUnitTest {
         shouldThrow<ShopNotFoundException> { shopQueryHandler.searchByDetailCategoryWithIn(request) }
     }
 
+    @Test
+    @DisplayName("[searchByShopNameWithIn] 1. 두 글자 미만으로 검색을 시도하는 경우")
+    fun searchByShopNameWithInTest1(): Unit = runBlocking {
+        // given
+        val shopName = "g"
+        val latitude = "0.0"
+        val longitude = "0.0"
+        val distance = "0.0"
+        val unit = "km"
+        val page = "0"
+        val size = "100"
+
+        val request = MockServerRequest.builder()
+            .queryParam("shop-name", shopName)
+            .queryParam("latitude", latitude)
+            .queryParam("longitude", longitude)
+            .queryParam("distance", distance)
+            .queryParam("unit", unit)
+            .queryParam("page", page)
+            .queryParam("size", size)
+            .build()
+
+        // then
+        shouldThrow<RequestParamLostException> { shopQueryHandler.searchByShopNameWithIn(request) }
+    }
+
+    @Test
+    @DisplayName("[searchByShopNameWithIn] 2. 가게가 존재하지 않는 경우")
+    fun searchByShopNameWithInTest2(): Unit = runBlocking {
+        // given
+        val shopName = "롯데리아"
+        val latitude = "0.0"
+        val longitude = "0.0"
+        val distance = "0.0"
+        val unit = "km"
+        val page = "0"
+        val size = "100"
+
+        val request = MockServerRequest.builder()
+            .queryParam("shop-name", shopName)
+            .queryParam("latitude", latitude)
+            .queryParam("longitude", longitude)
+            .queryParam("distance", distance)
+            .queryParam("unit", unit)
+            .queryParam("page", page)
+            .queryParam("size", size)
+            .build()
+
+        coEvery { grpcShopSearchClient.searchShopNameWithIn(shopName, latitude.toDouble(), longitude.toDouble(), distance.toDouble(), unit, page.toInt(), size.toInt()) } returns
+                SearchResponse.newBuilder()
+                    .addAllIds(listOf())
+                    .build()
+
+        // then
+        shouldThrow<ShopNotFoundException> { shopQueryHandler.searchByShopNameWithIn(request) }
+    }
+
     // MockServerRequest를 생성하는 메소드
     private inline fun generateRequest(block: () -> Mono<Any>): MockServerRequest {
         return MockServerRequest.builder()
