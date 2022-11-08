@@ -185,4 +185,36 @@ class ShopQueryHandler(
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValueAndAwait(ResultFactory.getMultipleResult(shopResponseList))
     }
+
+    // 반경 검색
+    suspend fun searchWithIn(request: ServerRequest): ServerResponse = coroutineScope {
+        val latitude = request.queryParamOrNull("latitude") ?: throw RequestParamLostException("latitude is lost")
+        val longitude = request.queryParamOrNull("longitude") ?: throw RequestParamLostException("longitude is lost")
+        val distance = request.queryParamOrNull("distance") ?: throw RequestParamLostException("distance is lost")
+        val unit = request.queryParamOrNull("unit") ?: throw RequestParamLostException("unit is lost")
+        val page = request.queryParamOrNull("page") ?: throw RequestParamLostException("page is lost")
+        val size = request.queryParamOrNull("size") ?: throw RequestParamLostException("size is lost")
+
+        val satisfiedShopIdFlow = grpcShopSearchClient.searchWithIn(
+            latitude.toDouble(),
+            longitude.toDouble(),
+            distance.toDouble(),
+            unit,
+            page.toInt(),
+            size.toInt()
+        ).idsList.asFlow()
+
+        val shopResponseList = satisfiedShopIdFlow
+            .map { shopQueryService.findShopById(it)!! }
+            .map { it.toSimpleResponse() }
+            .toList()
+
+        check(shopResponseList.isNotEmpty()) {
+            throw ShopNotFoundException("Shop is not found!!")
+        }
+
+        return@coroutineScope ok()
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValueAndAwait(ResultFactory.getMultipleResult(shopResponseList))
+    }
 }
