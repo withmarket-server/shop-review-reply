@@ -184,7 +184,6 @@ pipeline {
             steps {
                 script {
                     try {
-                        sh "aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin ${QUERY_ECR_REPO}"
                         sh 'docker push ${QUERY_ECR_REPO}:latest'
                     }catch(error) {
                         print(error)
@@ -207,7 +206,6 @@ pipeline {
             steps {
                 script {
                     try {
-                        sh "aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin ${KAFKA_CONSUMER_ECR_REPO}"
                         sh 'docker push ${KAFKA_CONSUMER_ECR_REPO}:latest'
                     }catch(error) {
                         print(error)
