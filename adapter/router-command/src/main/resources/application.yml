@@ -1,6 +1,8 @@
 server:
   port: 10101
 
+# serverDynamo, serverCache, serverProducer
+# localDynamo, localCache, localProducer
 spring:
   profiles:
     active: serverDynamo, serverCache, serverProducer

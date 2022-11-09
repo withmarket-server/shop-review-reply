@@ -34,7 +34,7 @@ class ShopReviewDynamoRepositoryImpl(
      * @param reviewTitle 리뷰의 제목
      * @return Mono<ShopReview?>
      */
-    override fun findReviewByIdAndTitle(reviewId: String): Mono<ShopReview> {
+    override fun findReviewById(reviewId: String): Mono<ShopReview> {
         val reviewKey = generateKey(reviewId)
         val reviewFuture = asyncTable.getItem(reviewKey)
 
@@ -70,7 +70,7 @@ class ShopReviewDynamoRepositoryImpl(
 
     // review를 soft delete 하는 메소드
     override fun softDeleteReview(reviewId: String): Mono<ShopReview> {
-        return findReviewByIdAndTitle(reviewId)
+        return findReviewById(reviewId)
             .map { it.softDelete() }
             .flatMap { createReviewAsync(it) }
     }

@@ -13,7 +13,7 @@ enum class ErrorCode(
     ACCESS_DENIED(400, "C001", "Access is denied"),
     REQUEST_PARAM_LOST(400, "C002", "Request param is lost"),
     REQUEST_BODY_LOST(400, "C003", "Request body is lost"),
-    REQUEST_FIELD_ERROR(400, "C004", "Request field is invalid"),
+    REQUEST_PARAM_ERROR(400, "C004", "Request param is invalid"),
     ENTITY_NOT_FOUND(400, "C101", "Not exist entity"),
     INVALID_INFO(400, "C102", "Invalid info is given"),
     INVALID_SHOP_REVIEW_LIST(400, "C300", "Invalid review list occurred")

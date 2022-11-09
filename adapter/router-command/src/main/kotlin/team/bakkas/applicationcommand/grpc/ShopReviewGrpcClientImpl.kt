@@ -11,7 +11,7 @@ import team.bakkas.grpcIfs.v1.shopReview.ShopReviewServiceGrpcKt
 // ShopReview에 대한 gRPC 서비스를 스터빙하는 클래스
 @Component
 class ShopReviewGrpcClientImpl(
-    @Value("\${cluster.grpc-host}") private val channelHost: String
+    @Value("\${grpc.shop-query}") private val channelHost: String
 ) : ShopReviewGrpcClient {
 
     // query server를 대상으로 gRPC 포트를 타겟한다

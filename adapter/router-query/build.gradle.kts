@@ -12,6 +12,9 @@ dependencies {
     // Armeria
     implementation("com.linecorp.armeria:armeria-grpc")
     implementation("com.linecorp.armeria:armeria-spring-boot2-webflux-starter")
+
+    // for using grpc client
+    api("io.grpc:grpc-netty-shaded:1.49.0")
 }
 
 dependencyManagement {

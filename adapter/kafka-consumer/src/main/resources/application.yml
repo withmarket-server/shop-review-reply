@@ -1,6 +1,8 @@
 server:
   port: 10102
 
+# serverDynamo, serverCache, serverConsumer, serverSearch
+# localDynamo, localCache, localConsumer, localSearch
 spring:
   profiles:
     active: serverDynamo, serverCache, serverConsumer, serverSearch

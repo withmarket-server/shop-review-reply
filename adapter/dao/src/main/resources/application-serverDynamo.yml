@@ -11,5 +11,6 @@ spring:
 encrypt:
   key: EjelT7fFw6T4LHQEuwtU
 
-cluster:
-  grpc-host: query.shop
+grpc:
+  shop-query: query.shop
+  shop-search: search.shop
