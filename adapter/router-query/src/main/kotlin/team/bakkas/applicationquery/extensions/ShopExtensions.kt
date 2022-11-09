@@ -11,7 +11,7 @@ fun Shop.toSimpleResponse() = ShopQuery.SimpleResponse(
     roadNameAddress = this.addressInfo.roadNameAddress,
     latitude = this.latLon.latitude,
     longitude = this.latLon.longitude,
-    averageScore = this.totalScore / reviewNumber,
+    averageScore = 0.0,
     reviewNumber = this.reviewNumber,
     mainImage = this.shopImageInfo.mainImage,
     shopDescription = this.shopDescription,
@@ -19,4 +19,7 @@ fun Shop.toSimpleResponse() = ShopQuery.SimpleResponse(
     shopDetailCategory = this.categoryInfo.shopDetailCategory,
     isBranch = this.branchInfo.isBranch,
     branchName = this.branchInfo.branchName
-)
+).apply { averageScore = when(reviewNumber) {
+    0 -> 0.0
+    else -> totalScore / reviewNumber
+} }
