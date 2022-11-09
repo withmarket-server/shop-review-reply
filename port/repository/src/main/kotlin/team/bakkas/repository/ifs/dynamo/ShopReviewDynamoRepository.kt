@@ -7,7 +7,7 @@ import team.bakkas.dynamo.shopReview.ShopReview
 interface ShopReviewDynamoRepository {
 
     // 비동기적으로 review를 하나 가져오는 메소드
-    fun findReviewByIdAndTitle(reviewId: String): Mono<ShopReview>
+    fun findReviewById(reviewId: String): Mono<ShopReview>
 
     // shop에 대한 모든 review를 가져오는 메소드
     fun getAllReviewsByShopId(shopId: String): Flow<ShopReview>

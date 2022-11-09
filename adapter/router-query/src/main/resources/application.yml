@@ -1,6 +1,8 @@
 server:
   port: 10100
 
+# serverDynamo, serverCache
+# localDynamo, localCache
 spring:
   profiles:
-    active: localDynamo, localCache
+    active: serverDynamo, serverCache

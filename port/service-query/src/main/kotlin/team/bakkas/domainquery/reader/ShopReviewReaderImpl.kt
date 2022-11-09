@@ -27,7 +27,7 @@ class ShopReviewReaderImpl(
      */
     override fun findReviewById(reviewId: String): Mono<ShopReview> {
         val key = RedisUtils.generateReviewRedisKey(reviewId)
-        val alternativeMono = shopReviewDynamoRepository.findReviewByIdAndTitle(reviewId)
+        val alternativeMono = shopReviewDynamoRepository.findReviewById(reviewId)
             .single()
             .doOnSuccess { shopReviewRedisRepository.cacheReview(it).subscribe() }
             .onErrorResume { Mono.empty() }
