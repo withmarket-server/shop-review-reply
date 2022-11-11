@@ -1,5 +1,6 @@
 package team.bakkas.applicationquery.scheduler
 
+import kotlinx.coroutines.flow.subscribe
 import kotlinx.coroutines.reactor.asFlux
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
@@ -22,7 +23,7 @@ class ShopReviewScheduler(
     fun cacheShopReviews() {
         shopReader.getAllShopsWithCaching()
             .asFlux()
-            .doOnNext { shopReviewReader.getReviewsOfShopWithCaching(it.shopId) }
+            .doOnNext { shopReviewReader.getReviewsOfShopWithCaching(it.shopId).asFlux().subscribe() }
             .log()
             .subscribe()
     }
