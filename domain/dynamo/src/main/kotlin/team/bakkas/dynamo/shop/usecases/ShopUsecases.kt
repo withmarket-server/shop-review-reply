@@ -69,7 +69,7 @@ fun Shop.changeOpenCloseTime(openTime: LocalTime, closeTime: LocalTime): Shop {
 
 // 휴무일을 변경하는 메소드
 fun Shop.changeRestDayList(restDayList: List<Days>?): Shop {
-    restDayList?.let { this.salesInfo.restDayList - restDayList }
+    restDayList?.let { this.salesInfo.restDayList = restDayList }
     this.updatedAt = LocalDateTime.now()
 
     return this
