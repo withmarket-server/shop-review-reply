@@ -2,7 +2,6 @@ package team.bakkas.applicationquery.handler
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import org.springframework.http.MediaType
@@ -12,7 +11,6 @@ import org.springframework.web.reactive.function.server.ServerResponse.ok
 import team.bakkas.applicationquery.extensions.toSimpleResponse
 import team.bakkas.applicationquery.grpc.client.GrpcShopSearchClient
 import team.bakkas.common.ResultFactory
-import team.bakkas.common.exceptions.RequestFieldException
 import team.bakkas.common.exceptions.RequestParamLostException
 import team.bakkas.common.exceptions.shop.CategoryNotFoundException
 import team.bakkas.common.exceptions.shop.DetailCategoryNotFoundException
@@ -41,13 +39,23 @@ class ShopQueryHandler(
 
         val shop = shopQueryService.findShopById(shopId) ?: throw ShopNotFoundException("Shop is not found!!")
 
-        if (shop.deletedAt != null) {
-            throw ShopNotFoundException("Shop is not found!!")
-        }
-
         return@coroutineScope ok()
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValueAndAwait(ResultFactory.getSingleResult(shop.toSimpleResponse()))
+    }
+
+    suspend fun findDetailById(request: ServerRequest): ServerResponse = coroutineScope {
+        val shopId = request.queryParamOrNull("id") ?: throw RequestParamLostException("shopId is lost")
+
+        check(shopId.isNotEmpty()) {
+            throw RequestParamLostException("Empty query parameter")
+        }
+
+        val shop = shopQueryService.findShopById(shopId) ?: throw ShopNotFoundException("Shop is not found!!")
+
+        return@coroutineScope ok()
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValueAndAwait(ResultFactory.getSingleResult(shop))
     }
 
     // 모든 shop에 대한 list를 반환해주는 메소드
