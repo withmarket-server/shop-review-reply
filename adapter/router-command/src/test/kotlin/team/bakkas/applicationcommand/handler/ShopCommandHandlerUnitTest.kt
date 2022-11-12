@@ -191,6 +191,30 @@ internal class ShopCommandHandlerUnitTest {
         shouldThrow<ShopNotFoundException> { shopCommandHandler.deleteShop(request) }
     }
 
+    @Test
+    @DisplayName("[updateShop] 1. shop이 존재하지 않는 경우 예외를 일으키는 테스트")
+    fun updateShopTest1(): Unit = runBlocking {
+        // given
+        val shopId = "qweqwe"
+        val updateRequest = ShopCommand.UpdateRequest(
+            shopId = shopId,
+            shopName = "qwe",
+            mainImage = null,
+            representativeImageUrlList = null,
+            openTimeRange = null,
+            restDayList = null
+        )
+        val request = generateRequest { Mono.just(updateRequest) }
+
+        coEvery { shopGrpcClient.isExistShop(shopId) } returns
+                CheckExistShopResponse.newBuilder()
+                    .setResult(false)
+                    .build()
+
+        // then
+        shouldThrow<ShopNotFoundException> { shopCommandHandler.updateShop(request) }
+    }
+
     // MockRequest를 생성해주는 메소드
     private inline fun generateRequest(block:() -> Mono<Any>): MockServerRequest {
         return MockServerRequest.builder()

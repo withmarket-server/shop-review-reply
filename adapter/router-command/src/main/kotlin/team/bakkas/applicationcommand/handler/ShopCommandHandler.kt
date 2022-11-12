@@ -68,4 +68,25 @@ class ShopCommandHandler(
         return@coroutineScope ok().contentType(MediaType.APPLICATION_JSON)
             .bodyValueAndAwait(ResultFactory.getSuccessResult())
     }
+
+    /** 가게 정보를 업데이트하는 메소드
+     * @param request
+     * @return serverResponse
+     */
+    suspend fun updateShop(request: ServerRequest): ServerResponse = coroutineScope {
+        val updateRequest = request.bodyToMono(ShopCommand.UpdateRequest::class.java)
+            .awaitSingleOrNull()
+
+        checkNotNull(updateRequest) {
+            throw RequestBodyLostException("Body is lost!!")
+        }
+
+        shopValidator.validateUpdatable(updateRequest)
+
+        shopEventProducer.propagateShopUpdated(updateRequest)
+
+        return@coroutineScope ok()
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValueAndAwait(ResultFactory.getSuccessResult())
+    }
 }

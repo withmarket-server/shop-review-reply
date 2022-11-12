@@ -11,12 +11,17 @@ import team.bakkas.eventinterface.kafka.KafkaTopics
 @Component
 class ShopEventProducerImpl(
     private val shopKafkaTemplate: KafkaTemplate<String, Shop>,
+    private val shopUpdatedEventKafkaTemplate: KafkaTemplate<String, ShopCommand.UpdateRequest>,
     private val shopDeletedEventKafkaTemplate: KafkaTemplate<String, ShopCommand.DeletedEvent>
-): ShopEventProducer {
+) : ShopEventProducer {
 
     // Kafka에다가 생성된 shop을 메시지로 전송하여 consume하는 쪽에서 redis에 캐싱하도록 구현한다
     override fun propagateShopCreated(shop: Shop): Unit = with(shop) {
         shopKafkaTemplate.send(KafkaTopics.shopCreateTopic, this)
+    }
+
+    override fun propagateShopUpdated(updatedEvent: ShopCommand.UpdateRequest): Unit = with(updatedEvent) {
+        shopUpdatedEventKafkaTemplate.send(KafkaTopics.shopUpdateTopic, this)
     }
 
     // Kafka에다가 shopDeletedEvent를 전송하여 consume하는 쪽에서 처리한다

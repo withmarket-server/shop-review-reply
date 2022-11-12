@@ -6,6 +6,7 @@ import org.springframework.validation.Errors
 import team.bakkas.applicationcommand.grpc.ifs.ShopGrpcClient
 import team.bakkas.clientcommand.shop.ShopCommand
 import team.bakkas.clientcommand.shop.annotations.ShopCreatable
+import team.bakkas.clientcommand.shop.annotations.ShopUpdatable
 import team.bakkas.common.error.ErrorResponse
 import team.bakkas.common.exceptions.RegionNotKoreaException
 import team.bakkas.common.exceptions.RequestFieldException
@@ -72,6 +73,13 @@ class ShopValidatorImpl(
 
         check(validateBranchInfo(createRequest.isBranch, createRequest.branchName)) {
             throw ShopBranchInfoInvalidException("본점/지점 정보가 잘못 주어졌습니다.")
+        }
+    }
+
+    override suspend fun validateUpdatable(updateRequest: ShopCommand.UpdateRequest) {
+        // first, validate the shopId is valid (i.e. whether the shop of shopId exists or not)
+        check(shopGrpcClient.isExistShop(updateRequest.shopId).result) {
+            throw ShopNotFoundException("The shop does not exist!!")
         }
     }
 

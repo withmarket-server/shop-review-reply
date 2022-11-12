@@ -26,6 +26,12 @@ class KafkaProducerConfig(
         return KafkaTemplate(shopProducerFactory())
     }
 
+    // shop 수정에 대한 template
+    @Bean
+    fun shopUpdatedEventKafkaTemplate(): KafkaTemplate<String, ShopCommand.UpdateRequest> {
+        return KafkaTemplate(shopUpdatedEventProducerFactory())
+    }
+
     @Bean
     fun shopDeletedEventKafkaTemplate(): KafkaTemplate<String, ShopCommand.DeletedEvent> {
         return KafkaTemplate(shopDeletedEventProducerFactory())
@@ -44,6 +50,9 @@ class KafkaProducerConfig(
 
     // Shop에 대한 Kafka Template를 사용하기 위한 Producer Factory
     private fun shopProducerFactory(): ProducerFactory<String, Shop> =
+        DefaultKafkaProducerFactory(producerConfig())
+
+    private fun shopUpdatedEventProducerFactory(): ProducerFactory<String, ShopCommand.UpdateRequest> =
         DefaultKafkaProducerFactory(producerConfig())
 
     // Shop에 대한 delete 처리를 하기 위한 template 정의를 위해 producer factory 생성
