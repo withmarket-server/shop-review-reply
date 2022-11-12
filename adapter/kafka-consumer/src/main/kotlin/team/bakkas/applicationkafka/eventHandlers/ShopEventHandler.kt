@@ -30,6 +30,16 @@ class ShopEventHandler(
             .subscribe()
     }
 
+    @KafkaListener(
+        topics = [KafkaTopics.shopUpdateTopic],
+        groupId = KafkaConsumerGroups.shopGroup
+    )
+    fun updateShop(updatedEvent: ShopCommand.UpdateRequest) {
+        shopCommandService.updateShop(updatedEvent)
+            .doOnSuccess { shopSearchRepository.save(it.toSearchEntity()).subscribe() }
+            .subscribe()
+    }
+
     // Shop을 Soft Delete를 수행하는 리스너
     @KafkaListener(
         topics = [KafkaTopics.shopDeleteTopic],

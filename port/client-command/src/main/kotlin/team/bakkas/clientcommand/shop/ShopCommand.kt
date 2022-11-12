@@ -34,6 +34,22 @@ sealed class ShopCommand {
         @JsonProperty("delivery_tip_per_distance_list") var deliveryTipPerDistanceList: List<DeliveryTipPerDistance>
     )
 
+    // Shop을 수정하는데 사용하는 dto class
+    data class UpdateRequest(
+        @field:JsonProperty("shop_id") var shopId: String,
+        @field:JsonProperty("shop_name") var shopName: String?,
+        @field:JsonProperty("main_image") var mainImage: String?,
+        @field:JsonProperty("representative_image_url_list") var representativeImageUrlList: List<String>?,
+        @field:JsonProperty("open_time_range") var openTimeRange: OpenTimeRange?,
+        @field:JsonProperty("rest_day_list") var restDayList: List<Days>?
+    )
+
+    // 가게의 여닫는 시간 정보를 저장하는 data class
+    data class OpenTimeRange(
+        var openTime: LocalTime,
+        var closeTime: LocalTime
+    )
+
     data class DeletedEvent(
         var shopId: String
     ) {
