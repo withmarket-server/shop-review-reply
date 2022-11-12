@@ -46,8 +46,8 @@ sealed class ShopCommand {
 
     // 가게의 여닫는 시간 정보를 저장하는 data class
     data class OpenTimeRange(
-        var openTime: LocalTime,
-        var closeTime: LocalTime
+        @field:JsonProperty("open_time") var openTime: LocalTime,
+        @field:JsonProperty("open_time") var closeTime: LocalTime
     )
 
     data class DeletedEvent(
