@@ -33,6 +33,7 @@ fun Shop.softDelete(): Shop {
 // 가게의 이름을 바꾸는 메소드
 fun Shop.changeShopName(shopName: String?): Shop {
     shopName?.let { this.shopName = shopName }
+    this.updatedAt = LocalDateTime.now()
 
     return this
 }
@@ -40,6 +41,7 @@ fun Shop.changeShopName(shopName: String?): Shop {
 // 가게의 이미지 정보를 변경하는 메소드
 fun Shop.changeMainImage(mainImage: String?): Shop {
     mainImage?.let { this.shopImageInfo.mainImage = mainImage }
+    this.updatedAt = LocalDateTime.now()
 
     return this
 }
@@ -49,6 +51,7 @@ fun Shop.changeRepresentativeImageList(representativeImageList: List<String>?): 
     representativeImageList?.let {
         this.shopImageInfo.representativeImageList = representativeImageList
     }
+    this.updatedAt = LocalDateTime.now()
 
     return this
 }
@@ -59,6 +62,7 @@ fun Shop.changeOpenCloseTime(openTime: LocalTime, closeTime: LocalTime): Shop {
         this.openTime = openTime
         this.closeTime = closeTime
     }
+    this.updatedAt = LocalDateTime.now()
 
     return this
 }
@@ -66,6 +70,7 @@ fun Shop.changeOpenCloseTime(openTime: LocalTime, closeTime: LocalTime): Shop {
 // 휴무일을 변경하는 메소드
 fun Shop.changeRestDayList(restDayList: List<Days>?): Shop {
     restDayList?.let { this.salesInfo.restDayList - restDayList }
+    this.updatedAt = LocalDateTime.now()
 
     return this
 }
