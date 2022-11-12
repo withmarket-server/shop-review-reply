@@ -3,6 +3,7 @@ package team.bakkas.servicecommand.service
 import io.kotest.common.runBlocking
 import io.mockk.*
 import io.mockk.junit5.MockKExtension
+import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals

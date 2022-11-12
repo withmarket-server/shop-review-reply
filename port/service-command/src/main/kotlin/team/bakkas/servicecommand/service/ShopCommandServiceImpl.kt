@@ -3,9 +3,9 @@ package team.bakkas.servicecommand.service
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Mono
+import team.bakkas.clientcommand.shop.ShopCommand
 import team.bakkas.dynamo.shop.Shop
-import team.bakkas.dynamo.shop.usecases.applyReviewCreate
-import team.bakkas.dynamo.shop.usecases.applyReviewDelete
+import team.bakkas.dynamo.shop.usecases.*
 import team.bakkas.servicecommand.service.ifs.ShopCommandService
 import team.bakkas.repository.ifs.dynamo.ShopDynamoRepository
 import team.bakkas.repository.ifs.redis.ShopRedisRepository
@@ -57,5 +57,25 @@ class ShopCommandServiceImpl(
             .map { it.applyReviewDelete(reviewScore) } // reviewScore를 반영하고
             .flatMap { shopDynamoRepository.createShop(it) } // dynamo에 밀어넣고
             .doOnSuccess { shopRedisRepository.cacheShop(it).subscribe() } // redis에 다시 캐싱한다
+    }
+
+    @Transactional
+    override fun updateShop(updateRequest: ShopCommand.UpdateRequest): Mono<Shop> {
+        return shopDynamoRepository.findShopById(updateRequest.shopId)
+            .map { it.changeShopName(updateRequest.shopName) } // 가게 이름 변경
+            .map { it.changeMainImage(updateRequest.mainImage) } // 메인 이미지 변경
+            .map { it.changeRepresentativeImageList(updateRequest.representativeImageUrlList) } // 대표 이미지 목록 변경
+            .map {
+                when (updateRequest.openTimeRange) {
+                    null -> it
+                    else -> it.changeOpenCloseTime(
+                        updateRequest.openTimeRange!!.openTime,
+                        updateRequest.openTimeRange!!.closeTime
+                    )
+                }
+            } // 가게 오픈시간, 종료시간 변경
+            .map { it.changeRestDayList(updateRequest.restDayList) } // 휴무일 변경
+            .flatMap { shopDynamoRepository.createShop(it) } // 변경이 적용된 가게를 dynamo에 저장하고
+            .doOnSuccess { shopRedisRepository.cacheShop(it).subscribe() } // 그걸 그대로 redis에도 전파한다
     }
 }
