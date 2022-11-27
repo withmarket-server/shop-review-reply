@@ -19,9 +19,11 @@ import team.bakkas.servicecommand.service.ifs.ShopReviewCommandService
 import team.bakkas.servicecommand.validator.ShopReviewValidator
 import team.bakkas.eventinterface.eventProducer.ShopReviewEventProducer
 
-/** ShopReview에 대한 command handler class
- * @param shopReviewValidator shopReview에 대한 검증을 담당하는 bean
- * @param shopReviewEventProducer
+/**
+ * ShopReviewCommandHandler
+ * ShopReview에 대해서 들어오는 command request들을 검증하고 이벤트를 발행하는 command handler
+ * @param shopReviewValidator ShopReview command request들을 검증하는 class
+ * @param shopReviewEventProducer 검증된 request들에 대한 event를 발행하는 event producer
  */
 @Component
 class ShopReviewCommandHandler(
@@ -29,23 +31,19 @@ class ShopReviewCommandHandler(
     private val shopReviewEventProducer: ShopReviewEventProducer
 ) {
 
-    // shopReview를 하나 생성하는 메소드
     suspend fun createReview(request: ServerRequest): ServerResponse = coroutineScope {
         // 비동기적으로 reviewDto를 body로부터 뽑아온다
         val reviewCreateRequest = request.bodyToMono(ShopReviewCommand.CreateRequest::class.java)
             .awaitSingleOrNull()
 
-        // body가 유실되어있는지 검증
         checkNotNull(reviewCreateRequest) {
             throw RequestBodyLostException("Body is lost!!")
         }
 
         shopReviewValidator.validateCreatable(reviewCreateRequest)
 
-        // dto -> entity 변환
         val generatedReview = reviewCreateRequest.toEntity()
 
-        // Kafka에 리뷰 생성 이벤트를 전파한다
         shopReviewEventProducer.propagateCreatedEvent(generatedReview)
 
         return@coroutineScope ok()
@@ -53,17 +51,14 @@ class ShopReviewCommandHandler(
             .bodyValueAndAwait(ResultFactory.getSuccessResult())
     }
 
-    // shopReview를 삭제하는 메소드
     suspend fun deleteReview(request: ServerRequest): ServerResponse = coroutineScope {
         val reviewId = request.queryParamOrNull("id") ?: throw RequestParamLostException("reviewId is lost")
         val shopId = request.queryParamOrNull("shop-id") ?: throw RequestParamLostException("shopId is lost")
 
-        // 해당 review가 삭제 가능한지 검증
         shopReviewValidator.validateDeletable(reviewId, shopId)
 
         val deletedEvent = ShopReviewCommand.DeletedEvent.of(reviewId, shopId)
 
-        // Kafka에 삭제 이벤트를 발행하여 Kafka 내부에서 삭제를 처리한다
         shopReviewEventProducer.propagateDeletedEvent(deletedEvent)
 
         return@coroutineScope ok()

@@ -1,4 +1,4 @@
-package team.bakkas.elasticsearch.usecases
+package team.bakkas.elasticsearch.domainExtensions
 
 import team.bakkas.elasticsearch.entity.SearchShop
 

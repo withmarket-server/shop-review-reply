@@ -14,12 +14,10 @@ import team.bakkas.dynamo.shop.usecases.softDelete
 import team.bakkas.repository.ifs.dynamo.ShopDynamoRepository
 
 /**
- * Before running this code example, create an Amazon DynamoDB table named shop
- * Also, ensure that you have set up your development environment, including your credentials from your config server
- * For information, see this documentation topic:
+ * ShopDynamoRepositoryImpl(private val dynamoDbEnhancedAsyncClient: DynamoDbEnhancedAsyncClient)
+ * shopDynamoRepository의 구현체.
+ * @param dynamoDbEnhancedAsyncClient
  * @see <a href="https://docs.aws.amazon.com/sdk-for-java/latest/developer-guide/get-started.html">Developer Guide for DynamoDB SDK</a>
- * @since 22/05/21
- * @author Brian
  */
 @Repository
 class ShopDynamoRepositoryImpl(
@@ -28,24 +26,17 @@ class ShopDynamoRepositoryImpl(
     val asyncTable: DynamoDbAsyncTable<Shop> =
         dynamoDbEnhancedAsyncClient.table("shop", Shop.tableSchema)
 
-    /* ==============================[Async Methods]============================== */
-
-    /** shopId와 shopName을 이용해서 비동기식으로 아이템을 가져오는 메소드
-     * @param shopId shop의 id
-     * @param shopName shop의 이름
-     * @return Mono<Shop?>
-     */
     override fun findShopById(shopId: String): Mono<Shop> {
         val shopKey = generateKey(shopId)
         return Mono.fromFuture(asyncTable.getItem(shopKey))
-            .filter { it.deletedAt == null }
+            .filter { it.deletedAt == null } // 삭제 처리가 되지않은 shop만 가져온다
     }
 
     // 모든 Shop에 대한 flow를 반환해주는 메소드
     override fun getAllShops(): Flow<Shop> {
         val shopPublisher = asyncTable.scan().items()
         return shopPublisher.asFlow()
-            .filter { it.deletedAt == null }
+            .filter { it.deletedAt == null } // 삭제 처리가 되지않은 shop만 가져온다
     }
 
     // shop을 하나 생성해주는 메소드

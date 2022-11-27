@@ -17,7 +17,4 @@ interface ShopRedisRepository {
 
     // shop을 삭제하는 메소드
     fun deleteShop(shopId: String): Mono<Boolean>
-
-    // shop을 soft delete하는 메소드
-    fun softDeleteShop(shopId: String): Mono<Shop>
 }

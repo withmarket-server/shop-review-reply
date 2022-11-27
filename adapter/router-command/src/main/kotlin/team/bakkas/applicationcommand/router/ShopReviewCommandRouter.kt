@@ -5,7 +5,11 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.web.reactive.function.server.coRouter
 import team.bakkas.applicationcommand.handler.ShopReviewCommandHandler
 
-// ShopReview에 대한 command end-point를 정의한 Router class
+/**
+ * ShopReviewCommandRouter
+ * shopReview에 대한 client endpoint를 정의하는 router class
+ * @param shopReviewCommandHandler
+ */
 @Configuration
 class ShopReviewCommandRouter(
     private val shopReviewCommandHandler: ShopReviewCommandHandler
