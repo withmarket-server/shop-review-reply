@@ -40,7 +40,6 @@ class ShopEventHandler(
             .subscribe()
     }
 
-    // Shop을 Soft Delete를 수행하는 리스너
     @KafkaListener(
         topics = [KafkaTopics.shopDeleteTopic],
         groupId = KafkaConsumerGroups.shopGroup
