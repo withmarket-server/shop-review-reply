@@ -5,6 +5,7 @@ import team.bakkas.dynamo.shop.Shop
 import team.bakkas.elasticsearch.entity.SearchShop
 import team.bakkas.elasticsearch.entity.vo.SearchDeliveryTipPerDistance
 
+// Record System(DynamoDB)에 저장된 데이터를 ES에 맞게 가공하는 로직
 fun Shop.toSearchEntity(): SearchShop = SearchShop(
     shopId = shopId,
     shopName = shopName,

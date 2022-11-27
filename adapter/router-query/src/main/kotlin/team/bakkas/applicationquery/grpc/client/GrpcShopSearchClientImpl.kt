@@ -6,7 +6,9 @@ import org.springframework.stereotype.Component
 import team.bakkas.shop.search.*
 
 /**
- * @author Brian
+ * GrpcShopSearchClientImpl
+ * GrpcShopSearchClient의 구현체
+ * @param channelHost grpc server's channel host
  * @since 2022/11/09
  */
 @Component

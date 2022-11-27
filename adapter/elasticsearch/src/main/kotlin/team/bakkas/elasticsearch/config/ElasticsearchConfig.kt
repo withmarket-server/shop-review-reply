@@ -19,8 +19,9 @@ import org.springframework.data.elasticsearch.core.convert.MappingElasticsearchC
 import org.springframework.data.elasticsearch.core.mapping.SimpleElasticsearchMappingContext
 
 /**
- * @author Brian
- * @since 2022/11/06
+ * ElasticsearchConfig(val hostAndPort: String)
+ * Elasticsearch를 사용하기 위해 정의한 Spring Configuration class
+ * @param hostAndPort host and port info
  */
 @Configuration
 class ElasticsearchConfig(

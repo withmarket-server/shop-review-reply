@@ -13,7 +13,9 @@ import team.bakkas.applicationquery.grpc.server.GrpcShopReviewService
 import team.bakkas.applicationquery.grpc.server.GrpcShopService
 import java.nio.charset.StandardCharsets
 
-/** gRPC 활용을 위해 armeria 서버 설정을 하는 configuration class
+/**
+ * ArmeriaServerConfig
+ * gRPC 활용을 위해 armeria 서버 설정을 하는 configuration class
  * @param grpcShopService gRPC 프로토콜로 제공하는 shop에 관련된 서비스
  * @param grpcShopReviewService gRPC 프로토콜로 제공하는 shopReview에 관련된 서비스
  */
@@ -36,13 +38,13 @@ class ArmeriaServerConfig(
             serverBuilder.accessLogWriter(AccessLogWriter.combined(), false)
             serverBuilder.service(
                 GrpcService.builder()
-                    .addService(grpcShopService)
-                    .addService(grpcShopReviewService)
+                    .addService(grpcShopService) // grpc shop service를 armeria 관리 대상으로 추가
+                    .addService(grpcShopReviewService) // grpc shopReview service를 armeria 관리 대상으로 추가
                     .supportedSerializationFormats(GrpcSerializationFormats.values())
                     .enableUnframedRequests(true)
                     .build()
             )
-            serverBuilder.serviceUnder("/docs", DocService())
+            serverBuilder.serviceUnder("/docs", DocService()) // armeria docs 추가
         }
     }
 }

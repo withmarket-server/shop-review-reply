@@ -9,6 +9,11 @@ import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory
 import org.springframework.data.redis.connection.RedisClusterConfiguration
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory
 
+/**
+ * ServerRedisConfig(private val clusterNodes: List<String>)
+ * cluster로 구성된 redis를 사용하기 위해 선언된 Spring Configuration class
+ * @param clusterNodes redis nodes consisted with cluster
+ */
 @Configuration
 @Profile("serverCxache")
 class ServerRedisConfig(

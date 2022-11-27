@@ -14,7 +14,9 @@ import team.bakkas.common.exceptions.shop.ShopNotFoundException
 import team.bakkas.common.exceptions.shopReview.ShopReviewNotFoundException
 import team.bakkas.servicecommand.validator.ShopReviewValidator
 
-/** Shop Review에 대한 검증을 수행하는 Validator class
+/**
+ * ShopReviewValidatorImpl
+ * ShopReviewValidator의 구현체
  * @param shopGrpcClient
  * @param shopReviewGrpcClient
  */
@@ -28,7 +30,6 @@ class ShopReviewValidatorImpl(
         return ShopReviewCommand.CreateRequest::class.java.isAssignableFrom(clazz)
     }
 
-    // 해당 리뷰가 생성 가능한지 검증하는 메소드
     override suspend fun validateCreatable(request: ShopReviewCommand.CreateRequest) = with(request) {
         val errors = BeanPropertyBindingResult(this, ShopReviewCommand.CreateRequest::class.java.name)
 
@@ -43,7 +44,6 @@ class ShopReviewValidatorImpl(
         }
     }
 
-    // 해당 review가 삭제 가능한지 검증하는 메소드
     override suspend fun validateDeletable(reviewId: String, shopId: String) {
         // reviewId가 비어서 들어오는 경우 예외 처리
         check(reviewId.isNotEmpty()) {
@@ -95,7 +95,7 @@ class ShopReviewValidatorImpl(
             )
         }
 
-        // reivewScore가 0점인 경우 제한한다
+        // reivewScore가 0점 이하, 10점 초과인 경우 예외를 발생시킨다
         if (review.reviewScore <= 0 || review.reviewScore > 10) {
             errors.rejectValue(
                 "reviewScore",
@@ -105,7 +105,7 @@ class ShopReviewValidatorImpl(
             )
         }
 
-        // Field에 error가 발생하여 errors에 content가 채워져서 보내진 경우 RequestFieldException을 일으킨다
+        // field error들을 모두 취합하여 exception을 던진다
         check(errors.allErrors.isEmpty()) {
             val errorList = errors.allErrors.map {
                 ErrorResponse.FieldError.of(

@@ -5,6 +5,11 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.web.reactive.function.server.coRouter
 import team.bakkas.applicationquery.handler.ShopQueryHandler
 
+/**
+ * ShopQueryRouter
+ * Shop에 대한 query client endpoint를 정의하는 router class
+ * @param shopHandler
+ */
 @Configuration
 class ShopQueryRouter(
     private val shopHandler: ShopQueryHandler

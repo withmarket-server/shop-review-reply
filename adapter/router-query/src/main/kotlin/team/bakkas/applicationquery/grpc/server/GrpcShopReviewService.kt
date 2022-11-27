@@ -6,16 +6,16 @@ import team.bakkas.grpcIfs.v1.shopReview.CheckExistShopReviewRequest
 import team.bakkas.grpcIfs.v1.shopReview.CheckExistShopReviewResponse
 import team.bakkas.grpcIfs.v1.shopReview.ShopReviewServiceGrpcKt
 
+/**
+ * GrpcShopReviewService
+ * shopReview에 대한 grpc server 기능을 제공하는 grpc service class
+ * @param shopReviewQueryService
+ */
 @Service
 class GrpcShopReviewService(
     private val shopReviewQueryService: ShopReviewQueryService
 ) : ShopReviewServiceGrpcKt.ShopReviewServiceCoroutineImplBase() {
 
-    /** Shop이 존재하는지 검증해주는 메소드
-     * @param request reviewId, reviewTitle이 포함된 parameter
-     * @throws ShopReviewNotFoundException
-     * @return CheckExistShopReviewResponse
-     */
     override suspend fun isExistShopReview(request: CheckExistShopReviewRequest): CheckExistShopReviewResponse {
         val reviewId = request.reviewId
 
