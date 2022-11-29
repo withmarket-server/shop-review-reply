@@ -11,7 +11,7 @@ import software.amazon.awssdk.enhanced.dynamodb.Expression
 import software.amazon.awssdk.enhanced.dynamodb.Key
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 import team.bakkas.dynamo.shopReview.ShopReview
-import team.bakkas.dynamo.shopReview.usecases.softDelete
+import team.bakkas.dynamo.shopReview.extensions.softDelete
 import team.bakkas.repository.ifs.dynamo.ShopReviewDynamoRepository
 
 /**

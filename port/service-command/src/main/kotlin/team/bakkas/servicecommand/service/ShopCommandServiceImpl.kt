@@ -5,7 +5,7 @@ import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Mono
 import team.bakkas.clientcommand.shop.ShopCommand
 import team.bakkas.dynamo.shop.Shop
-import team.bakkas.dynamo.shop.usecases.*
+import team.bakkas.dynamo.shop.extensions.*
 import team.bakkas.servicecommand.service.ifs.ShopCommandService
 import team.bakkas.repository.ifs.dynamo.ShopDynamoRepository
 import team.bakkas.repository.ifs.redis.ShopRedisRepository

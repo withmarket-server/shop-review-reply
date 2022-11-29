@@ -1,4 +1,4 @@
-package team.bakkas.dynamo.shopReview.usecases
+package team.bakkas.dynamo.shopReview.extensions
 
 import team.bakkas.dynamo.shopReview.ShopReview
 import java.time.LocalDateTime

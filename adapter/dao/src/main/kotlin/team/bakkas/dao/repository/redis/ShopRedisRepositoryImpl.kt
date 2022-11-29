@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
 import team.bakkas.common.utils.RedisUtils
 import team.bakkas.dynamo.shop.Shop
-import team.bakkas.dynamo.shop.usecases.softDelete
 import team.bakkas.repository.ifs.redis.ShopRedisRepository
 import java.time.Duration
 import java.util.StringTokenizer
