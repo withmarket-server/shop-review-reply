@@ -9,32 +9,33 @@ import team.bakkas.dynamo.shop.vo.sale.Days
 import java.time.LocalTime
 
 sealed class ShopCommand {
-    /** Shop을 생성하는데 사용하는 dto class
-     * @since 22.07.24
-     */
+
+    // Shop을 생성하는데 사용되는 request를 정의하는 class
     @ShopCreatable
     data class CreateRequest(
-        @JsonProperty("shop_name") var shopName: String,
-        @JsonProperty("business_number") var businessNumber: String,
-        @JsonProperty("open_time") var openTime: LocalTime,
-        @JsonProperty("close_time") var closeTime: LocalTime,
-        @JsonProperty("rest_day_list") var restDayList: List<Days>,
-        @JsonProperty("lot_number_address") var lotNumberAddress: String,
-        @JsonProperty("road_name_address") var roadNameAddress: String,
-        @JsonProperty("detail_address") var detailAddress: String?,
-        @JsonProperty("latitude") var latitude: Double,
-        @JsonProperty("longitude") var longitude: Double,
-        @JsonProperty("shop_description") var shopDescription: String,
-        @JsonProperty("is_branch") var isBranch: Boolean,
-        @JsonProperty("branch_name") var branchName: String? = null,
-        @JsonProperty("category") var shopCategory: Category,
-        @JsonProperty("detail_category") var shopDetailCategory: DetailCategory,
-        @JsonProperty("main_image_url") var mainImageUrl: String?,
-        @JsonProperty("representative_image_url_list") var representativeImageUrlList: List<String>,
-        @JsonProperty("delivery_tip_per_distance_list") var deliveryTipPerDistanceList: List<DeliveryTipPerDistance>
+        @field:JsonProperty("shop_name") var shopName: String,
+        @field:JsonProperty("business_number") var businessNumber: String,
+        @field:JsonProperty("open_time") var openTime: LocalTime,
+        @field:JsonProperty("close_time") var closeTime: LocalTime,
+        @field:JsonProperty("rest_day_list") var restDayList: List<Days>,
+        @field:JsonProperty("lot_number_address") var lotNumberAddress: String,
+        @field:JsonProperty("road_name_address") var roadNameAddress: String,
+        @field:JsonProperty("detail_address") var detailAddress: String?,
+        @field:JsonProperty("latitude") var latitude: Double,
+        @field:JsonProperty("longitude") var longitude: Double,
+        @field:JsonProperty("shop_description") var shopDescription: String,
+        @field:JsonProperty("is_branch") var isBranch: Boolean,
+        @field:JsonProperty("branch_name") var branchName: String? = null,
+        @field:JsonProperty("category") var shopCategory: Category,
+        @field:JsonProperty("detail_category") var shopDetailCategory: DetailCategory,
+        @field:JsonProperty("main_image_url") var mainImageUrl: String?,
+        @field:JsonProperty("representative_image_url_list") var representativeImageUrlList: List<String>,
+        @field:JsonProperty("delivery_tip_per_distance_list") var deliveryTipPerDistanceList: List<DeliveryTipPerDistance>
     )
 
     // Shop을 수정하는데 사용하는 dto class
+    // must required: shop_id
+    // partially required: others (shop_name, main_image, representative_image_url_list, open_time_range, rest_day_list)
     data class UpdateRequest(
         @field:JsonProperty("shop_id") var shopId: String,
         @field:JsonProperty("shop_name") var shopName: String?,
@@ -45,11 +46,14 @@ sealed class ShopCommand {
     )
 
     // 가게의 여닫는 시간 정보를 저장하는 data class
+    // openTime: 여는 시간 format: 00:00:00
+    // closeTime: 닫는 시간 format: 00:00:00
     data class OpenTimeRange(
         @field:JsonProperty("open_time") var openTime: LocalTime,
         @field:JsonProperty("close_time") var closeTime: LocalTime
     )
 
+    // 가게 삭제 이벤트를 정의하는 클래스
     data class DeletedEvent(
         var shopId: String
     ) {

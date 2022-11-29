@@ -4,21 +4,20 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import team.bakkas.dynamo.shopReview.ShopReview
 
-
+/**
+ * ShopReviewCommandService
+ * ShopReview에 대한 command business logic을 담당하며 처리하는 service class
+ * Clean Architecture 상의 UseCase layer에 대응한다
+ */
 interface ShopReviewCommandService {
 
-    // shop에 대한 review를 생성하는 메소드
     fun createReview(shopReview: ShopReview): Mono<ShopReview>
 
-    // shopReview를 삭제하는 메소드
     fun deleteReview(reviewId: String): Mono<ShopReview>
 
-    // shopReview를 softDelete하는 메소드
     fun softDeleteReview(reviewId: String): Mono<ShopReview>
 
-    // shop에 있는 모든 리뷰를 삭제시키는 메소드
     fun deleteAllReviewsOfShop(shopId: String): Flux<ShopReview>
 
-    // shop에 있는 모든 review를 soft delete하는 메소드
     fun softDeleteAllReviewsOfShop(shopId: String): Flux<ShopReview>
 }

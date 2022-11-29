@@ -1,4 +1,4 @@
-package team.bakkas.dynamo.shop.usecases
+package team.bakkas.dynamo.shop.extensions
 
 import team.bakkas.dynamo.shop.Shop
 import team.bakkas.dynamo.shop.vo.sale.Days

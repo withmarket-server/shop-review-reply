@@ -11,41 +11,35 @@ import team.bakkas.domainquery.reader.ifs.ShopReader
 import team.bakkas.repository.ifs.dynamo.ShopDynamoRepository
 import team.bakkas.repository.ifs.redis.ShopRedisRepository
 
-// TODO CQRS 패턴이 완전 정착되면 삭제할 예정임
-/** Cache hit 방식으로 데이터에 access하는 repository 구현
- * @param shopDynamoRepository DynamoDB의 shop 테이블에 접근하는 repository
- * @param shopReactiveRedisTemplate Redis에 Shop entity를 논블로킹 방식으로 캐싱하는데 사용하는 template
+/**
+ * ShopReaderImpl(shopDynamoRepository: ShopDynamoRepository, shopRedisRepository: ShopRedisRepository)
+ * ShopReader의 구현체. Facade pattern을 구현한다.
+ * @param shopDynamoRepository
+ * @param shopRedisRepository
  */
 @Repository
 class ShopReaderImpl(
     private val shopDynamoRepository: ShopDynamoRepository,
     private val shopRedisRepository: ShopRedisRepository
 ) : ShopReader {
-    /**
-     * Cache hit 방식으로 DynamoDB로부터 가게를 찾아오는 메소드
-     * @param shopId 가게의 Id
-     * @param shopName 가게의 이름
-     * @return Mono<Shop?>
-     */
+
     override fun findShopById(shopId: String): Mono<Shop> {
         val key = RedisUtils.generateShopRedisKey(shopId)
+
+        // redis에 해당 shop이 존재하지 않는 경우 수행하는 Mono
         val alternativeShopMono: Mono<Shop?> = shopDynamoRepository.findShopById(shopId)
             .single()
             .doOnSuccess { shopRedisRepository.cacheShop(it).subscribe() }
             .onErrorResume { Mono.empty() }
 
-        // Redis에서 key에 해당하는 값을 찾지 못한경우 alternativeShopMono를 이용해 Dynamo에서 찾아온다
-        // Dynamo에서 찾아오는데 성공하는 경우 동시에 Redis에 캐싱한다
-        return shopRedisRepository.findShopByKey(key)
-            .switchIfEmpty(alternativeShopMono)
+        return shopRedisRepository.findShopByKey(key) // redis에서 shop을 찾아보고
+            .switchIfEmpty(alternativeShopMono) // 없으면 dynamo를 뒤져서 찾아온다
     }
 
-    // Redis로부터 모든 Shop을 가져오는 메소드
     override fun getAllShops(): Flow<Shop> {
         return shopRedisRepository.getAllShops()
     }
 
-    // cache hit 방식으로 모든 shop을 가져오는 메소드
     override fun getAllShopsWithCaching(): Flow<Shop> {
         return shopDynamoRepository
             .getAllShops() // 모든 shop을 dynamoDB로부터 직접 가져와서

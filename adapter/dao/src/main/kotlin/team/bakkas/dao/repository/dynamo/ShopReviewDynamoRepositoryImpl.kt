@@ -11,7 +11,7 @@ import software.amazon.awssdk.enhanced.dynamodb.Expression
 import software.amazon.awssdk.enhanced.dynamodb.Key
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 import team.bakkas.dynamo.shopReview.ShopReview
-import team.bakkas.dynamo.shopReview.usecases.softDelete
+import team.bakkas.dynamo.shopReview.extensions.softDelete
 import team.bakkas.repository.ifs.dynamo.ShopReviewDynamoRepository
 
 /**
@@ -41,14 +41,14 @@ class ShopReviewDynamoRepositoryImpl(
             .filter { it.deletedAt == null } // 삭제된적이 없는 리뷰들만 가져온다
     }
 
-    override fun createReviewAsync(shopReview: ShopReview): Mono<ShopReview> {
+    override fun createReview(shopReview: ShopReview): Mono<ShopReview> {
         val reviewFuture = asyncTable.putItem(shopReview)
 
         return Mono.fromFuture(reviewFuture)
             .thenReturn(shopReview)
     }
 
-    override fun deleteReviewAsync(reviewId: String): Mono<ShopReview> {
+    override fun deleteReview(reviewId: String): Mono<ShopReview> {
         val reviewKey = generateKey(reviewId)
         val deleteReviewFuture = asyncTable.deleteItem(generateKey(reviewId))
         return Mono.fromFuture(deleteReviewFuture)
@@ -57,7 +57,7 @@ class ShopReviewDynamoRepositoryImpl(
     override fun softDeleteReview(reviewId: String): Mono<ShopReview> {
         return findReviewById(reviewId)
             .map { it.softDelete() }
-            .flatMap { createReviewAsync(it) }
+            .flatMap { createReview(it) }
     }
 
     private fun generateKey(reviewId: String): Key = Key.builder()

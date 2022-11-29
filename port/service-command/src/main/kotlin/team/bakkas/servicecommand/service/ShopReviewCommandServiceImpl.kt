@@ -20,7 +20,7 @@ class ShopReviewCommandServiceImpl(
     @Transactional
     override fun createReview(shopReview: ShopReview): Mono<ShopReview> {
         // 검증이 끝나면 review 생성
-        return shopReviewDynamoRepository.createReviewAsync(shopReview) // review를 dynamo에 저장하고
+        return shopReviewDynamoRepository.createReview(shopReview) // review를 dynamo에 저장하고
             .doOnSuccess { shopReviewRedisRepository.cacheReview(it).subscribe() } // 동시에 redis에 캐싱한다
     }
 
@@ -33,7 +33,7 @@ class ShopReviewCommandServiceImpl(
             .flatMap { shopReviewRedisRepository.deleteReview(it.reviewId) }
 
         // 검증이 끝나면 review 삭제
-        return shopReviewDynamoRepository.deleteReviewAsync(reviewId) // 우선 dynamo에서 review를 제거하고
+        return shopReviewDynamoRepository.deleteReview(reviewId) // 우선 dynamo에서 review를 제거하고
             .doOnSuccess { redisMono.subscribe() } // redis에서 캐시를 evict 처리한다
     }
 
@@ -46,7 +46,7 @@ class ShopReviewCommandServiceImpl(
     override fun deleteAllReviewsOfShop(shopId: String): Flux<ShopReview> {
         return shopReviewDynamoRepository.getAllReviewsByShopId(shopId)
             .asFlux()
-            .flatMap { shopReviewDynamoRepository.deleteReviewAsync(it.reviewId) }
+            .flatMap { shopReviewDynamoRepository.deleteReview(it.reviewId) }
             .doOnNext { shopReviewRedisRepository.deleteReview(it.reviewId).subscribe() }
     }
 
