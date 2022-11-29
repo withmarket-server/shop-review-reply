@@ -3,11 +3,13 @@ package team.bakkas.eventinterface.eventProducer
 import team.bakkas.clientcommand.shopReview.ShopReviewCommand
 import team.bakkas.dynamo.shopReview.ShopReview
 
+/**
+ * ShopReviewEventProducer
+ * ShopReview에 대한 이벤트 발행을 담당하는 interface
+ */
 interface ShopReviewEventProducer {
 
-    // shopReview가 생성되었을 때의 이벤트 전파
     fun propagateCreatedEvent(createdReview: ShopReview)
 
-    // shopReview가 삭제되었을 때의 이벤트 전파
     fun propagateDeletedEvent(deletedEvent: ShopReviewCommand.DeletedEvent)
 }

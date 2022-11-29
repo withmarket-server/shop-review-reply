@@ -76,7 +76,7 @@ class ShopReviewValidatorImpl(
         target::class.java.annotations.map {
             // annotation에 따라서 분기한다
             when (it) {
-                is ReviewCreatable -> rejectEmptyByFieldList(
+                is ReviewCreatable -> rejectEmptyFieldList(
                     errors,
                     listOf("reviewTitle", "shopId", "reviewContent")
                 )

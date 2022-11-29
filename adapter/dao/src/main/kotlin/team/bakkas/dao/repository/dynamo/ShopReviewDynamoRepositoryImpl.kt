@@ -41,14 +41,14 @@ class ShopReviewDynamoRepositoryImpl(
             .filter { it.deletedAt == null } // 삭제된적이 없는 리뷰들만 가져온다
     }
 
-    override fun createReviewAsync(shopReview: ShopReview): Mono<ShopReview> {
+    override fun createReview(shopReview: ShopReview): Mono<ShopReview> {
         val reviewFuture = asyncTable.putItem(shopReview)
 
         return Mono.fromFuture(reviewFuture)
             .thenReturn(shopReview)
     }
 
-    override fun deleteReviewAsync(reviewId: String): Mono<ShopReview> {
+    override fun deleteReview(reviewId: String): Mono<ShopReview> {
         val reviewKey = generateKey(reviewId)
         val deleteReviewFuture = asyncTable.deleteItem(generateKey(reviewId))
         return Mono.fromFuture(deleteReviewFuture)
@@ -57,7 +57,7 @@ class ShopReviewDynamoRepositoryImpl(
     override fun softDeleteReview(reviewId: String): Mono<ShopReview> {
         return findReviewById(reviewId)
             .map { it.softDelete() }
-            .flatMap { createReviewAsync(it) }
+            .flatMap { createReview(it) }
     }
 
     private fun generateKey(reviewId: String): Key = Key.builder()

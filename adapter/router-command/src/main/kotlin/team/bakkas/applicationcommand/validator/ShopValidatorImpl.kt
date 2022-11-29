@@ -6,7 +6,6 @@ import org.springframework.validation.Errors
 import team.bakkas.applicationcommand.grpc.ifs.ShopGrpcClient
 import team.bakkas.clientcommand.shop.ShopCommand
 import team.bakkas.clientcommand.shop.annotations.ShopCreatable
-import team.bakkas.clientcommand.shop.annotations.ShopUpdatable
 import team.bakkas.common.error.ErrorResponse
 import team.bakkas.common.exceptions.RegionNotKoreaException
 import team.bakkas.common.exceptions.RequestFieldException
@@ -45,7 +44,7 @@ class ShopValidatorImpl(
     override fun validate(target: Any, errors: Errors) {
         target::class.java.annotations.map {
             when (it) {
-                is ShopCreatable -> rejectEmptyByFieldList(
+                is ShopCreatable -> rejectEmptyFieldList(
                     errors,
                     listOf(
                         "shopName",
