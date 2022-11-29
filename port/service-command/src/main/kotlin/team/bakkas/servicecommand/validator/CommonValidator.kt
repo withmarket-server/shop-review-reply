@@ -3,14 +3,20 @@ package team.bakkas.servicecommand.validator
 import org.springframework.validation.Errors
 import org.springframework.validation.ValidationUtils
 
-/** 모든 validator에서 공통적으로 사용하는 로직들을 묶어둔 클래스
- * @author Doyeop Kim
- * @since 2022/10/14
+/**
+ * CommonValidator
+ * 모든 validator에서 공통적으로 사용하는 로직들을 묶어둔 클래스
  */
 open class CommonValidator {
 
-    // 주어진 field가 비어있는지 검증해주는 메소드
-    fun rejectFieldIfEmpty(errors: Errors, fieldName: String, message: String) {
+    /**
+     * rejectEmptyField(errors: Errors, fieldName: String, message: String)
+     * 주어진 fieldName에 대응하는 파라미터가 empty인 경우 errors에 reject를 남겨주는 메소드
+     * @param errors error를 담는 객체
+     * @param fieldName validate를 원하는 field의 이름
+     * @param message error message
+     */
+    private fun rejectEmptyField(errors: Errors, fieldName: String, message: String) {
         ValidationUtils.rejectIfEmptyOrWhitespace(
             errors,
             fieldName,
@@ -20,38 +26,48 @@ open class CommonValidator {
         )
     }
 
-    // 모든 필드를 대상으로 empty 검사를 시행하는 메소드
-    fun rejectEmptyByFieldList(errors: Errors, fieldNameList: List<String>) {
-        fieldNameList.forEach { rejectFieldIfEmpty(errors, it, "$it is required") }
+    /**
+     * rejectEmptyFieldList(errors: Errors, fieldNameList: List<String>)
+     * 주어진 fieldList에 대응하는 파라미터들에 대하여 empty 검증을 수행해주는 메소드
+     * @param errors error를 담는 객체
+     * @param fieldNameList fieldName을 모아둔 List 객체
+     */
+    fun rejectEmptyFieldList(errors: Errors, fieldNameList: List<String>) {
+        fieldNameList.forEach { rejectEmptyField(errors, it, "$it is required") }
     }
 
-    // field 검증을 배타적으로 수행하는 메소드 (i.e. N 개중 하나만 들어와도 괜찮은 경우)
+    /**
+     * rejectFieldsExclusively(target: Any, errors: Errors, fieldNameList: List<String>)
+     * fieldNameList에 존재하는 파라미터들에 대해서 배타적인 검증을 수행하는 메소드
+     * 즉, fieldNameList에 대해서 1개 이상이 empty가 아니면 검증을 통과시키는 기능을 수행한다.
+     * @param target 검증 타겟
+     * @param errors error를 저장하는 객체
+     * @param fieldNameList 배타 검증을 수행하고자하는 fieldName의 List 객체
+     */
     @Suppress("UNCHECKED_CAST")
-    fun rejectEmptyFieldExclusively(target: Any, errors: Errors, fieldNameList: List<String>) {
-        // get memberProperties by java reflection
+    fun rejectFieldsExclusively(target: Any, errors: Errors, fieldNameList: List<String>) {
         val memberProperties = target::class.java.fields
 
-        // 검증해야하는 field들의 리스트
-        val validateFields = memberProperties.filter { it.name in fieldNameList }
+        val targetFields = memberProperties
+            .filter { it.name in fieldNameList }
             .map { it as String? }
 
-        // 내용물이 채워져있는 String field의 개수
-        val satisfyVariableNumber = validateFields
+        val satisfyVariableNumber = targetFields
             .filter { !it.isNullOrEmpty() }
             .size
 
-        // 만약에 조건에 부합한 원소가 하나도 없다면 reject 시킨다
         if (satisfyVariableNumber == 0) {
-            rejectEmptyByFieldList(errors, fieldNameList)
+            rejectEmptyFieldList(errors, fieldNameList)
         }
     }
 
-    /** field에 대해서 값 자체가 잘못되었을 때 error를 검증해주는 메소드
-     * @param errors
-     * @param fieldName
-     * @param errorCode
-     * @param value
-     * @param message
+    /**
+     * rejectFieldWithValue(errors: Errors, fieldName: String, errorCode: String, value: String, message: String)
+     * 검증 field에 대해서 잘못된 값을 검증해내는 기능을 수행하는 메소드
+     * ex) 0~10 사이의 평점이 허용된 리뷰에 대해서 11점이 들어온 경우 reject를 일으킨다
+     * ex) 0~10 사이의 평점이 허용된 리뷰에 대해서 음수의 평점이 들어온 경우 reject를 일으킨다
+     * @param errorCode 일으키고자하는 error의 코드
+     * @param value 잘못 전달된 field의 값
      */
     fun rejectFieldWithValue(errors: Errors, fieldName: String, errorCode: String, value: String, message: String) {
         errors.rejectValue(fieldName, errorCode, arrayOf(value), message)

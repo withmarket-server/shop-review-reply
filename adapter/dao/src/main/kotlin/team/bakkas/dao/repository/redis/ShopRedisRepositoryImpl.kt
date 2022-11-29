@@ -10,18 +10,20 @@ import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
 import team.bakkas.common.utils.RedisUtils
 import team.bakkas.dynamo.shop.Shop
-import team.bakkas.dynamo.shop.usecases.softDelete
 import team.bakkas.repository.ifs.redis.ShopRedisRepository
 import java.time.Duration
 import java.util.StringTokenizer
 
-// Shop을 redis에 캐싱하는 메소드들을 정의하는 repository
+/**
+ * ShopRedisRepositoryImpl(private val shopReactiveRedisTemplate: ReactiveRedisTemplate<String, Shop>)
+ * ShopRedisRepository의 구현체
+ * @param shopReactiveRedisTemplate
+ */
 @Repository
 class ShopRedisRepositoryImpl(
     private val shopReactiveRedisTemplate: ReactiveRedisTemplate<String, Shop>
 ) : ShopRedisRepository {
 
-    // shop을 캐싱하는 메소드
     override fun cacheShop(shop: Shop): Mono<Shop> = with(shop) {
         val shopKey = RedisUtils.generateShopRedisKey(shopId)
 
@@ -29,29 +31,18 @@ class ShopRedisRepositoryImpl(
             .thenReturn(shop)
     }
 
-    // redis에 저장된 shop을 가져오는 메소드
     override fun findShopByKey(shopKey: String): Mono<Shop> =
         shopReactiveRedisTemplate.opsForValue().get(shopKey)
 
-    // DynamoDB에 저장된 모든 shop을 가져오는 메소드
     override fun getAllShops(): Flow<Shop> {
         return shopReactiveRedisTemplate.scanAsFlow()
-            .filter { key -> StringTokenizer(key, ":").nextToken().equals("shop") }
+            .filter { key -> StringTokenizer(key, ":").nextToken().equals("shop") } // shop prefix가 붙은 key들만 가져온다
             .map { findShopByKey(it).awaitSingle() }
     }
 
-    // shop을 삭제하는 메소드
     override fun deleteShop(shopId: String): Mono<Boolean> {
         val shopKey = RedisUtils.generateShopRedisKey(shopId)
 
         return shopReactiveRedisTemplate.opsForValue().delete(shopKey)
-    }
-
-    override fun softDeleteShop(shopId: String): Mono<Shop> {
-        val shopKey = RedisUtils.generateShopRedisKey(shopId)
-
-        return findShopByKey(shopKey) // shopId, shopName을 기반으로 shop을 찾아온 다음에
-            .map { it.softDelete() } // 해당 shop을 soft delete를 수행하고
-            .flatMap { cacheShop(it) } // 해당 shop을 다시 redis에 저장한다
     }
 }

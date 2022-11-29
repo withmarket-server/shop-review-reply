@@ -19,8 +19,11 @@ import team.bakkas.domainquery.service.ifs.ShopQueryService
 import team.bakkas.dynamo.shop.vo.category.Category
 import team.bakkas.dynamo.shop.vo.category.DetailCategory
 
-/** Shop에 대한 Query logic을 처리하는 Handler class
+/**
+ * ShopQueryHandler
+ * Shop에 대한 query request를 처리하여 검증하고, 검증 완료 시 결과를 반환하는 handler class
  * @param shopQueryService shop에 대한 Service 로직들을 저장한 컨포넌트
+ * @param grpcShopSearchClient ES에서 조건을 검색하기 위한 grpc client
  */
 @Component
 class ShopQueryHandler(
@@ -28,8 +31,6 @@ class ShopQueryHandler(
     private val grpcShopSearchClient: GrpcShopSearchClient
 ) {
 
-    // shopId와 shopName을 기반으로 shop에 대한 response를 반환해주는 메소드
-    // http://localhost:10100/v2/shop/simple?id=xx&name=xx
     suspend fun findById(request: ServerRequest): ServerResponse = coroutineScope {
         val shopId = request.queryParamOrNull("id") ?: throw RequestParamLostException("shopId is lost")
 
@@ -58,8 +59,6 @@ class ShopQueryHandler(
             .bodyValueAndAwait(ResultFactory.getSingleResult(shop))
     }
 
-    // 모든 shop에 대한 list를 반환해주는 메소드
-    // http://localhost:10100/v2/shop/simple/list
     suspend fun getAllShops(request: ServerRequest): ServerResponse = coroutineScope {
         val shopList = shopQueryService.getAllShopList()
 
@@ -75,8 +74,7 @@ class ShopQueryHandler(
             .bodyValueAndAwait(ResultFactory.getMultipleResult(shopResponseList))
     }
 
-    // TODO 반경 검색, 카테고리별 검색, 세부 카테고리별 검색, 가게 이름 기반 검색 구현
-    // category 기반의 반경 검색
+    // 카테고리 반경 검색
     suspend fun searchByCategoryWithIn(request: ServerRequest): ServerResponse = coroutineScope {
         val category = request.queryParamOrNull("category") ?: throw RequestParamLostException("category is lost")
         val latitude = request.queryParamOrNull("latitude") ?: throw RequestParamLostException("latitude is lost")
@@ -86,11 +84,12 @@ class ShopQueryHandler(
         val page = request.queryParamOrNull("page") ?: throw RequestParamLostException("page is lost")
         val size = request.queryParamOrNull("size") ?: throw RequestParamLostException("size is lost")
 
-        // Check the given category is valid
+        // 카테고리가 존재하는지 검증
         if (category !in Category.values().map { it.toString() }) {
             throw CategoryNotFoundException("Category is not valid")
         }
 
+        // 조건에 만족하는 shop의 목록을 가져온다
         val satisfiedShopIdFlow = grpcShopSearchClient.searchCategoryWIthIn(
             category,
             latitude.toDouble(),
@@ -126,7 +125,7 @@ class ShopQueryHandler(
         val page = request.queryParamOrNull("page") ?: throw RequestParamLostException("page is lost")
         val size = request.queryParamOrNull("size") ?: throw RequestParamLostException("size is lost")
 
-        // Check the given detailCategory is valid
+        // detail category가 실존하는지 검증
         if (detailCategory !in DetailCategory.values().map { it.toString() }) {
             throw DetailCategoryNotFoundException("detail-category is lost")
         }
@@ -155,7 +154,7 @@ class ShopQueryHandler(
             .bodyValueAndAwait(ResultFactory.getMultipleResult(shopResponseList))
     }
 
-    // 가게 이름 기반으로 검색
+    // 가게이름 + 반경
     suspend fun searchByShopNameWithIn(request: ServerRequest): ServerResponse = coroutineScope {
         val shopName = request.queryParamOrNull("shop-name") ?: throw RequestParamLostException("shop-name is lost")
         val latitude = request.queryParamOrNull("latitude") ?: throw RequestParamLostException("latitude is lost")

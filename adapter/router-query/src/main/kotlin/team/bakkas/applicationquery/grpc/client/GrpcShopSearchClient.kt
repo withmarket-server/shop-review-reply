@@ -1,11 +1,10 @@
 package team.bakkas.applicationquery.grpc.client
 
-import team.bakkas.dynamo.shop.vo.category.Category
-import team.bakkas.dynamo.shop.vo.category.DetailCategory
 import team.bakkas.shop.search.SearchResponse
 
 /**
- * @author Doyeop Kim
+ * GrpcShopSearchClient
+ * 가게 검색 client를 정의하는 interface
  * @since 2022/11/08
  */
 interface GrpcShopSearchClient {

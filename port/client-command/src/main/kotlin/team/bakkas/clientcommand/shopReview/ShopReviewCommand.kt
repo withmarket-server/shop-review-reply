@@ -3,20 +3,19 @@ package team.bakkas.clientcommand.shopReview
 import com.fasterxml.jackson.annotation.JsonProperty
 import team.bakkas.clientcommand.shopReview.annotations.ReviewCreatable
 
-// ShopReview에 대한 command에 사용되는 dto들을 정의하는 sealed class
 sealed class ShopReviewCommand {
 
-    // shop review를 생성하는데 사용하는 dto class
+    // ShopReview 생성 request를 정의하는 dto class
     @ReviewCreatable
     data class CreateRequest(
-        @JsonProperty("review_title") var reviewTitle: String,
-        @JsonProperty("shop_id") var shopId: String,
-        @JsonProperty("review_content") var reviewContent: String,
-        @JsonProperty("review_score") var reviewScore: Double,
-        @JsonProperty("review_photo_list") var reviewPhotoList: List<String> = listOf()
+        @field:JsonProperty("review_title") var reviewTitle: String,
+        @field:JsonProperty("shop_id") var shopId: String,
+        @field:JsonProperty("review_content") var reviewContent: String,
+        @field:JsonProperty("review_score") var reviewScore: Double,
+        @field:JsonProperty("review_photo_list") var reviewPhotoList: List<String> = listOf()
     )
 
-    // Review가 삭제될 때 발행하는 이벤트
+    // Review가 삭제될 때 발행하는 이벤트를 정의하는 dto class
     data class DeletedEvent(
         var reviewId: String,
         var shopId: String

@@ -11,7 +11,13 @@ import team.bakkas.eventinterface.kafka.KafkaTopics
 import team.bakkas.servicecommand.service.ifs.ShopCommandService
 import team.bakkas.servicecommand.service.ifs.ShopReviewCommandService
 
-// Kafka에 발행된 shop관련 메시지를 redis에 캐싱하는 리스너를 정의하는 클래스
+/**
+ * ShopEventHandler
+ * shop에 대해서 발행된 event들을 컨슘해서 처리하는 event handler class
+ * @param shopCommandService shop의 command logic를 처리하는 useCase layer class
+ * @param shopReviewCommandService shopReview command logic을 처리하는 useCase layer class
+ * @param shopSearchRepository elasticsearch에 shop을 persist하는데 사용하는 repository class
+ */
 @Component
 class ShopEventHandler(
     private val shopCommandService: ShopCommandService,
@@ -19,14 +25,13 @@ class ShopEventHandler(
     private val shopSearchRepository: ShopSearchRepository
 ) {
 
-    // withmarket.shop.create 토픽에 있는 메시지를 읽어내서 shop을 dynamo, redis에 저장하는 메소드
     @KafkaListener(
         topics = [KafkaTopics.shopCreateTopic],
         groupId = KafkaConsumerGroups.shopGroup
     )
     fun createShop(shop: Shop) {
         shopCommandService.createShop(shop)
-            .doOnSuccess { shopSearchRepository.save(it.toSearchEntity()).subscribe() }
+            .doOnSuccess { shopSearchRepository.save(it.toSearchEntity()).subscribe() } // 파생 데이터를 elasticsearch로 전송
             .subscribe()
     }
 
@@ -36,19 +41,18 @@ class ShopEventHandler(
     )
     fun updateShop(updatedEvent: ShopCommand.UpdateRequest) {
         shopCommandService.updateShop(updatedEvent)
-            .doOnSuccess { shopSearchRepository.save(it.toSearchEntity()).subscribe() }
+            .doOnSuccess { shopSearchRepository.save(it.toSearchEntity()).subscribe() } // record system(dynamoDB)에 persist 성공시 es에 파생데이터 저장
             .subscribe()
     }
 
-    // Shop을 Soft Delete를 수행하는 리스너
     @KafkaListener(
         topics = [KafkaTopics.shopDeleteTopic],
         groupId = KafkaConsumerGroups.shopGroup
     )
     fun deleteShop(deletedEvent: ShopCommand.DeletedEvent) {
         shopCommandService.softDeleteShop(deletedEvent.shopId)
-            .doOnNext { shopReviewCommandService.softDeleteAllReviewsOfShop(deletedEvent.shopId).subscribe() }
-            .doOnNext { shopSearchRepository.deleteById(it.shopId).subscribe() }
+            .doOnNext { shopReviewCommandService.softDeleteAllReviewsOfShop(deletedEvent.shopId).subscribe() } // 연관된 review를 모두 삭제 처리
+            .doOnNext { shopSearchRepository.deleteById(it.shopId).subscribe() } // es에 있는 shop data 삭제
             .subscribe()
     }
 }

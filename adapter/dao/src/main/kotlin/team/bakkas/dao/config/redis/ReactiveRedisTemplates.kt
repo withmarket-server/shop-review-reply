@@ -12,8 +12,11 @@ import org.springframework.data.redis.serializer.StringRedisSerializer
 import team.bakkas.dynamo.shop.Shop
 import team.bakkas.dynamo.shopReview.ShopReview
 
+/**
+ * ReactiveRedisConfig
+ */
 @Configuration
-class ReactiveRedisConfig {
+class ReactiveRedisTemplates {
 
     /**
      * ReactiveRedisTemplate를 생성하기 위한 공통 로직을 선언한 메소드

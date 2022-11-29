@@ -4,20 +4,18 @@ import kotlinx.coroutines.flow.Flow
 import reactor.core.publisher.Mono
 import team.bakkas.dynamo.shopReview.ShopReview
 
+// Dynamo의 ShopReview 테이블에 접근하는데 사용하는 interface
 interface ShopReviewDynamoRepository {
 
-    // 비동기적으로 review를 하나 가져오는 메소드
     fun findReviewById(reviewId: String): Mono<ShopReview>
 
-    // shop에 대한 모든 review를 가져오는 메소드
     fun getAllReviewsByShopId(shopId: String): Flow<ShopReview>
 
-    // review를 하나 생성하는 메소드
-    fun createReviewAsync(shopReview: ShopReview): Mono<ShopReview>
+    fun createReview(shopReview: ShopReview): Mono<ShopReview>
 
-    // review를 삭제하는 메소드
-    fun deleteReviewAsync(reviewId: String): Mono<ShopReview>
+    fun deleteReview(reviewId: String): Mono<ShopReview>
 
-    // review를 soft delete하는 메소드
+    // soft delete 정책에 의해 shopReview를 dynamo에 삭제 처리를 시행하는 메소드
+    // record system으로부터 삭제가 아닌, deletedAt을 갱신하여 삭제 처리를 수행한다
     fun softDeleteReview(reviewId: String): Mono<ShopReview>
 }

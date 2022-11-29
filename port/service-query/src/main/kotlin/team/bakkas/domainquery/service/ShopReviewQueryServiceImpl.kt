@@ -5,24 +5,24 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
-import team.bakkas.common.exceptions.shopReview.ShopReviewNotFoundException
 import team.bakkas.domainquery.reader.ifs.ShopReviewReader
 import team.bakkas.domainquery.service.ifs.ShopReviewQueryService
 import team.bakkas.dynamo.shopReview.ShopReview
 
+/**
+ * ShopReviewQueryServiceImpl(shopReviewReader: ShopReviewReader)
+ * ShopReviewReader의 구현체
+ */
 @Service
 class ShopReviewQueryServiceImpl(
     private val shopReviewReader: ShopReviewReader
 ) : ShopReviewQueryService {
 
-    /** reviewId와 reviewTitle을 기반으로 ShopReview를 가져오는 메소드
-     * @param reviewId review id
-     * @param reviewTitle review title
-     * @throws ShopReviewNotFoundException
-     * @return ShopReview
+    /*
+     * UseCase layer부터는 coroutine을 적용하여 business logic을 수행한다.
+     * Dispatchers.IO를 사용하여 I/O 성능을 높인다.
      */
-    @Transactional(readOnly = true)
+
     override suspend fun findReviewById(reviewId: String): ShopReview? =
         withContext(Dispatchers.IO) {
             val reviewMono = shopReviewReader.findReviewById(reviewId)
@@ -30,7 +30,6 @@ class ShopReviewQueryServiceImpl(
             return@withContext reviewMono.awaitSingleOrNull()
         }
 
-    @Transactional(readOnly = true)
     override suspend fun getReviewsByShopId(shopId: String): List<ShopReview> =
         withContext(Dispatchers.IO) {
             val reviewFlow = shopReviewReader.getReviewsByShopId(shopId)

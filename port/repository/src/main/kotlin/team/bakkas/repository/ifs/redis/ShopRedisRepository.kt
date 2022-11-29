@@ -4,20 +4,17 @@ import kotlinx.coroutines.flow.Flow
 import reactor.core.publisher.Mono
 import team.bakkas.dynamo.shop.Shop
 
+/**
+ * ShopRedisRepository
+ * Redis에 접근하여 Shop을 제어하는데 사용하는 interface
+ */
 interface ShopRedisRepository {
 
-    // shop을 캐싱하는 메소드
     fun cacheShop(shop: Shop): Mono<Shop>
 
-    // redis에 저장된 shop을 가져오는 메소드
     fun findShopByKey(shopKey: String): Mono<Shop>
 
-    // redis 상에 캐싱된 모든 shop을 가져오는 메소드
     fun getAllShops(): Flow<Shop>
 
-    // shop을 삭제하는 메소드
     fun deleteShop(shopId: String): Mono<Boolean>
-
-    // shop을 soft delete하는 메소드
-    fun softDeleteShop(shopId: String): Mono<Shop>
 }

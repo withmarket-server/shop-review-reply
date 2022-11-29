@@ -1,4 +1,4 @@
-package team.bakkas.dao.config
+package team.bakkas.dao.config.dynamo
 
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -13,10 +13,8 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 
 /**
- * netty 기반의 DynamoDB Enhanced Client를 Configuration으로 등록
- * Config Server로부터 access-key, secret-key를 주입받아서 DynamoDBEnhancedClient를 Bean으로 등록한다
- * @since 22/05/18
- * @author Brian
+ * DynamoDbConfig(val accessKey: String, secretKey: String)
+ * Netty Engine 기반의 비동기 접근을 통해 AsyncClient를 사용하기 위해 정의한 Spring Configuration class
  * @param accessKey DynamoDB의 FullAccess IAM의 액세스 키.
  * @param secretKey DynamoDB의 FullAccess IAM의 시크릿 키.
  */
@@ -28,17 +26,9 @@ class DynamoDbConfig(
     val secretKey: String
 ) {
 
-    // dynamoDB Client Bean 생성
-    @Bean
-    fun dynamoDbClient(): DynamoDbClient = DynamoDbClient.builder()
-        .region(Region.AP_NORTHEAST_2)
-        .credentialsProvider(
-            StaticCredentialsProvider.create(
-                AwsBasicCredentials.create(accessKey, secretKey)
-            )
-        )
-        .build()
-
+    /**
+     * DynamoDb에 접근하기 위한 metadata를 이용하여 asyncClient를 생성해내는 메소드
+     */
     @Bean
     fun dynamoDbAsyncClient(): DynamoDbAsyncClient = DynamoDbAsyncClient.builder()
         .region(Region.AP_NORTHEAST_2)
@@ -49,15 +39,11 @@ class DynamoDbConfig(
         )
         .build()
 
-    // dynamoDB Enhanced Client 생성
-    @Bean
-    fun dynamoDbEnhancedClient(
-        @Qualifier("dynamoDbClient") dynamoDbClient: DynamoDbClient
-    ): DynamoDbEnhancedClient = DynamoDbEnhancedClient.builder()
-        .dynamoDbClient(dynamoDbClient)
-        .build()
-
-    // Async가 적용된 DynamoDbEnhancedAsyncClient 생성
+    /**
+     * dynamoDbEnhancedAsyncClient(dynamoDbAsyncClient: DynamoDbAsyncClient)
+     * dynamo persist, query를 사용하기 위해 정의하는 asyncClient
+     * @param dynamoDbAsyncClient
+     */
     @Bean(name = ["dynamoDbEnhancedAsyncClient"])
     fun dynamoDbEnhancedAsyncClient(
         @Qualifier("dynamoDbAsyncClient") dynamoDbAsyncClient: DynamoDbAsyncClient

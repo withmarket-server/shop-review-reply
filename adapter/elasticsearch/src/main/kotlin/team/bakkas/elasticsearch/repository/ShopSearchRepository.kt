@@ -5,6 +5,8 @@ import org.springframework.data.elasticsearch.repository.ReactiveElasticsearchRe
 import team.bakkas.elasticsearch.entity.SearchShop
 
 /**
+ * ShopSearchRepository
+ * elasticsearch에서 shop을 persist하기 위해 이용되는 interface
  * @author Brian
  * @since 2022/11/06
  */

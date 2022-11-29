@@ -10,11 +10,15 @@ import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
 import team.bakkas.common.utils.RedisUtils
 import team.bakkas.dynamo.shopReview.ShopReview
-import team.bakkas.dynamo.shopReview.usecases.softDelete
 import team.bakkas.repository.ifs.redis.ShopReviewRedisRepository
 import java.time.Duration
 import java.util.StringTokenizer
 
+/**
+ * ShopReviewRedisRepositoryImpl(private val shopReviewReactiveRedisTemplate: ReactiveRedisTemplate<String, ShopReview>)
+ * ShopReviewRedisRepository의 구현체
+ * @param shopReviewReactiveRedisTemplate
+ */
 @Repository
 class ShopReviewRedisRepositoryImpl(
     private val shopReviewReactiveRedisTemplate: ReactiveRedisTemplate<String, ShopReview>
@@ -27,11 +31,9 @@ class ShopReviewRedisRepositoryImpl(
             .thenReturn(this)
     }
 
-    // review Key를 이용해서 review를 가져오는 메소드
     override fun findReviewById(reviewId: String): Mono<ShopReview> =
         shopReviewReactiveRedisTemplate.opsForValue().get(RedisUtils.generateReviewRedisKey(reviewId))
 
-    // review를 삭제하는데 사용하는 메소드
     override fun deleteReview(reviewId: String): Mono<Boolean> {
         val reviewKey = RedisUtils.generateReviewRedisKey(reviewId)
 
@@ -41,18 +43,6 @@ class ShopReviewRedisRepositoryImpl(
             .thenReturn(true)
     }
 
-    override fun softDeleteReview(reviewId: String): Mono<ShopReview> {
-        val reviewKey = RedisUtils.generateReviewRedisKey(reviewId)
-
-        return findReviewById(reviewKey) // reviewId, reviewTitle을 기반으로 review를 찾아와서
-            .map { it.softDelete() } // review를 soft delete 처리를 하고
-            .flatMap { cacheReview(it) } // 다시 저장한다
-    }
-
-    /** 해당 shop의 id와 name을 통해서 shopReview 모두를 가져오는 메소드
-     * @param shopId 해당 shop의 id
-     * @param shopName 해당 shop의 name
-     */
     override fun getShopReviewsByShopId(shopId: String): Flow<ShopReview> {
         return shopReviewReactiveRedisTemplate.scanAsFlow()
             .filter { key ->
