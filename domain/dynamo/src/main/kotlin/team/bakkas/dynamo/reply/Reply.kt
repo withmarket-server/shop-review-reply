@@ -1,4 +1,4 @@
-package team.bakkas.dynamo.reviewReply
+package team.bakkas.dynamo.reply
 
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema
 import software.amazon.awssdk.enhanced.dynamodb.mapper.StaticAttributeTags
@@ -13,7 +13,7 @@ import java.util.UUID
  * @since 2022/10/29
  */
 @DynamoDbBean
-class ReviewReply(
+class Reply(
     var replyId: String = UUID.randomUUID().toString(),
     var reviewId: String = "",
     var content: String = ""
@@ -23,29 +23,29 @@ class ReviewReply(
         val reviewIndexName = ""
 
         // Review에 대한 사장님의 Reply의 table schema
-        val tableSchema = TableSchema.builder(ReviewReply::class.java)
-            .newItemSupplier(::ReviewReply)
+        val tableSchema = TableSchema.builder(Reply::class.java)
+            .newItemSupplier(::Reply)
             .addAttribute(String::class.java) {
-                it.name("reply_id").getter(ReviewReply::replyId::get)
-                    .setter(ReviewReply::replyId::set)
+                it.name("reply_id").getter(Reply::replyId::get)
+                    .setter(Reply::replyId::set)
                     .tags(StaticAttributeTags.primaryPartitionKey())
             }
             .addAttribute(String::class.java) {
-                it.name("review_id").getter(ReviewReply::reviewId::get)
-                    .setter(ReviewReply::reviewId::set)
+                it.name("review_id").getter(Reply::reviewId::get)
+                    .setter(Reply::reviewId::set)
                     .tags(StaticAttributeTags.secondaryPartitionKey(reviewIndexName))
             }
             .addAttribute(String::class.java) {
-                it.name("content").getter(ReviewReply::content::get)
-                    .setter(ReviewReply::content::set)
+                it.name("content").getter(Reply::content::get)
+                    .setter(Reply::content::set)
             }
             .addAttribute(LocalDateTime::class.java) {
-                it.name("created_at").getter(ReviewReply::createdAt::get)
-                    .setter(ReviewReply::createdAt::set)
+                it.name("created_at").getter(Reply::createdAt::get)
+                    .setter(Reply::createdAt::set)
             }
             .addAttribute(LocalDateTime::class.java) {
-                it.name("deleted_at").getter(ReviewReply::deletedAt::get)
-                    .setter(ReviewReply::deletedAt::set)
+                it.name("deleted_at").getter(Reply::deletedAt::get)
+                    .setter(Reply::deletedAt::set)
             }
             .build()
     }

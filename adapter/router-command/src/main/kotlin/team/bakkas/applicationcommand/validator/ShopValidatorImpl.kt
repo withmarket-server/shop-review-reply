@@ -6,7 +6,6 @@ import org.springframework.validation.Errors
 import team.bakkas.applicationcommand.grpc.ifs.ShopGrpcClient
 import team.bakkas.clientcommand.shop.ShopCommand
 import team.bakkas.clientcommand.shop.annotations.ShopCreatable
-import team.bakkas.common.error.ErrorResponse
 import team.bakkas.common.exceptions.RegionNotKoreaException
 import team.bakkas.common.exceptions.RequestFieldException
 import team.bakkas.common.exceptions.RequestParamLostException
@@ -62,17 +61,7 @@ class ShopValidatorImpl(
             }
         }
 
-        // Field error들을 모두 취합해서 exception을 던진다
-        check(errors.allErrors.isEmpty()) {
-            val errorList = errors.allErrors.map {
-                ErrorResponse.FieldError.of(
-                    it.objectName,
-                    it.arguments.contentToString(),
-                    it.defaultMessage!!
-                )
-            }
-            throw RequestFieldException(errorList, "잘못된 요청입니다")
-        }
+        throwsExceptionIfErrorExists(errors)
     }
 
     override fun validateCreatable(createRequest: ShopCommand.CreateRequest) = with(createRequest) {

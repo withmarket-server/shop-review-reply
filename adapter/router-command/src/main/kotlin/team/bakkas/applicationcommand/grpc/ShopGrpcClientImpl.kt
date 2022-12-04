@@ -6,6 +6,8 @@ import org.springframework.stereotype.Component
 import team.bakkas.applicationcommand.grpc.ifs.ShopGrpcClient
 import team.bakkas.grpcIfs.v1.shop.CheckExistShopRequest
 import team.bakkas.grpcIfs.v1.shop.CheckExistShopResponse
+import team.bakkas.grpcIfs.v1.shop.CheckIsOwnerOfShopRequest
+import team.bakkas.grpcIfs.v1.shop.CheckIsOwnerOfShopResponse
 import team.bakkas.grpcIfs.v1.shop.ShopServiceGrpcKt
 
 /**
@@ -29,5 +31,14 @@ class ShopGrpcClientImpl(
             .build()
 
         return shopStub.isExistShop(request)
+    }
+
+    override suspend fun isOwnerOfShop(memberId: String, shopId: String): CheckIsOwnerOfShopResponse {
+        val request = CheckIsOwnerOfShopRequest.newBuilder()
+            .setMemberId(memberId)
+            .setShopId(shopId)
+            .build()
+
+        return shopStub.isOwnerOfShop(request)
     }
 }
