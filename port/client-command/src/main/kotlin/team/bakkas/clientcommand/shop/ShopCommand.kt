@@ -14,7 +14,7 @@ sealed class ShopCommand {
     @ShopCreatable
     data class CreateRequest(
         @field:JsonProperty("shop_name") var shopName: String,
-        @field:JsonProperty("business_number") var businessNumber: String,
+        @field:JsonProperty("member_id") var memberId: String,
         @field:JsonProperty("open_time") var openTime: LocalTime,
         @field:JsonProperty("close_time") var closeTime: LocalTime,
         @field:JsonProperty("rest_day_list") var restDayList: List<Days>,

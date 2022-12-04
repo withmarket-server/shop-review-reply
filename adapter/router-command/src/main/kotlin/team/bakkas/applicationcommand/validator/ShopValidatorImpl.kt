@@ -48,6 +48,7 @@ class ShopValidatorImpl(
                     errors,
                     listOf(
                         "shopName",
+                        "memberId",
                         "openTime",
                         "closeTime",
                         "lotNumberAddress",

@@ -64,7 +64,7 @@ internal class ShopServiceTest {
     // 1-2. shop이 존재하는 경우 테스트
     @Test
     @DisplayName("shop을 가져올 수 있는 케이스")
-    fun successFindShop() = runBlocking {
+    fun successFindShop(): Unit = runBlocking {
         // given
         val shopId = "correct-shop-id"
         val shopName = "correct-shop-name"
@@ -110,7 +110,7 @@ internal class ShopServiceTest {
 
     @Test
     @DisplayName("[service] findShopByIdAndName 성공 테스트")
-    fun successFindShop2() = runBlocking {
+    fun successFindShop2(): Unit = runBlocking {
         // given
         val shopId = "success-id"
         val shopName = "success-name"
@@ -153,6 +153,6 @@ internal class ShopServiceTest {
         totalScore = 0.0,
         reviewNumber = 0,
         shopDescription = "포오오스 마트!",
-        businessNumber = "123123-33123-33123"
+        memberId = "123123-33123-33123"
     )
 }

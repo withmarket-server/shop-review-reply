@@ -50,7 +50,7 @@ internal class ShopCommandHandlerUnitTest {
     @DisplayName("[createShop] 1. 위도/경도가 잘못되어 RegionNotKoreaException을 일으키는 테스트")
     fun createShopTest1(): Unit = runBlocking {
         // given
-        val dto = generateDto().apply { latitude = 124.0 }
+        val dto = generateCreateRequest().apply { latitude = 124.0 }
         val serverRequest = MockServerRequest.builder()
             .body(Mono.just(dto)) // ServerRequest는 Mono 타입이기 때문에 body도 Mono로 날려줘야한다
 
@@ -73,7 +73,7 @@ internal class ShopCommandHandlerUnitTest {
     @DisplayName("[createShop] 3. 본점인데 branchName이 있는 경우")
     fun createShopTest3(): Unit = runBlocking {
         // given
-        val dto = generateDto().apply {
+        val dto = generateCreateRequest().apply {
             isBranch = false
             branchName = "분점이에요 ㅎㅎ"
         }
@@ -88,7 +88,7 @@ internal class ShopCommandHandlerUnitTest {
     @DisplayName("[createShop] 4. 분점인데 분점 정보가 없는 경우 (분점 정보가 empty)")
     fun createShopTest4(): Unit = runBlocking {
         // given
-        val dto = generateDto().apply {
+        val dto = generateCreateRequest().apply {
             isBranch = true
             branchName = ""
         }
@@ -103,7 +103,7 @@ internal class ShopCommandHandlerUnitTest {
     @DisplayName("[createShop] 5. 분점인데 분점 정보가 없는 경우 (분점 정보가 null)")
     fun createShopTest5(): Unit = runBlocking {
         // given
-        val dto = generateDto().apply {
+        val dto = generateCreateRequest().apply {
             isBranch = true
             branchName = null
         }
@@ -118,7 +118,7 @@ internal class ShopCommandHandlerUnitTest {
     @DisplayName("[createShop] 6. shopName이 비어서 들어오는 경우 RequestFieldException을 일으키는 테스트")
     fun createShopTest6(): Unit = runBlocking {
         // given
-        val dto = generateDto().apply {
+        val dto = generateCreateRequest().apply {
             shopName = ""
         }
         val requestBody = Mono.just(dto)
@@ -132,7 +132,7 @@ internal class ShopCommandHandlerUnitTest {
     @DisplayName("[createShop] 7. 지번주소가 비어서 들어오는 경우 RequestFieldException을 일으키는 테스트")
     fun createShopTest7(): Unit = runBlocking {
         // given
-        val dto = generateDto().apply {
+        val dto = generateCreateRequest().apply {
             lotNumberAddress = ""
         }
         val requestBody = Mono.just(dto)
@@ -146,11 +146,26 @@ internal class ShopCommandHandlerUnitTest {
     @DisplayName("[createShop] 8. 도로명주소가 비어서 들어오는 경우 RequestFieldException을 일으키는 테스트")
     fun createShopTest8(): Unit = runBlocking {
         // given
-        val dto = generateDto().apply {
+        val dto = generateCreateRequest().apply {
             roadNameAddress = ""
         }
         val requestBody = Mono.just(dto)
         val request = MockServerRequest.builder().body(requestBody)
+
+        // then
+        shouldThrow<RequestFieldException> { shopCommandHandler.createShop(request) }
+    }
+
+    @Test
+    @DisplayName("[createShop] 9. memberId가 비어서 들어오는 경우 RequestFieldException을 일으키는 테스트")
+    fun createShopTest9(): Unit = runBlocking {
+        // given
+        val dto = generateCreateRequest().apply {
+            memberId = ""
+        }
+        val requestBody = Mono.just(dto)
+        val request = MockServerRequest.builder()
+            .body(requestBody)
 
         // then
         shouldThrow<RequestFieldException> { shopCommandHandler.createShop(request) }
@@ -221,7 +236,7 @@ internal class ShopCommandHandlerUnitTest {
             .body(block.invoke())
     }
 
-    private fun generateDto(): ShopCommand.CreateRequest = ShopCommand.CreateRequest(
+    private fun generateCreateRequest(): ShopCommand.CreateRequest = ShopCommand.CreateRequest(
         shopName = "카페 경사다",
         openTime = LocalTime.of(9, 0),
         closeTime = LocalTime.of(18, 0),
@@ -238,6 +253,6 @@ internal class ShopCommandHandlerUnitTest {
         mainImageUrl = "fake-image",
         representativeImageUrlList = listOf("fake-image-1", "fake-image-2"),
         deliveryTipPerDistanceList = listOf(DeliveryTipPerDistance(3.0, 2000)),
-        businessNumber = "3333-3333-3333"
+        memberId = "doccimann"
     )
 }

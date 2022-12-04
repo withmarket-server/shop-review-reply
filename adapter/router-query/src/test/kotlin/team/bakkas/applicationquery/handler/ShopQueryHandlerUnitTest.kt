@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.http.HttpStatus
 import org.springframework.mock.web.reactive.function.server.MockServerRequest
-import reactor.core.publisher.Mono
 import team.bakkas.applicationquery.grpc.client.GrpcShopSearchClient
 import team.bakkas.common.exceptions.RequestParamLostException
 import team.bakkas.common.exceptions.shop.CategoryNotFoundException
@@ -372,12 +371,6 @@ internal class ShopQueryHandlerUnitTest {
         shouldThrow<ShopNotFoundException> { shopQueryHandler.searchWithIn(request) }
     }
 
-    // MockServerRequest를 생성하는 메소드
-    private inline fun generateRequest(block: () -> Mono<Any>): MockServerRequest {
-        return MockServerRequest.builder()
-            .body(block())
-    }
-
     // 테스트용 가짜 shop
     private fun generateFakeShop(shopId: String, shopName: String) = Shop(
         shopId = shopId,
@@ -397,6 +390,6 @@ internal class ShopQueryHandlerUnitTest {
         totalScore = 0.0,
         reviewNumber = 0,
         shopDescription = "shopDescription",
-        businessNumber = "3333-3333-3333"
+        memberId = "3333-3333-3333"
     )
 }
