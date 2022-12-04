@@ -16,7 +16,7 @@ fun Shop.toSearchEntity(): SearchShop = SearchShop(
     detailCategory = categoryInfo.shopDetailCategory,
     totalScore = totalScore,
     reviewNumber = reviewNumber,
-    businessNumber = businessNumber
+    businessNumber = memberId
 ).apply {
     averageScore = when (reviewNumber) {
         0 -> 0.0
