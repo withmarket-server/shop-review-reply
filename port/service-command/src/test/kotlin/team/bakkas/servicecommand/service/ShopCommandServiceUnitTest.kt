@@ -3,9 +3,7 @@ package team.bakkas.servicecommand.service
 import io.kotest.common.runBlocking
 import io.mockk.*
 import io.mockk.junit5.MockKExtension
-import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
@@ -63,7 +61,7 @@ internal class ShopCommandServiceUnitTest {
         // then
         coVerify(exactly = 1) { shopDynamoRepository.createShop(mockShop) }
         coVerify(exactly = 1) { shopCommandService.createShop(mockShop) }
-        Assertions.assertNotNull(createShop)
+        assertNotNull(createShop)
 
         println("Test passed!!")
     }
@@ -74,7 +72,6 @@ internal class ShopCommandServiceUnitTest {
         // given
         val mockShop = generateDto().toEntity()
         val shopId = mockShop.shopId
-        val shopName = mockShop.shopName
         val reviewScore = 5.0
 
         every { shopDynamoRepository.findShopById(shopId) } returns Mono.just(mockShop)
@@ -105,7 +102,6 @@ internal class ShopCommandServiceUnitTest {
             this.totalScore = reviewScore
         }
         val shopId = mockShop.shopId
-        val shopName = mockShop.shopName
 
         every { shopDynamoRepository.findShopById(shopId) } returns Mono.just(mockShop)
         every { shopDynamoRepository.createShop(mockShop) } returns Mono.just(mockShop)
@@ -143,7 +139,7 @@ internal class ShopCommandServiceUnitTest {
         mainImageUrl = "fake-image",
         representativeImageUrlList = listOf("fake-image-1", "fake-image-2"),
         deliveryTipPerDistanceList = listOf(DeliveryTipPerDistance(3.0, 2000)),
-        businessNumber = "3333-3333-3333"
+        memberId = "doccimann"
     )
 
     private fun ShopCommand.CreateRequest.toEntity() = Shop(
@@ -159,6 +155,6 @@ internal class ShopCommandServiceUnitTest {
         totalScore = 0.0,
         reviewNumber = 0,
         shopDescription = shopDescription,
-        businessNumber = businessNumber
+        memberId = memberId
     )
 }
