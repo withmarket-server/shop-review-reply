@@ -2,6 +2,8 @@ package team.bakkas.servicecommand.validator
 
 import org.springframework.validation.Errors
 import org.springframework.validation.ValidationUtils
+import team.bakkas.common.error.ErrorResponse
+import team.bakkas.common.exceptions.RequestFieldException
 
 /**
  * CommonValidator
@@ -71,5 +73,25 @@ open class CommonValidator {
      */
     fun rejectFieldWithValue(errors: Errors, fieldName: String, errorCode: String, value: String, message: String) {
         errors.rejectValue(fieldName, errorCode, arrayOf(value), message)
+    }
+
+    /**
+     * throwsIfErrorExists(errors: Errors)
+     * errors에 기록된 에러가 하나 이상일 경우 예외를 발생시키는 메소드
+     * @param errors 에러의 집합 객체
+     * @throws RequestFieldException
+     */
+    fun throwsExceptionIfErrorExists(errors: Errors) {
+        // field error들을 모두 취합하여 exception을 던진다
+        check(errors.allErrors.isEmpty()) {
+            val errorList = errors.allErrors.map {
+                ErrorResponse.FieldError.of(
+                    it.objectName,
+                    it.arguments.contentToString(),
+                    it.defaultMessage!!
+                )
+            }
+            throw RequestFieldException(errorList, "잘못된 요청입니다")
+        }
     }
 }

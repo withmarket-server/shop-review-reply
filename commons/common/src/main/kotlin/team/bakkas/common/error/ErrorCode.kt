@@ -16,5 +16,6 @@ enum class ErrorCode(
     REQUEST_PARAM_ERROR(400, "C004", "Request param is invalid"),
     ENTITY_NOT_FOUND(400, "C101", "Not exist entity"),
     INVALID_INFO(400, "C102", "Invalid info is given"),
-    INVALID_SHOP_REVIEW_LIST(400, "C300", "Invalid review list occurred")
+    INVALID_SHOP_REVIEW_LIST(400, "C300", "Invalid review list occurred"),
+    ALREADY_REPLIED_REVIEW(400, "C301", "the review is already replied")
 }

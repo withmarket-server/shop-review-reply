@@ -9,37 +9,28 @@ import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.kafka.core.ProducerFactory
 import org.springframework.kafka.support.serializer.JsonSerializer
 import org.springframework.stereotype.Component
-import team.bakkas.clientcommand.shopReview.ShopReviewCommand
-import team.bakkas.dynamo.shopReview.ShopReview
+import team.bakkas.clientcommand.reply.ReplyCommand
 
 /**
- * ShopReviewTemplates
- * shopReview 관련 event를 발행하는데 사용되는 kafka templates
+ * ReplyTemplates
+ * Reply 관련 event를 발행하는데 사용되는 Kafka templates
  * @param bootstrapServers
  * @param producerAcks
- * @since 2022/11/27
  */
 @Component
-class ShopReviewTemplates(
+class ReplyTemplates(
     @Value("\${spring.kafka.producer.bootstrap-servers}") private val bootstrapServers: String,
     @Value("\${spring.kafka.producer.acks}") private val producerAcks: String
 ) {
 
     @Bean
-    fun shopReviewKafkaTemplate(): KafkaTemplate<String, ShopReview> {
-        return KafkaTemplate(shopReviewProducerFactory())
+    fun replyCreatedEventKafkaTemplate(): KafkaTemplate<String, ReplyCommand.CreatedEvent> {
+        return KafkaTemplate(replyCreatedEventProducerFactory())
     }
 
-    @Bean
-    fun reviewDeletedEventKafkaTemplate(): KafkaTemplate<String, ShopReviewCommand.DeletedEvent> {
-        return KafkaTemplate(reviewDeletedEventProducerFactory())
+    private fun replyCreatedEventProducerFactory(): ProducerFactory<String, ReplyCommand.CreatedEvent> {
+        return DefaultKafkaProducerFactory(producerConfig())
     }
-
-    private fun shopReviewProducerFactory(): ProducerFactory<String, ShopReview> =
-        DefaultKafkaProducerFactory(producerConfig())
-
-    private fun reviewDeletedEventProducerFactory(): ProducerFactory<String, ShopReviewCommand.DeletedEvent> =
-        DefaultKafkaProducerFactory(producerConfig())
 
     private fun producerConfig(): HashMap<String, Any> {
         val configProps: HashMap<String, Any> = hashMapOf()

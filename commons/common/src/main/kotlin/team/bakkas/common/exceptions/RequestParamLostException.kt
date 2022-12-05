@@ -5,6 +5,6 @@ package team.bakkas.common.exceptions
  * @author Brian
  * @since 22/05/29
  */
-data class RequestParamLostException(override var message: String) : RuntimeException(message) {
+class RequestParamLostException(override var message: String) : RuntimeException(message) {
 
 }

@@ -9,6 +9,12 @@ service ShopReviewService {
    * @returns CheckExistShopReviewResponse
    */
   rpc isExistShopReview (CheckExistShopReviewRequest) returns (CheckExistShopReviewResponse);
+
+  /** 파라미터에 대응하는 shopReview가 존재하며, 동시에 답글이 달려있는지 여부를 반환해주는 gRPC 메소드
+   * @param CheckIsRepliedReviewRequest
+   * @returns CheckIsRepliedReviewResponse
+   */
+  rpc isRepliedReview (CheckIsRepliedReviewRequest) returns (CheckIsRepliedReviewResponse);
 }
 
 message CheckExistShopReviewRequest {
@@ -17,4 +23,13 @@ message CheckExistShopReviewRequest {
 
 message CheckExistShopReviewResponse {
   bool result = 1;
+}
+
+message CheckIsRepliedReviewRequest {
+  string reviewId = 1;
+}
+
+message CheckIsRepliedReviewResponse {
+  bool isExists = 1;
+  bool isReplied = 2;
 }

@@ -9,12 +9,10 @@ import team.bakkas.common.exceptions.RegionNotKoreaException
 import team.bakkas.common.exceptions.RequestBodyLostException
 import team.bakkas.common.exceptions.RequestFieldException
 import team.bakkas.common.exceptions.RequestParamLostException
-import team.bakkas.common.exceptions.shop.ShopBranchInfoInvalidException
 import team.bakkas.common.exceptions.shopReview.ShopReviewListInvalidException
 import team.bakkas.common.error.ErrorCode
-import team.bakkas.common.exceptions.shop.CategoryNotFoundException
-import team.bakkas.common.exceptions.shop.DetailCategoryNotFoundException
-import team.bakkas.common.exceptions.shop.ShopNotFoundException
+import team.bakkas.common.exceptions.shop.*
+import team.bakkas.common.exceptions.shopReview.ShopReviewAlreadyRepliedException
 import team.bakkas.common.exceptions.shopReview.ShopReviewNotFoundException
 
 @Component
@@ -52,6 +50,11 @@ class GlobalErrorAttributes : DefaultErrorAttributes() {
                 map["error"] = ErrorCode.REQUEST_PARAM_ERROR
                 map["error_code"] = ErrorCode.REQUEST_PARAM_ERROR
             }
+            is MemberNotOwnerException -> {
+                map["default_message"] = throwable.message
+                map["error"] = ErrorCode.ACCESS_DENIED
+                map["error_code"] = ErrorCode.ACCESS_DENIED
+            }
             is ShopReviewNotFoundException -> {
                 map["default_message"] = throwable.message
                 map["error"] = ErrorCode.ENTITY_NOT_FOUND
@@ -61,6 +64,11 @@ class GlobalErrorAttributes : DefaultErrorAttributes() {
                 map["default_message"] = throwable.message
                 map["error"] = ErrorCode.INVALID_SHOP_REVIEW_LIST
                 map["error_code"] = ErrorCode.INVALID_SHOP_REVIEW_LIST
+            }
+            is ShopReviewAlreadyRepliedException -> {
+                map["default_message"] = throwable.message
+                map["error"] = ErrorCode.ALREADY_REPLIED_REVIEW
+                map["error_code"] = ErrorCode.ALREADY_REPLIED_REVIEW
             }
             is RegionNotKoreaException -> {
                 map["default_message"] = throwable.message

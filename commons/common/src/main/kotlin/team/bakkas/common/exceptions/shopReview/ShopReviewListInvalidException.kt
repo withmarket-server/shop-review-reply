@@ -4,6 +4,6 @@ package team.bakkas.common.exceptions.shopReview
  * @author Brian
  * @since 22/06/03
  */
-data class ShopReviewListInvalidException(override val message: String) : RuntimeException(message) {
+class ShopReviewListInvalidException(override val message: String) : RuntimeException(message) {
 
 }
