@@ -20,10 +20,12 @@ import team.bakkas.clientcommand.reply.ReplyCommand
 import team.bakkas.common.exceptions.RequestBodyLostException
 import team.bakkas.common.exceptions.RequestFieldException
 import team.bakkas.common.exceptions.shop.MemberNotOwnerException
+import team.bakkas.common.exceptions.shopReview.ShopReviewAlreadyRepliedException
 import team.bakkas.common.exceptions.shopReview.ShopReviewNotFoundException
 import team.bakkas.eventinterface.eventProducer.ReplyEventProducer
 import team.bakkas.grpcIfs.v1.shop.CheckIsOwnerOfShopResponse
 import team.bakkas.grpcIfs.v1.shopReview.CheckExistShopReviewResponse
+import team.bakkas.grpcIfs.v1.shopReview.CheckIsRepliedReviewResponse
 import team.bakkas.servicecommand.validator.ReplyValidator
 
 @ExtendWith(MockKExtension::class)
@@ -152,13 +154,37 @@ internal class ReplyCommandHandlerTest {
                     .setResult(true)
                     .build()
 
-        coEvery { shopReviewGrpcClient.isExistShopReview(dto.reviewId) } returns
-                CheckExistShopReviewResponse.newBuilder()
-                    .setResult(false)
+        coEvery { shopReviewGrpcClient.isRepliedReview(dto.reviewId) } returns
+                CheckIsRepliedReviewResponse.newBuilder()
+                    .setIsExists(false)
+                    .setIsReplied(false)
                     .build()
 
         // then
         shouldThrow<ShopReviewNotFoundException> { replyCommandHandler.createReply(request) }
+    }
+
+    @Test
+    @DisplayName("[createReply] 9. 답글이 달린 review의 경우 ShopReviewAlreadyRepliedException을 반환한다")
+    fun createReply9(): Unit = runBlocking {
+        // given
+        val dto = generateCreateRequest()
+        val request = createRequest { Mono.just(dto) }
+
+        // when
+        coEvery { shopGrpcClient.isOwnerOfShop(dto.memberId, dto.shopId) } returns
+                CheckIsOwnerOfShopResponse.newBuilder()
+                    .setResult(true)
+                    .build()
+
+        coEvery { shopReviewGrpcClient.isRepliedReview(dto.reviewId) } returns
+                CheckIsRepliedReviewResponse.newBuilder()
+                    .setIsExists(true)
+                    .setIsReplied(true)
+                    .build()
+
+        // then
+        shouldThrow<ShopReviewAlreadyRepliedException> { replyCommandHandler.createReply(request) }
     }
 
     private fun generateCreateRequest() = ReplyCommand.CreateRequest(

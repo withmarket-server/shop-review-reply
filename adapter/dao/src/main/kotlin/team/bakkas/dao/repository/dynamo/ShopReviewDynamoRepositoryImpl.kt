@@ -32,6 +32,7 @@ class ShopReviewDynamoRepositoryImpl(
         val reviewFuture = asyncTable.getItem(reviewKey)
 
         return Mono.fromFuture(reviewFuture)
+            .filter { it.deletedAt == null } // 삭제된 적이 없는 review의 반환만 허용한다
     }
 
     override fun getAllReviewsByShopId(shopId: String): Flow<ShopReview> {

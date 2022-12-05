@@ -6,6 +6,8 @@ import org.springframework.stereotype.Component
 import team.bakkas.applicationcommand.grpc.ifs.ShopReviewGrpcClient
 import team.bakkas.grpcIfs.v1.shopReview.CheckExistShopReviewRequest
 import team.bakkas.grpcIfs.v1.shopReview.CheckExistShopReviewResponse
+import team.bakkas.grpcIfs.v1.shopReview.CheckIsRepliedReviewRequest
+import team.bakkas.grpcIfs.v1.shopReview.CheckIsRepliedReviewResponse
 import team.bakkas.grpcIfs.v1.shopReview.ShopReviewServiceGrpcKt
 
 /**
@@ -30,5 +32,13 @@ class ShopReviewGrpcClientImpl(
             .build()
 
         return shopReviewStub.isExistShopReview(request)
+    }
+
+    override suspend fun isRepliedReview(reviewId: String): CheckIsRepliedReviewResponse {
+        val request = CheckIsRepliedReviewRequest.newBuilder()
+            .setReviewId(reviewId)
+            .build()
+
+        return shopReviewStub.isRepliedReview(request)
     }
 }

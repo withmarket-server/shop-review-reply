@@ -8,6 +8,7 @@ import team.bakkas.applicationcommand.grpc.ifs.ShopReviewGrpcClient
 import team.bakkas.clientcommand.reply.ReplyCommand
 import team.bakkas.clientcommand.reply.annotations.ReplyCreatable
 import team.bakkas.common.exceptions.shop.MemberNotOwnerException
+import team.bakkas.common.exceptions.shopReview.ShopReviewAlreadyRepliedException
 import team.bakkas.common.exceptions.shopReview.ShopReviewNotFoundException
 import team.bakkas.servicecommand.validator.ReplyValidator
 
@@ -42,15 +43,19 @@ class ReplyValidatorImpl(
             throw MemberNotOwnerException("해당 member에게 답글 작성 권한이 존재하지 않습니다.")
         }
 
-        // 해당 review가 존재하는지 검증한다
-        val isExistsReview = shopReviewGrpcClient.isExistShopReview(reviewId).result
+        val isRepliedReviewResponse = shopReviewGrpcClient.isRepliedReview(reviewId)
+        val isExists = isRepliedReviewResponse.isExists
+        val isReplied = isRepliedReviewResponse.isReplied
 
-        check(isExistsReview) {
+        // isExists가 false이면 review 자체가 존재하지 않음을 의미
+        check(isExists) {
             throw ShopReviewNotFoundException("review가 존재하지 않습니다.")
         }
 
-        // TODO 해당 reviewId에 답글이 존재하는지 여부를 반환하는 로직을 구현
-
+        // review는 존재하지만, 답글이 존재하는 경우 에외를 발생시킨다
+        if(isReplied) {
+            throw ShopReviewAlreadyRepliedException("이미 답글이 존재합니다.")
+        }
     }
 
     override fun validate(target: Any, errors: Errors) {
