@@ -24,11 +24,11 @@ class ReplyTemplates(
 ) {
 
     @Bean
-    fun replyCreatedEventKafkaTemplate(): KafkaTemplate<String, ReplyCommand.CreateRequest> {
+    fun replyCreatedEventKafkaTemplate(): KafkaTemplate<String, ReplyCommand.CreatedEvent> {
         return KafkaTemplate(replyCreatedEventProducerFactory())
     }
 
-    private fun replyCreatedEventProducerFactory(): ProducerFactory<String, ReplyCommand.CreateRequest> {
+    private fun replyCreatedEventProducerFactory(): ProducerFactory<String, ReplyCommand.CreatedEvent> {
         return DefaultKafkaProducerFactory(producerConfig())
     }
 

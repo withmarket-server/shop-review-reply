@@ -20,4 +20,10 @@ interface ShopReviewCommandService {
     fun deleteAllReviewsOfShop(shopId: String): Flux<ShopReview>
 
     fun softDeleteAllReviewsOfShop(shopId: String): Flux<ShopReview>
+
+    // 답글 작성이 반영되는 로직을 처리하는 메소드
+    fun applyReplyCreated(reviewId: String): Mono<ShopReview>
+
+    // 답글 삭제가 반영되는 로직을 처리하는 메소드
+    fun applyReplyDeleted(reviewId: String): Mono<ShopReview>
 }

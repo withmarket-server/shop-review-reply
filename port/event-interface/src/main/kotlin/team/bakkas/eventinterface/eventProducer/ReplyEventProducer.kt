@@ -9,5 +9,5 @@ import team.bakkas.clientcommand.reply.ReplyCommand
  */
 interface ReplyEventProducer {
 
-    fun propagateReplyCreated(createdEvent: ReplyCommand.CreateRequest)
+    fun propagateReplyCreated(createdEvent: ReplyCommand.CreatedEvent)
 }

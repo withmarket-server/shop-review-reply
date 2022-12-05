@@ -14,10 +14,10 @@ import team.bakkas.eventinterface.kafka.KafkaTopics
  */
 @Component
 class ReplyEventProducerImpl(
-    private val replyCreatedEventKafkaTemplate: KafkaTemplate<String, ReplyCommand.CreateRequest>
+    private val replyCreatedEventKafkaTemplate: KafkaTemplate<String, ReplyCommand.CreatedEvent>
 ) : ReplyEventProducer {
 
-    override fun propagateReplyCreated(createdEvent: ReplyCommand.CreateRequest): Unit = with(createdEvent) {
+    override fun propagateReplyCreated(createdEvent: ReplyCommand.CreatedEvent): Unit = with(createdEvent) {
         replyCreatedEventKafkaTemplate.send(KafkaTopics.replyCreateTopic, this)
     }
 }

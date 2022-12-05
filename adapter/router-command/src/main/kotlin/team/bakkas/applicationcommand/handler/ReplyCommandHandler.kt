@@ -36,7 +36,9 @@ class ReplyCommandHandler(
 
         replyValidator.validateCreatable(createRequest)
 
-        replyEventProducer.propagateReplyCreated(createRequest)
+        val createdEvent = createRequest.transformToEvent()
+
+        replyEventProducer.propagateReplyCreated(createdEvent)
 
         return@coroutineScope ok()
             .contentType(MediaType.APPLICATION_JSON)

@@ -2,6 +2,7 @@ package team.bakkas.clientcommand.reply
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import team.bakkas.clientcommand.reply.annotations.ReplyCreatable
+import java.util.UUID
 
 
 sealed class ReplyCommand {
@@ -13,5 +14,20 @@ sealed class ReplyCommand {
         @field:JsonProperty("shop_id") var shopId: String,
         @field:JsonProperty("review_id") var reviewId: String,
         @field:JsonProperty("content") var content: String
+    ) {
+        fun transformToEvent() = CreatedEvent(
+            replyId = UUID.randomUUID().toString(),
+            shopId = shopId,
+            reviewId = reviewId,
+            content = content
+        )
+    }
+
+    // 답글 생성 이벤트
+    data class CreatedEvent(
+        var replyId: String,
+        var shopId: String,
+        var reviewId: String,
+        var content: String
     )
 }
