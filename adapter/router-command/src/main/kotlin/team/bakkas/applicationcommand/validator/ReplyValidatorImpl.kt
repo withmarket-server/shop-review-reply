@@ -48,6 +48,9 @@ class ReplyValidatorImpl(
         check(isExistsReview) {
             throw ShopReviewNotFoundException("review가 존재하지 않습니다.")
         }
+
+        // TODO 해당 reviewId에 답글이 존재하는지 여부를 반환하는 로직을 구현
+
     }
 
     override fun validate(target: Any, errors: Errors) {
