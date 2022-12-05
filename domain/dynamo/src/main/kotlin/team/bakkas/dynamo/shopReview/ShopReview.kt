@@ -23,7 +23,8 @@ class ShopReview(
     var shopId: String = "",
     var reviewContent: String = "",
     var reviewScore: Double = 0.0,
-    var reviewPhotoList: List<String> = listOf()
+    var reviewPhotoList: List<String> = listOf(),
+    var isReplyExists: Boolean = false
 ) : Serializable, BaseTimeEntity() {
 
     companion object {
@@ -56,6 +57,10 @@ class ShopReview(
             .addAttribute(EnhancedType.listOf(String::class.java)) {
                 it.name("review_photo_list").getter(ShopReview::reviewPhotoList::get)
                     .setter(ShopReview::reviewPhotoList::set)
+            }
+            .addAttribute(Boolean::class.java) {
+                it.name("is_reply_exists").getter(ShopReview::isReplyExists::get)
+                    .setter(ShopReview::isReplyExists::set)
             }
             .addAttribute(LocalDateTime::class.java) {
                 it.name("created_at").getter(ShopReview::createdAt::get)

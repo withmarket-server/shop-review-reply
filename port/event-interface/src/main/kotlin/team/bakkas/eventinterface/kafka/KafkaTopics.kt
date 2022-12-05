@@ -8,4 +8,6 @@ object KafkaTopics {
 
     const val shopReviewCreateTopic = "withmarket.shopReview.create"
     const val shopReviewDeleteTopic = "withmarket.shopReview.delete"
+
+    const val replyCreateTopic = "withmarket.reply.create"
 }

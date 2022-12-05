@@ -7,8 +7,6 @@ import team.bakkas.applicationcommand.grpc.ifs.ShopGrpcClient
 import team.bakkas.applicationcommand.grpc.ifs.ShopReviewGrpcClient
 import team.bakkas.clientcommand.shopReview.ShopReviewCommand
 import team.bakkas.clientcommand.shopReview.annotations.ReviewCreatable
-import team.bakkas.common.error.ErrorResponse
-import team.bakkas.common.exceptions.RequestFieldException
 import team.bakkas.common.exceptions.RequestParamLostException
 import team.bakkas.common.exceptions.shop.ShopNotFoundException
 import team.bakkas.common.exceptions.shopReview.ShopReviewNotFoundException
@@ -76,45 +74,37 @@ class ShopReviewValidatorImpl(
         target::class.java.annotations.map {
             // annotation에 따라서 분기한다
             when (it) {
-                is ReviewCreatable -> rejectEmptyFieldList(
-                    errors,
-                    listOf("reviewTitle", "shopId", "reviewContent")
-                )
+                is ReviewCreatable -> {
+                    rejectEmptyFieldList(
+                        errors,
+                        listOf("reviewTitle", "shopId", "reviewContent")
+                    )
+
+                    val review = target as ShopReviewCommand.CreateRequest
+
+                    // reviewContent의 길이를 200으로 제한한다
+                    if (review.reviewContent.length > 200) {
+                        errors.rejectValue(
+                            "reviewContent",
+                            "field.max.length",
+                            arrayOf(review.reviewContent.length),
+                            "review의 내용은 200을 넘어서는 안됩니다."
+                        )
+                    }
+
+                    // reivewScore가 0점 이하, 10점 초과인 경우 예외를 발생시킨다
+                    if (review.reviewScore <= 0 || review.reviewScore > 10) {
+                        errors.rejectValue(
+                            "reviewScore",
+                            "field.value.range",
+                            arrayOf(review.reviewScore),
+                            "review score은 무조건 0 초과 10 이하입니다."
+                        )
+                    }
+                }
             }
         }
 
-        val review = target as ShopReviewCommand.CreateRequest
-
-        // reviewContent의 길이를 200으로 제한한다
-        if (review.reviewContent.length > 200) {
-            errors.rejectValue(
-                "reviewContent",
-                "field.max.length",
-                arrayOf(review.reviewContent.length),
-                "review의 내용은 200을 넘어서는 안됩니다."
-            )
-        }
-
-        // reivewScore가 0점 이하, 10점 초과인 경우 예외를 발생시킨다
-        if (review.reviewScore <= 0 || review.reviewScore > 10) {
-            errors.rejectValue(
-                "reviewScore",
-                "field.value.range",
-                arrayOf(review.reviewScore),
-                "review score은 무조건 0 초과 10 이하입니다."
-            )
-        }
-
-        // field error들을 모두 취합하여 exception을 던진다
-        check(errors.allErrors.isEmpty()) {
-            val errorList = errors.allErrors.map {
-                ErrorResponse.FieldError.of(
-                    it.objectName,
-                    it.arguments.contentToString(),
-                    it.defaultMessage!!
-                )
-            }
-            throw RequestFieldException(errorList, "잘못된 요청입니다")
-        }
+        throwsExceptionIfErrorExists(errors)
     }
 }

@@ -11,3 +11,17 @@ fun ShopReview.softDelete(): ShopReview {
 
     return this
 }
+
+// review에 대해서 reply가 작성되었을 때 isReplyExists를 true로 바꾼다
+fun ShopReview.applyReplyCreated(): ShopReview {
+    this.isReplyExists = true
+
+    return this
+}
+
+// review에 대해서 reply가 삭제되었을 때 isReplyExists를 false로 바꾼다
+fun ShopReview.applyReplyDeleted(): ShopReview {
+    this.isReplyExists = false
+
+    return this
+}

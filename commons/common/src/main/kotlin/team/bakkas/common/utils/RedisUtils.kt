@@ -8,4 +8,6 @@ object RedisUtils {
     fun generateShopRedisKey(shopId: String) = "shop:${shopId}"
 
     fun generateReviewRedisKey(reviewId: String) = "shopReview:${reviewId}"
+
+    fun generateReplyRedisKey(replyId: String) = "reply:${replyId}"
 }

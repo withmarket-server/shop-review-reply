@@ -4,6 +4,6 @@ package team.bakkas.common.exceptions.shop
  * @author Brian
  * @since 22/05/29
  */
-data class ShopNotFoundException(override val message: String) : RuntimeException(message) {
+class ShopNotFoundException(override val message: String) : RuntimeException(message) {
 
 }
