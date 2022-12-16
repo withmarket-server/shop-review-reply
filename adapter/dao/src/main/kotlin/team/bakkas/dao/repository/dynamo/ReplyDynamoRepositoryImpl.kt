@@ -1,9 +1,15 @@
 package team.bakkas.dao.repository.dynamo
 
+import kotlinx.coroutines.flow.singleOrNull
+import kotlinx.coroutines.reactive.asFlow
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.toFlux
 import reactor.kotlin.core.publisher.toMono
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedAsyncClient
+import software.amazon.awssdk.enhanced.dynamodb.Expression
+import software.amazon.awssdk.enhanced.dynamodb.Key
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 import team.bakkas.dynamo.reply.Reply
 import team.bakkas.repository.ifs.dynamo.ReplyDynamoRepository
 
@@ -15,7 +21,7 @@ import team.bakkas.repository.ifs.dynamo.ReplyDynamoRepository
 @Repository
 class ReplyDynamoRepositoryImpl(
     private val dynamoDbEnhancedAsyncClient: DynamoDbEnhancedAsyncClient
-): ReplyDynamoRepository {
+) : ReplyDynamoRepository {
 
     private val asyncTable = dynamoDbEnhancedAsyncClient.table("reply", Reply.tableSchema)
 
@@ -23,5 +29,33 @@ class ReplyDynamoRepositoryImpl(
         return asyncTable.putItem(reply)
             .toMono()
             .thenReturn(reply)
+    }
+
+    override fun findByReviewId(reviewId: String): Mono<Reply> {
+        return asyncTable.scan { it.filterExpression(generateReplyExpression(reviewId)) }
+            .items()
+            .toFlux()
+            .singleOrEmpty() // 하나만 가져오거나, 아니면 empty mono를 가져온다
+    }
+
+    private fun generateKey(replyId: String): Key {
+        return Key.builder()
+            .partitionValue(replyId)
+            .build()
+    }
+
+    private fun generateReplyExpression(reviewId: String): Expression {
+        val attributeAliasMap = mutableMapOf<String, String>()
+        val attributeValueMap = mutableMapOf<String, AttributeValue>()
+
+        attributeAliasMap["#review_id"] = "review_id"
+
+        attributeValueMap[":id_val"] = AttributeValue.fromS(reviewId)
+
+        return Expression.builder()
+            .expressionNames(attributeAliasMap)
+            .expressionValues(attributeValueMap)
+            .expression("#review_id = :id_val")
+            .build()
     }
 }

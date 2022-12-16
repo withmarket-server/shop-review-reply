@@ -16,7 +16,9 @@ import org.springframework.http.HttpStatus
 import org.springframework.mock.web.reactive.function.server.MockServerRequest
 import team.bakkas.common.exceptions.RequestParamLostException
 import team.bakkas.common.exceptions.shopReview.ShopReviewNotFoundException
+import team.bakkas.domainquery.service.ifs.ReplyQueryService
 import team.bakkas.domainquery.service.ifs.ShopReviewQueryService
+import team.bakkas.dynamo.reply.Reply
 import team.bakkas.dynamo.shopReview.ShopReview
 
 @ExtendWith(MockKExtension::class)
@@ -25,10 +27,13 @@ internal class ShopReviewQueryHandlerUnitTest {
 
     private lateinit var shopReviewService: ShopReviewQueryService
 
+    private lateinit var replyService: ReplyQueryService
+
     @BeforeEach
     fun setUp() {
         shopReviewService = mockk(relaxed = true)
-        shopReviewQueryHandler = spyk(ShopReviewQueryHandler(shopReviewService))
+        replyService = mockk(relaxed = true)
+        shopReviewQueryHandler = spyk(ShopReviewQueryHandler(shopReviewService, replyService))
     }
 
     @Test
@@ -156,6 +161,95 @@ internal class ShopReviewQueryHandlerUnitTest {
         assertEquals(response.statusCode(), HttpStatus.OK)
     }
 
+    @Test
+    @DisplayName("[getReviewListWithReplyByShopId] 1. shop-id가 빈 상태로 들어와서 RequestParamLostException 발생")
+    fun getReviewListWithReplyByShopId1(): Unit = runBlocking {
+        // given
+        val shopId = ""
+        val request = MockServerRequest.builder()
+            .queryParam("shop-id", shopId)
+            .build()
+
+        // then
+        shouldThrow<RequestParamLostException> { shopReviewQueryHandler.getReviewListWithReplyByShopId(request) }
+    }
+
+    @Test
+    @DisplayName("[getReviewListWithReplyByShopId] 2. shop-id에 대응하는 review가 존재하지 않는 경우")
+    fun getReviewListWithReplyByShopId2(): Unit = runBlocking {
+        // given
+        val shopId = "mock-shop"
+        val request = MockServerRequest.builder()
+            .queryParam("shop-id", shopId)
+            .build()
+
+        // when
+        coEvery { shopReviewService.getReviewsByShopId(shopId) } returns listOf() // 비어있는 리스트를 반환
+
+        // then
+        shouldThrow<ShopReviewNotFoundException> { shopReviewQueryHandler.getReviewListWithReplyByShopId(request) }
+    }
+
+    @Test
+    @DisplayName("[getReviewListWithReplyByShopId] 3. 모든 리뷰에 대해서 사장님의 답글이 있는 경우")
+    fun getReviewListWithReplyByShopId3(): Unit = runBlocking {
+        // given
+        val shopId = "mock-shop"
+        val shopName = "mock-name"
+        val request = MockServerRequest.builder()
+            .queryParam("shop-id", shopId)
+            .build()
+
+        // when
+        coEvery { shopReviewService.getReviewsByShopId(shopId) } returns
+                listOf(
+                    getMockReview("1", "review1", shopId, shopName),
+                    getMockReview("2", "review1", shopId, shopName)
+                )
+
+        coEvery { replyService.findByReviewId("1") } returns getMockReply("reply-1", "1", "내용1")
+        coEvery { replyService.findByReviewId("2") } returns getMockReply("reply-2", "2", "내용2")
+
+        // then
+        val response = shopReviewQueryHandler.getReviewListWithReplyByShopId(request)
+
+        coVerify(exactly = 1) { shopReviewService.getReviewsByShopId(shopId) }
+        coVerify(exactly = 1) { replyService.findByReviewId("1") }
+        coVerify(exactly = 1) { replyService.findByReviewId("2") }
+        coVerify(exactly = 1) { shopReviewQueryHandler.getReviewListWithReplyByShopId(request) }
+        assertEquals(response.statusCode(), HttpStatus.OK)
+    }
+
+    @Test
+    @DisplayName("[getReviewListWithReplyByShopId] 4. 몇 리뷰에 대해서는 사장님의 답글이 없는 경우 (즉, 답글이 null이 낀 경우)")
+    fun getReviewListWithReplyByShopId4(): Unit = runBlocking {
+        // given
+        val shopId = "mock-shop"
+        val shopName = "mock-name"
+        val request = MockServerRequest.builder()
+            .queryParam("shop-id", shopId)
+            .build()
+
+        // when
+        coEvery { shopReviewService.getReviewsByShopId(shopId) } returns
+                listOf(
+                    getMockReview("1", "review1", shopId, shopName),
+                    getMockReview("2", "review1", shopId, shopName)
+                )
+
+        coEvery { replyService.findByReviewId("1") } returns getMockReply("reply-1", "1", "내용1")
+        coEvery { replyService.findByReviewId("2") } returns null
+
+        // then
+        val response = shopReviewQueryHandler.getReviewListWithReplyByShopId(request)
+
+        coVerify(exactly = 1) { shopReviewService.getReviewsByShopId(shopId) }
+        coVerify(exactly = 1) { replyService.findByReviewId("1") }
+        coVerify(exactly = 1) { replyService.findByReviewId("2") }
+        coVerify(exactly = 1) { shopReviewQueryHandler.getReviewListWithReplyByShopId(request) }
+        assertEquals(response.statusCode(), HttpStatus.OK)
+    }
+
     // 가짜 review를 반환하는 메소드
     private fun getMockReview(reviewId: String, reviewTitle: String, shopId: String, shopName: String) =
         ShopReview(
@@ -166,4 +260,11 @@ internal class ShopReviewQueryHandlerUnitTest {
             reviewScore = 1.0,
             reviewPhotoList = listOf()
         )
+
+    // 가짜 reply를 생성하는 메소드
+    private fun getMockReply(replyId: String, reviewId: String, content: String) = Reply(
+        replyId = replyId,
+        reviewId = reviewId,
+        content = content
+    )
 }
