@@ -9,5 +9,5 @@ object RedisUtils {
 
     fun generateReviewRedisKey(reviewId: String) = "shopReview:${reviewId}"
 
-    fun generateReplyRedisKey(replyId: String) = "reply:${replyId}"
+    fun generateReplyRedisKey(replyId: String, reviewId: String) = "reply:${replyId}+${reviewId}"
 }

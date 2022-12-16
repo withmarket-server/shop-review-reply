@@ -10,4 +10,6 @@ import team.bakkas.dynamo.reply.Reply
 interface ReplyRedisRepository {
 
     fun cacheReply(reply: Reply): Mono<Reply>
+
+    fun findByReviewId(reviewId: String): Mono<Reply>
 }

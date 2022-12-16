@@ -22,7 +22,6 @@ class ShopQueryServiceImpl(
      * UseCase layer부터는 coroutine을 적용하여 business logic을 수행한다.
      * Dispatchers.IO를 사용하여 I/O 성능을 높인다.
      */
-
     override suspend fun findShopById(shopId: String): Shop? = withContext(Dispatchers.IO) {
         val shopMono = shopReader.findShopById(shopId)
         return@withContext shopMono.awaitSingleOrNull()
