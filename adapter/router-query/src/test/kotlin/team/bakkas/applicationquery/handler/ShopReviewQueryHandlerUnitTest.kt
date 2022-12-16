@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.mock.web.reactive.function.server.MockServerRequest
 import team.bakkas.common.exceptions.RequestParamLostException
 import team.bakkas.common.exceptions.shopReview.ShopReviewNotFoundException
+import team.bakkas.domainquery.service.ifs.ReplyQueryService
 import team.bakkas.domainquery.service.ifs.ShopReviewQueryService
 import team.bakkas.dynamo.shopReview.ShopReview
 
@@ -25,10 +26,13 @@ internal class ShopReviewQueryHandlerUnitTest {
 
     private lateinit var shopReviewService: ShopReviewQueryService
 
+    private lateinit var replyService: ReplyQueryService
+
     @BeforeEach
     fun setUp() {
         shopReviewService = mockk(relaxed = true)
-        shopReviewQueryHandler = spyk(ShopReviewQueryHandler(shopReviewService))
+        replyService = mockk(relaxed = true)
+        shopReviewQueryHandler = spyk(ShopReviewQueryHandler(shopReviewService, replyService))
     }
 
     @Test
