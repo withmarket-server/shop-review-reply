@@ -11,6 +11,7 @@ import team.bakkas.common.exceptions.RequestFieldException
 import team.bakkas.common.exceptions.RequestParamLostException
 import team.bakkas.common.exceptions.shopReview.ShopReviewListInvalidException
 import team.bakkas.common.error.ErrorCode
+import team.bakkas.common.exceptions.reply.ReplyNotFoundException
 import team.bakkas.common.exceptions.shop.*
 import team.bakkas.common.exceptions.shopReview.ShopReviewAlreadyRepliedException
 import team.bakkas.common.exceptions.shopReview.ShopReviewNotFoundException
@@ -69,6 +70,11 @@ class GlobalErrorAttributes : DefaultErrorAttributes() {
                 map["default_message"] = throwable.message
                 map["error"] = ErrorCode.ALREADY_REPLIED_REVIEW
                 map["error_code"] = ErrorCode.ALREADY_REPLIED_REVIEW
+            }
+            is ReplyNotFoundException -> {
+                map["default_message"] = throwable.message
+                map["error"] = ErrorCode.ENTITY_NOT_FOUND
+                map["error_code"] = ErrorCode.ENTITY_NOT_FOUND
             }
             is RegionNotKoreaException -> {
                 map["default_message"] = throwable.message
