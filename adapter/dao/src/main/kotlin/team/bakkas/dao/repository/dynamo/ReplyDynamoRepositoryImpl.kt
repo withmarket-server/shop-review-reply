@@ -11,6 +11,7 @@ import software.amazon.awssdk.enhanced.dynamodb.Expression
 import software.amazon.awssdk.enhanced.dynamodb.Key
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 import team.bakkas.dynamo.reply.Reply
+import team.bakkas.dynamo.reply.extentions.softDelete
 import team.bakkas.repository.ifs.dynamo.ReplyDynamoRepository
 
 /**
@@ -36,6 +37,19 @@ class ReplyDynamoRepositoryImpl(
             .items()
             .toFlux()
             .singleOrEmpty() // 하나만 가져오거나, 아니면 empty mono를 가져온다
+    }
+
+    override fun findById(replyId: String): Mono<Reply> {
+        val replyKey = generateKey(replyId)
+
+        return asyncTable.getItem(replyKey)
+            .toMono()
+    }
+
+    override fun softDeleteById(replyId: String): Mono<Reply> {
+        return findById(replyId)
+            .map { it.softDelete() } // soft delete를 적용한 후
+            .flatMap { createReply(it) } // record system에 다시 저장
     }
 
     private fun generateKey(replyId: String): Key {

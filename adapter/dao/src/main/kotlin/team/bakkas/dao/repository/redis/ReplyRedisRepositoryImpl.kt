@@ -44,4 +44,11 @@ class ReplyRedisRepositoryImpl(
 
         return isReplyKey && isReplyOfReview
     }
+
+    override fun deleteReply(reviewId: String, replyId: String): Mono<Boolean> {
+        val redisKey = RedisUtils.generateReplyRedisKey(replyId, reviewId)
+
+        return replyReactiveRedisTemplate.opsForValue()
+            .delete(redisKey)
+    }
 }

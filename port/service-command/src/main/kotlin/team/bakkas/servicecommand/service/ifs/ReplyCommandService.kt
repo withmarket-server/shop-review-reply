@@ -12,4 +12,6 @@ import team.bakkas.dynamo.reply.Reply
 interface ReplyCommandService {
 
     fun createReply(reply: Reply): Mono<Reply>
+
+    fun deleteById(replyId: String): Mono<Reply>
 }

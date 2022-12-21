@@ -12,4 +12,6 @@ interface ReplyRedisRepository {
     fun cacheReply(reply: Reply): Mono<Reply>
 
     fun findByReviewId(reviewId: String): Mono<Reply>
+
+    fun deleteReply(reviewId: String, replyId: String): Mono<Boolean>
 }
