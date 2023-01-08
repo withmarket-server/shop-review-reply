@@ -1,24 +1,26 @@
 # Withmarket-main-server
 
-이 프로젝트는 WithMarket의 **가게와 관련된 서비스**를 담당하는 스프링 기반의 프로젝트입니다.
-
-현재는 **아키텍처의 확장** 에 집중하고 있으며, 요구사항이 모두 정해질 시 기능 구현을 할 에정입니다.
+WithMarket의 **가게와 관련된 서비스**를 담당하는 스프링 기반의 프로젝트
 
 * * *
 
-### 👉 본 프로젝트의 목적
+### 기능 명세
 
-본 프로젝트는 졸업작품을 위한 것 뿐만 아니라 본인의 실력 향상에도 목적을 두고있습니다.
-
-따라서 본 프로젝트의 구현에 있어서 우선순위는 다음과 같습니다.
-
-1️⃣ 확장에 유연한 아키텍처 설계 능력 향상
+1️⃣ 확장에 유연한 아키텍처 설계
 
 2️⃣ 역할과 책임이 명확하게 분리되어있는 설계
 
-3️⃣ 신기술에 대해서 트레이드오프를 따지며 기술선정을 하는 능력
+3️⃣ 기술에 대한 트레이드오프
 
 4️⃣ 기능 구현
+
+### 설계 중점 사항
+
+1️⃣ 확장에 유연한 아키텍처 설계
+
+2️⃣ 역할과 책임이 명확하게 분리되어있는 설계
+
+3️⃣ 기술에 대한 트레이드오프
 
 * * *
 
@@ -29,51 +31,39 @@
 
 ### 👉 사용되는 기술 스택 (Tech used in this project)
 
-1️⃣ **사용 언어**
+1️⃣ **언어**
 
 <img src="https://img.shields.io/badge/Kotlin-7F52FF?style=for-the-badge&logo=Kotlin&logoColor=black">
 
 2️⃣ **프로젝트 아키텍처**
 
 * Hexagonal Architecture
-* Multi-Module Architecture (멀티모듈 기반의 설계)
+* Multi-Module Architecture
 * CQRS Architecture (Command-Query Responsibility Segregation)
 
-3️⃣ **개발 방법론**
-
-* DDD (Domain Driven Development)
-
-4️⃣ **사용된 데이터베이스**
+3️⃣ **데이터베이스**
 
 <img src="https://img.shields.io/badge/DynamoDB-4053D6?style=for-the-badge&logo=Amazon DynamoDB&logoColor=white"> <img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=Redis&logoColor=white">
 
-5️⃣ **사용된 프레임워크**
+4️⃣ **프레임워크**
 
 <img src="https://img.shields.io/badge/Spring Boot-6DB33F?style=for-the-badge&logo=Spring Boot&logoColor=black"> <img src="https://img.shields.io/badge/Spring Data Redis-6DB33F?style=for-the-badge&logo=Redis&logoColor=white"> <img src="https://img.shields.io/badge/Spring Webflux-6DB33F?style=for-the-badge&logo=Spring&logoColor=white">
 
 <img src="https://img.shields.io/badge/Armeria-F75690?style=for-the-badge&logo=armeria&logoColor=black">
 
-6️⃣ **사용된 라이브러리**
+5️⃣ **라이브러리**
 
 <img src="https://img.shields.io/badge/AWS DynamoDB Sdk-4053D6?style=for-the-badge&logo=Amazon DynamoDB&logoColor=white"> <img src="https://img.shields.io/badge/Spring Kafka-231F20?style=for-the-badge&logo=Apache Kafka&logoColor=white"> <img src="https://img.shields.io/badge/Kotlin Coroutines-7F52FF?style=for-the-badge&logo=Kotlin&logoColor=black">
 
 <img src="https://img.shields.io/badge/GRPC-00ADD8?style=for-the-badge&logo=&logoColor=black">
 
-7️⃣ **빌드 툴**
-
-<img src="https://img.shields.io/badge/Gradle-4053D6?style=for-the-badge&logo=Gradle&logoColor=white">
-
-8️⃣ **Test Libraries**
-
-<img src="https://img.shields.io/badge/MockK-7F52FF?style=for-the-badge&logo=Kotlin&logoColor=black"> <img src="https://img.shields.io/badge/Kotest-7F52FF?style=for-the-badge&logo=Kotlin&logoColor=black">
-
-9️⃣ **Container Tool**
-
-<img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=Docker&logoColor=white">
-
 * * *
 
-### 👉 **모듈 분리에 관한 의사결정 과정**
+### **프로젝트 아키텍처**
+
+아키텍처가 어떤건지 설명
+
+👉 **모듈 분리에 관한 의사결정 과정**
 
 저는 모듈의 분리에 관한 목적은 **코드의 역할과 책임에 따른 명확한 분리**에 있다고 생각합니다. 따라서 저는 **역할과 책임**을 분리하는 기준을 명확하게 할 필요가 있다고 보았습니다.
 
@@ -83,7 +73,7 @@
 
 * * *
 
-### 👉 **본 프로젝트 모듈 구조 (Module Structure of This Project)**
+👉 **본 프로젝트 모듈 구조 (Module Structure of This Project)**
 
 이 섹션에서는 본 프로젝트의 모듈에 대해서 설명하고자한다. 프로젝트 모듈을 분리하면서 주의해야할 점을 먼저 소개한 다음에, 본격적으로 본 프로젝트의 아키텍처를 설명하고자합니다.
 
@@ -91,54 +81,10 @@
 
 2️⃣ 분리한 module 간에는 Common 모듈이 아닌 이상 2단계 아래 참조는 웬만하면 금지한다. 2단게 아래 참조를 한다는건 모듈 분리가 잘못됐다는 증거다.
 
-이제부터 본격적으로 프로젝트의 아키텍처에 대해서 설명하겠습니다.
-
-<details>
-<summary>⭐️ 9월 이전의 아키텍처 구조(Layered Architecture)</summary>
-<div markdown="1">
-
-![](./img/withmarket-architecture-code-level.png)
-
-1. **Application Layer**
-
-응용계층, 표현 계층을 관리하는 모듈. 즉, Handler, Router class 들을 관리하는 모듈입니다.
-
-* Application-query: 조회 로직을 관리하는 application module
-* Application-command: 커맨드 로직을 관리하는 application module
-
-2. **System Layer**
-
-어플리케이션 로직을 모르고, 도메인 로직을 모르지만, System에는 관여하는 코드들을 모아둔 모듈입니다. 주로 DTO가 여기에 위치합니다.
-
-* client-query: 조회 DTO를 모아둔 모듈
-* client-command: 명령 로직에 사용되는 DTO를 모아둔 모듈
-
-3. **Domain Layer**
-
-Entity, Service, Repository, Validator를 구현하는 Layer.
-
-* domain-dynamo: dynamo에 관련된 도메인을 관리하는 모듈. Entity, Repository, Validator를 보관하며, Repository에 대해서는 실제 구현체가 아닌 interface만을 보관합니다.
-* domain-query: query 로직에 대한 Service를 구현하는 모듈
-* domain-command: command 로직에 대한 Service를 구현하는 모듈
-
-4. **Infrastructure**
-
-domain layer에 존재하는 repository에 대해서 실제 구현체를 보관하는 모듈입니다. DB에 접근하기 위한 config, RepositoryImpl을 여기서 구현해서 Bean으로 등록합니다.
-
-5. **Common**
-
-System에는 관여하지 않지만, System을 구현함에 있어서 필요한 타입을 정의하는 모듈입니다.
-
-**System에 관여하지 않는 타입클래스 혹은 툴만 여기다 위치시켜서 common hell에 빠지지 않도록 항상 주의합니다.**
-
-</div>
-</details>
 
 * * *
 
-9월 이후로 본 프로젝트의 아키텍처 구조를 **Layered Architecture**에서 **Hexagonal Architecture**로 전환하였습니다. 이에 따라서 새롭게 정의한 아키텍처를 설명드리겠습니다.
-
-그 이전에 저의 아키텍처를 바라보는 관점이 한가지 달라진 것이 있는데, 다음과 같습니다.
+9월 이후로 본 프로젝트의 아키텍처 구조를 **Layered Architecture**에서 **Hexagonal Architecture**로 전환하였습니다.
 
 > 👉 **Module 간의 의존성만 Dependency로 바라보는 것이 아닌, 외부 미들웨어, 혹은 데이터베이스와의 의존, 그리고 외부 Web 혹은 mobile환경에서의 접근 또한 하나의 Dependency로 바라본다.**
 
@@ -171,10 +117,6 @@ Adapter Layer는 기존의 Application Layer, Presentation Layer와 크게 차�
 
 2️⃣ Validator 실제 구현체를 모두 adapter layer로 옮겼으며, 이를 정의하기 위한 interface는 모두 port layer로 이동시켰다.
 
-3️⃣ Validator에서 webClient를 이용해서 검증을 하던 것을 gRPC 통신 로직을 사용하여 구현하기 시작하였다. 이를 이용해서 스레드풀의 스레드 사용량을 낮출 수 있을것으로 기대한다.
-
-그 외에는 기존 Layered Architecture에서의 응용계층과 차이점이 없기에 이하 설명은 생략하도록 하겠습니다.
-
 * * *
 
 ### 👉 **본 프로젝트 전체적인 아키텍처(Architecture of This Project)**
@@ -183,7 +125,7 @@ Adapter Layer는 기존의 Application Layer, Presentation Layer와 크게 차�
 
 <img src="img/withmarket-architecture-total.png" height="600">
 
-* Application Query에서는 읽기 DB로 Redis를 사용합니다. Redis의 경우 In-memory Database이기 때문에 높은 throghput을 자랑하며, 초당 100만 요청까지 처리 가능한 것으로 알려져있습니다.
+* Application Query에서는 읽기 DB로 Redis를 사용합니다.
 * Redis는 DynamoDB를 Look Aside 관계로 의존하는 형태이며, 찾고자하는 데이터가 Redis에 캐싱이 안 되어있거나, 혹은 DynamoDB와 싱크가 안 맞는 현상을 대비하기 위해 약한 결합을 띄고있습니다.
 * Application Command의 경우 명령 요청을 처리하는 Application입니다. 명령 요청이 떨어지면 DynamoDB에 저장된 데이터에 변형이 발생하게됩니다. 예시를 한번 들어보면서 설명을 드리자면, 
 
@@ -197,6 +139,15 @@ Adapter Layer는 기존의 Application Layer, Presentation Layer와 크게 차�
 * 이를 통해 shopReview를 건드리는 로직에서 Shop을 건드리지 않은 상태로 DynamoDB의 1번 가게 리뷰 카운트를 늘리고, 동시에 redis에도 캐싱을 할수있게 됩니다.
 
 * * *
+
+
+
+
+
+
+
+
+
 
 ### 👉 발견한 에러 혹은 해결해야할 부분들
 
