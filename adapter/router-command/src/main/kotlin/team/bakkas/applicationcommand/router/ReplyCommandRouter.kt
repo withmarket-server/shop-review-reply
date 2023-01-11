@@ -17,7 +17,8 @@ class ReplyCommandRouter(
     @Bean
     fun replyCommandRoutes() = coRouter {
         "/api/v2/reply".nest {
-            POST("", replyCommandHandler::createReply) // [POST] http://localhost:10100/api/v2/reply
+            POST("", replyCommandHandler::createReply) // [POST] http://localhost:10101/api/v2/reply
+            DELETE("", replyCommandHandler::deleteReply) // [DELETE] http://localhost:10101/api/v2/reply
         }
     }
 }

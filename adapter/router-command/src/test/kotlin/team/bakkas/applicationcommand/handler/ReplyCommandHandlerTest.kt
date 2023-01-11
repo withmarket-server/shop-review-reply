@@ -3,6 +3,7 @@ package team.bakkas.applicationcommand.handler
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.common.runBlocking
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
 import io.mockk.spyk
@@ -11,18 +12,23 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.http.HttpStatus
 import org.springframework.mock.web.reactive.function.server.MockServerRequest
 import reactor.core.publisher.Mono
+import team.bakkas.applicationcommand.grpc.ifs.ReplyGrpcClient
 import team.bakkas.applicationcommand.grpc.ifs.ShopGrpcClient
 import team.bakkas.applicationcommand.grpc.ifs.ShopReviewGrpcClient
 import team.bakkas.applicationcommand.validator.ReplyValidatorImpl
 import team.bakkas.clientcommand.reply.ReplyCommand
 import team.bakkas.common.exceptions.RequestBodyLostException
 import team.bakkas.common.exceptions.RequestFieldException
+import team.bakkas.common.exceptions.RequestParamLostException
+import team.bakkas.common.exceptions.reply.ReplyNotFoundException
 import team.bakkas.common.exceptions.shop.MemberNotOwnerException
 import team.bakkas.common.exceptions.shopReview.ShopReviewAlreadyRepliedException
 import team.bakkas.common.exceptions.shopReview.ShopReviewNotFoundException
 import team.bakkas.eventinterface.eventProducer.ReplyEventProducer
+import team.bakkas.grpcIfs.v1.reply.CheckIsExistReplyResponse
 import team.bakkas.grpcIfs.v1.shop.CheckIsOwnerOfShopResponse
 import team.bakkas.grpcIfs.v1.shopReview.CheckExistShopReviewResponse
 import team.bakkas.grpcIfs.v1.shopReview.CheckIsRepliedReviewResponse
@@ -36,15 +42,18 @@ internal class ReplyCommandHandlerTest {
 
     private lateinit var replyValidator: ReplyValidator
 
+    private lateinit var replyGrpcClient: ReplyGrpcClient
+
     private lateinit var shopReviewGrpcClient: ShopReviewGrpcClient
 
     private lateinit var shopGrpcClient: ShopGrpcClient
 
     @BeforeEach
     fun setUp() {
+        replyGrpcClient = mockk(relaxed = true)
         shopReviewGrpcClient = mockk(relaxed = true)
         shopGrpcClient = mockk(relaxed = true)
-        replyValidator = spyk(ReplyValidatorImpl(shopGrpcClient, shopReviewGrpcClient))
+        replyValidator = spyk(ReplyValidatorImpl(shopGrpcClient, shopReviewGrpcClient, replyGrpcClient))
         replyEventProducer = mockk(relaxed = true)
         replyCommandHandler = spyk(ReplyCommandHandler(replyValidator, replyEventProducer))
     }
@@ -185,6 +194,224 @@ internal class ReplyCommandHandlerTest {
 
         // then
         shouldThrow<ShopReviewAlreadyRepliedException> { replyCommandHandler.createReply(request) }
+    }
+
+    @Test
+    @DisplayName("[deleteReply] 1. shopId가 비어서 들어오는 경우")
+    fun deleteReply1(): Unit = runBlocking {
+        // given
+        val shopId = ""
+        val reviewId = "review-id"
+        val replyId = "reply-id"
+        val memberId = "doccimann"
+
+        val request = MockServerRequest.builder()
+            .queryParam("shop-id", shopId)
+            .queryParam("review-id", reviewId)
+            .queryParam("reply-id", replyId)
+            .queryParam("member-id", memberId)
+            .build()
+
+        // then
+        shouldThrow<RequestFieldException> { replyCommandHandler.deleteReply(request) }
+    }
+
+    @Test
+    @DisplayName("[deleteReply] 2. reviewId가 비어서 들어오는 경우")
+    fun deleteReply2(): Unit = runBlocking {
+        // given
+        val shopId = "shop-id"
+        val reviewId = ""
+        val replyId = "reply-id"
+        val memberId = "doccimann"
+
+        val request = MockServerRequest.builder()
+            .queryParam("shop-id", shopId)
+            .queryParam("review-id", reviewId)
+            .queryParam("reply-id", replyId)
+            .queryParam("member-id", memberId)
+            .build()
+
+        // then
+        shouldThrow<RequestFieldException> { replyCommandHandler.deleteReply(request) }
+    }
+
+    @Test
+    @DisplayName("[deleteReply] 3. replyId가 비어서 들어오는 경우")
+    fun deleteReply3(): Unit = runBlocking {
+        // given
+        val shopId = "shop-id"
+        val reviewId = "review-id"
+        val replyId = ""
+        val memberId = "doccimann"
+
+        val request = MockServerRequest.builder()
+            .queryParam("shop-id", shopId)
+            .queryParam("review-id", reviewId)
+            .queryParam("reply-id", replyId)
+            .queryParam("member-id", memberId)
+            .build()
+
+        // then
+        shouldThrow<RequestFieldException> { replyCommandHandler.deleteReply(request) }
+    }
+
+    @Test
+    @DisplayName("[deleteReply] 4. memberId가 비어서 들어오는 경우")
+    fun deleteReply4(): Unit = runBlocking {
+        // given
+        val shopId = "shop-id"
+        val reviewId = "review-id"
+        val replyId = "reply-id"
+        val memberId = ""
+
+        val request = MockServerRequest.builder()
+            .queryParam("shop-id", shopId)
+            .queryParam("review-id", reviewId)
+            .queryParam("reply-id", replyId)
+            .queryParam("member-id", memberId)
+            .build()
+
+        // then
+        shouldThrow<RequestFieldException> { replyCommandHandler.deleteReply(request) }
+    }
+
+    @Test
+    @DisplayName("[deleteReply] 5. member가 해당 shop의 주인이 아닌 경우")
+    fun deleteReply5(): Unit = runBlocking {
+        // given
+        val shopId = "shop-id"
+        val reviewId = "review-id"
+        val replyId = "reply-id"
+        val memberId = "doccimann"
+
+        val request = MockServerRequest.builder()
+            .queryParam("shop-id", shopId)
+            .queryParam("review-id", reviewId)
+            .queryParam("reply-id", replyId)
+            .queryParam("member-id", memberId)
+            .build()
+
+        // when
+        coEvery { shopGrpcClient.isOwnerOfShop(memberId, shopId) } returns
+                CheckIsOwnerOfShopResponse.newBuilder()
+                    .setResult(false)
+                    .build()
+
+        // then
+        shouldThrow<MemberNotOwnerException> { replyCommandHandler.deleteReply(request) }
+    }
+
+    @Test
+    @DisplayName("[deleteReply] 6. member가 shop의 주인은 맞으나, review가 존재하지 않는 경우")
+    fun deleteReply6(): Unit = runBlocking {
+        // given
+        val shopId = "shop-id"
+        val reviewId = "review-id"
+        val replyId = "reply-id"
+        val memberId = "doccimann"
+
+        val request = MockServerRequest.builder()
+            .queryParam("shop-id", shopId)
+            .queryParam("review-id", reviewId)
+            .queryParam("reply-id", replyId)
+            .queryParam("member-id", memberId)
+            .build()
+
+        // when
+        coEvery { shopGrpcClient.isOwnerOfShop(memberId, shopId) } returns
+                CheckIsOwnerOfShopResponse.newBuilder()
+                    .setResult(true)
+                    .build()
+
+        coEvery { shopReviewGrpcClient.isExistShopReview(reviewId) } returns
+                CheckExistShopReviewResponse.newBuilder()
+                    .setResult(false)
+                    .build()
+
+        // then
+        shouldThrow<ShopReviewNotFoundException> { replyCommandHandler.deleteReply(request) }
+    }
+
+    @Test
+    @DisplayName("[deleteReply] 7. reply가 존재하지 않는 경우")
+    fun deleteReply7(): Unit = runBlocking {
+        // given
+        val shopId = "shop-id"
+        val reviewId = "review-id"
+        val replyId = "reply-id"
+        val memberId = "doccimann"
+
+        val request = MockServerRequest.builder()
+            .queryParam("shop-id", shopId)
+            .queryParam("review-id", reviewId)
+            .queryParam("reply-id", replyId)
+            .queryParam("member-id", memberId)
+            .build()
+
+        // when
+        coEvery { shopGrpcClient.isOwnerOfShop(memberId, shopId) } returns
+                CheckIsOwnerOfShopResponse.newBuilder()
+                    .setResult(true)
+                    .build()
+
+        coEvery { shopReviewGrpcClient.isExistShopReview(reviewId) } returns
+                CheckExistShopReviewResponse.newBuilder()
+                    .setResult(true)
+                    .build()
+
+        coEvery { replyGrpcClient.isExistReply(reviewId, replyId) } returns
+                CheckIsExistReplyResponse.newBuilder()
+                    .setResult(false)
+                    .build()
+
+        // then
+        shouldThrow<ReplyNotFoundException> { replyCommandHandler.deleteReply(request) }
+    }
+
+    @Test
+    @DisplayName("[deleteReply] 8. 모든 조건을 만족하여 validator를 통과하는 경우")
+    fun deleteReply8(): Unit = runBlocking {
+        // given
+        val shopId = "shop-id"
+        val reviewId = "review-id"
+        val replyId = "reply-id"
+        val memberId = "doccimann"
+
+        val request = MockServerRequest.builder()
+            .queryParam("shop-id", shopId)
+            .queryParam("review-id", reviewId)
+            .queryParam("reply-id", replyId)
+            .queryParam("member-id", memberId)
+            .build()
+
+        val deleteRequest = ReplyCommand.DeleteRequest.of(shopId, reviewId, replyId, memberId)
+
+        // when
+        coEvery { shopGrpcClient.isOwnerOfShop(memberId, shopId) } returns
+                CheckIsOwnerOfShopResponse.newBuilder()
+                    .setResult(true)
+                    .build()
+
+        coEvery { shopReviewGrpcClient.isExistShopReview(reviewId) } returns
+                CheckExistShopReviewResponse.newBuilder()
+                    .setResult(true)
+                    .build()
+
+        coEvery { replyGrpcClient.isExistReply(reviewId, replyId) } returns
+                CheckIsExistReplyResponse.newBuilder()
+                    .setResult(true)
+                    .build()
+
+        // then
+        val replyResponse = replyCommandHandler.deleteReply(request)
+
+        coVerify(exactly = 1) { replyCommandHandler.deleteReply(request) }
+        coVerify(exactly = 1) { replyValidator.validateDeletable(deleteRequest) }
+        coVerify(exactly = 1) { shopGrpcClient.isOwnerOfShop(memberId, shopId) }
+        coVerify(exactly = 1) { shopReviewGrpcClient.isExistShopReview(reviewId) }
+        coVerify(exactly = 1) { replyGrpcClient.isExistReply(reviewId, replyId) }
+        assertEquals(replyResponse.statusCode(), HttpStatus.OK)
     }
 
     private fun generateCreateRequest() = ReplyCommand.CreateRequest(

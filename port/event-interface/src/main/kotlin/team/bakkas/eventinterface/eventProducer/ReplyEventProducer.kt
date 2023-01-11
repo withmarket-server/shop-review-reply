@@ -10,4 +10,6 @@ import team.bakkas.clientcommand.reply.ReplyCommand
 interface ReplyEventProducer {
 
     fun propagateReplyCreated(createdEvent: ReplyCommand.CreatedEvent)
+
+    fun propagateReplyDeleted(deletedEvent: ReplyCommand.DeletedEvent)
 }

@@ -28,7 +28,16 @@ class ReplyTemplates(
         return KafkaTemplate(replyCreatedEventProducerFactory())
     }
 
+    @Bean
+    fun replyDeletedEventKafkaTemplate(): KafkaTemplate<String, ReplyCommand.DeletedEvent> {
+        return KafkaTemplate(replyDeletedEventProducerFactory())
+    }
+
     private fun replyCreatedEventProducerFactory(): ProducerFactory<String, ReplyCommand.CreatedEvent> {
+        return DefaultKafkaProducerFactory(producerConfig())
+    }
+
+    private fun replyDeletedEventProducerFactory(): ProducerFactory<String, ReplyCommand.DeletedEvent> {
         return DefaultKafkaProducerFactory(producerConfig())
     }
 

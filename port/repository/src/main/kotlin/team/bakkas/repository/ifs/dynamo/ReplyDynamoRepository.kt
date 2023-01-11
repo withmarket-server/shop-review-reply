@@ -12,4 +12,8 @@ interface ReplyDynamoRepository {
     fun createReply(reply: Reply): Mono<Reply>
 
     fun findByReviewId(reviewId: String): Mono<Reply>
+
+    fun findById(replyId: String): Mono<Reply>
+
+    fun softDeleteById(replyId: String): Mono<Reply>
 }
