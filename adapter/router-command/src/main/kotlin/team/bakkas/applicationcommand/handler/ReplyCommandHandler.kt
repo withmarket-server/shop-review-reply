@@ -8,9 +8,11 @@ import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.ServerResponse
 import org.springframework.web.reactive.function.server.ServerResponse.ok
 import org.springframework.web.reactive.function.server.bodyValueAndAwait
+import org.springframework.web.reactive.function.server.queryParamOrNull
 import team.bakkas.clientcommand.reply.ReplyCommand
 import team.bakkas.common.ResultFactory
 import team.bakkas.common.exceptions.RequestBodyLostException
+import team.bakkas.common.exceptions.RequestParamLostException
 import team.bakkas.eventinterface.eventProducer.ReplyEventProducer
 import team.bakkas.servicecommand.validator.ReplyValidator
 
@@ -42,6 +44,24 @@ class ReplyCommandHandler(
 
         return@coroutineScope ok()
             .contentType(MediaType.APPLICATION_JSON)
+            .bodyValueAndAwait(ResultFactory.getSuccessResult())
+    }
+
+    suspend fun deleteReply(serverRequest: ServerRequest): ServerResponse = coroutineScope {
+        val shopId = serverRequest.queryParamOrNull("shop-id") ?: throw RequestParamLostException("shopId is lost")
+        val reviewId = serverRequest.queryParamOrNull("review-id") ?: throw RequestParamLostException("reviewId is lost")
+        val replyId = serverRequest.queryParamOrNull("reply-id") ?: throw RequestParamLostException("replyId is lost")
+        val memberId = serverRequest.queryParamOrNull("member-id") ?: throw RequestParamLostException("memberId is lost")
+
+        val deleteRequest = ReplyCommand.DeleteRequest.of(shopId, reviewId, replyId, memberId)
+
+        replyValidator.validateDeletable(deleteRequest)
+
+        val deletedEvent = deleteRequest.transformToEvent()
+
+        replyEventProducer.propagateReplyDeleted(deletedEvent)
+
+        return@coroutineScope ok().contentType(MediaType.APPLICATION_JSON)
             .bodyValueAndAwait(ResultFactory.getSuccessResult())
     }
 }

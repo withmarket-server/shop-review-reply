@@ -22,4 +22,9 @@ class ReplyCommandServiceImpl(
         return replyDynamoRepository.createReply(reply) // reply를 dynamo에 기록하고
             .doOnSuccess { replyRedisRepository.cacheReply(reply).subscribe() } // dynamo에 기록을 성공할 시 redis에도 전파
     }
+
+    override fun deleteById(replyId: String): Mono<Reply> {
+        return replyDynamoRepository.softDeleteById(replyId)
+            .doOnSuccess { replyRedisRepository.deleteReply(it.reviewId, it.replyId).subscribe() }
+    }
 }

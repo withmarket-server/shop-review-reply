@@ -37,10 +37,8 @@ class ShopReviewRedisRepositoryImpl(
     override fun deleteReview(reviewId: String): Mono<Boolean> {
         val reviewKey = RedisUtils.generateReviewRedisKey(reviewId)
 
-        return shopReviewReactiveRedisTemplate.opsForValue().get(reviewKey)
-            .single()
-            .flatMap { shopReviewReactiveRedisTemplate.opsForValue().delete(reviewKey) }
-            .thenReturn(true)
+        return shopReviewReactiveRedisTemplate.opsForValue()
+            .delete(reviewKey)
     }
 
     override fun getShopReviewsByShopId(shopId: String): Flow<ShopReview> {
